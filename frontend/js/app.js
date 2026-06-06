@@ -110,6 +110,8 @@
 
     // ============ VIEW SWITCHING ============
     function switchView(viewName) {
+        // Stop any playing video before switching
+        stopAllPlayers();
         currentView = viewName;
         // Hide all views
         $$('.view').forEach(function(v) { v.classList.remove('active'); });
@@ -727,6 +729,16 @@
             try { dpInstance.destroy(); } catch(e) {}
             dpInstance = null;
         }
+    }
+
+    function stopAllPlayers() {
+        // Stop DPlayer
+        destroyDPlayer();
+        // Stop HTML5 video elements
+        document.querySelectorAll('video').forEach(function(v) { v.pause(); v.src = ''; });
+        // Remove iframe (B站) - clear the wrapper content
+        var iframeWrappers = document.querySelectorAll('.video-player-wrapper');
+        iframeWrappers.forEach(function(w) { w.innerHTML = ''; });
     }
 
     // ============ LIKE ============
