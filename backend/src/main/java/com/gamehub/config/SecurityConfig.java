@@ -38,17 +38,23 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/news/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/banners/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/contact/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/videos/hot-plays").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/api/files/*").hasRole("ADMIN")
                 // Admin news & banner management
                 .requestMatchers("/api/news/**").hasRole("ADMIN")
                 .requestMatchers("/api/banners/**").hasRole("ADMIN")
+                .requestMatchers("/api/contact").hasRole("ADMIN")
                 // Authenticated users can like/unlike
                 .requestMatchers(HttpMethod.POST, "/api/videos/*/like", "/api/videos/*/unlike").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/videos/hot-plays").permitAll()
                 // Admin only
                 .requestMatchers(HttpMethod.DELETE, "/api/videos/*", "/api/comments/*").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                // Member+ can create videos
+                .requestMatchers(HttpMethod.PUT, "/api/contact/**").hasRole("ADMIN")
+                // Member+ can create/edit videos
                 .requestMatchers(HttpMethod.POST, "/api/videos").hasAnyRole("ADMIN", "MEMBER")
+                .requestMatchers(HttpMethod.PUT, "/api/videos/*").hasAnyRole("ADMIN", "MEMBER")
                 .requestMatchers(HttpMethod.POST, "/api/upload/**").hasAnyRole("ADMIN", "MEMBER")
                 .requestMatchers(HttpMethod.POST, "/api/videos/*/comments").hasAnyRole("ADMIN", "MEMBER", "VISITOR")
                 // Everything else needs auth

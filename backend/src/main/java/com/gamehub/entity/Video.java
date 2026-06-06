@@ -40,6 +40,9 @@ public class Video {
     @Column(nullable = false)
     private int likes = 0;
 
+    @Column(nullable = false)
+    private int playCount = 0;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -83,6 +86,8 @@ public class Video {
 
     public int getLikes() { return likes; }
     public void setLikes(int likes) { this.likes = likes; }
+    public int getPlayCount() { return playCount; }
+    public void setPlayCount(int playCount) { this.playCount = playCount; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

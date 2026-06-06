@@ -118,6 +118,11 @@
                 $('#view-detail').classList.add('active');
                 if (btnAdd) btnAdd.style.display = 'none';
                 break;
+            case 'dashboard':
+                $('#view-dashboard').classList.add('active');
+                if (btnAdd) btnAdd.style.display = 'none';
+                renderDashboard('stats');
+                break;
         }
 
         $$('.nav-link[data-view]').forEach(function(l) {
@@ -173,6 +178,8 @@
                 '<div class="file-actions">' +
                     '<button class="btn-view" onclick="APP_ACTIONS.viewFile(' + f.id + ')">👁 查看</button>' +
                     '<button class="btn-download" onclick="APP_ACTIONS.downloadFile(' + f.id + ')">⬇ 下载</button>' +
+                    (AUTH.getUser() && AUTH.getUser().role === 'ADMIN'
+                        ? '<button class="btn-delete-user" onclick="APP_ACTIONS.deleteFile(' + f.id + ')">🗑</button>' : '') +
                 '</div>' +
             '</div>';
         }).join('');
@@ -217,6 +224,13 @@
         },
         downloadFile: function(fileId) {
             window.open(CONFIG.API_BASE + '/files/' + fileId + '/download', '_blank');
+        },
+        deleteFile: async function(fileId) {
+            if (!confirm('确定删除该文件吗？')) return;
+            try { await API.deleteFile(fileId); showToast('已删除'); await loadFileList(); } catch(e) { showToast('删除失败','error'); }
+        },
+        editVideo: function(videoId) {
+            openEditVideoModal(videoId);
         }
     };
 
@@ -369,6 +383,36 @@
         try { await API.deleteNews(id); showToast('已删除'); renderNewsList(); } catch(e) { showToast('删除失败', 'error'); }
     };
 
+    // ============ AUDIT LOG HELPER ============
+    function auditLog(action, detail) {
+        const user = AUTH.getUser();
+        if (!user || user.role !== 'ADMIN') return;
+        API.addLog(action, user.displayName, detail).catch(function(){});
+    }
+
+    // ============ SEARCH ============
+    let searchTimer;
+    function initSearch() {
+        const input = $('#search-input');
+        const clearBtn = $('#btn-search-clear');
+        if (!input) return;
+
+        input.addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(function() {
+                const val = input.value.trim();
+                clearBtn.style.display = val ? 'block' : 'none';
+                renderVideoList(val);
+            }, 300);
+        });
+
+        clearBtn.addEventListener('click', function() {
+            input.value = '';
+            clearBtn.style.display = 'none';
+            renderVideoList('');
+        });
+    }
+
     // ============ SORT ============
     function setSort(sort) {
         currentSort = sort;
@@ -379,7 +423,7 @@
     }
 
     // ============ VIDEO LIST ============
-    async function renderVideoList() {
+    async function renderVideoList(searchTerm) {
         const grid = $('#video-grid');
         const empty = $('#empty-state');
         const loading = $('#loading-list');
@@ -391,7 +435,11 @@
         let videos = [];
 
         try {
-            videos = await API.getVideos(currentSort);
+            if (searchTerm && searchTerm.trim()) {
+                videos = await API.getVideosBySearch(searchTerm.trim());
+            } else {
+                videos = await API.getVideos(currentSort);
+            }
         } catch(e) {
             if (CONFIG.IS_LOCAL) {
                 console.log('API not available, using demo data');
@@ -612,7 +660,12 @@
         const isLocal = video.videoType === 'LOCAL';
         const bv = video.bilibiliBv || '';
         const gameTag = video.game ? '<span class="game-tag">🎮 ' + esc(video.game) + '</span>' : '';
-        const actions = AUTH.can('deleteVideo') ? '<div class="video-actions"><button class="btn-danger" id="btn-delete-video">🗑 删除此视频</button></div>' : '';
+        const canEdit = AUTH.getUser() && (AUTH.getUser().role === 'ADMIN' || (AUTH.getUser().role === 'MEMBER' && video.uploaderId === AUTH.getUser().userId));
+        const actions = (AUTH.can('deleteVideo') || canEdit)
+            ? '<div class="video-actions">' +
+                (canEdit ? '<button class="btn btn-primary btn-sm" id="btn-edit-video" style="margin-right:8px;">✏️ 编辑</button>' : '') +
+                (AUTH.can('deleteVideo') ? '<button class="btn-danger" id="btn-delete-video">🗑 删除</button>' : '') +
+              '</div>' : '';
         const user = AUTH.getUser();
         const authorValue = user ? user.displayName : '';
 
@@ -676,6 +729,9 @@
 
         const delBtn = $('#btn-delete-video');
         if (delBtn) delBtn.addEventListener('click', handleDeleteVideo);
+
+        const editBtn = $('#btn-edit-video');
+        if (editBtn) editBtn.addEventListener('click', function() { openEditVideoModal(videoId); });
 
         const likeBtn = $('#btn-like');
         if (likeBtn) likeBtn.addEventListener('click', function() { handleLike(videoId); });
@@ -962,6 +1018,128 @@
         showToast('🎉 视频发布成功！');
     }
 
+    // ============ EDIT VIDEO ============
+    async function openEditVideoModal(videoId) {
+        let video;
+        try { video = await API.getVideo(videoId); } catch(e) { video = findDemoVideo(videoId); }
+        if (!video) { showToast('视频不存在','error'); return; }
+
+        $('#edit-video-id').value = videoId;
+        $('#edit-video-title').value = video.title || '';
+        $('#edit-video-game').value = video.game || '';
+        $('#edit-video-cover').value = video.thumbnailUrl || '';
+        $('#edit-video-desc').value = video.description || '';
+        $('#modal-edit-video').classList.add('active');
+    }
+
+    function closeEditVideoModal() { $('#modal-edit-video').classList.remove('active'); }
+
+    async function handleEditVideo(e) {
+        e.preventDefault();
+        const id = $('#edit-video-id').value;
+        const data = {
+            title: $('#edit-video-title').value.trim(),
+            game: $('#edit-video-game').value.trim() || null,
+            thumbnailUrl: $('#edit-video-cover').value.trim() || null,
+            description: $('#edit-video-desc').value.trim() || null
+        };
+        try { await API.updateVideo(id, data); auditLog('EDIT_VIDEO', data.title); } catch(err) { showToast('保存失败: '+err.message,'error'); return; }
+        closeEditVideoModal();
+        renderVideoList();
+        if (currentView === 'detail' && currentVideoId == id) openVideoDetail(id);
+        showToast('视频已更新');
+    }
+
+    // ============ DASHBOARD ============
+    let dashQuill = null;
+
+    async function renderDashboard(tab) {
+        const panels = $$('.dash-panel');
+        panels.forEach(function(p) { p.classList.remove('active'); });
+        document.getElementById('dash-' + tab).classList.add('active');
+
+        switch(tab) {
+            case 'stats': await renderStats(); break;
+            case 'logs': await renderLogs(); break;
+            case 'contact': await renderContactEdit(); break;
+            case 'banners': await renderBannerAdmin(); break;
+        }
+    }
+
+    async function renderStats() {
+        const el = $('#dash-stats');
+        try {
+            const [videos, users, files] = await Promise.all([
+                API.getVideos('latest'), API.admin.getUsers(), API.getFiles()
+            ]);
+            el.innerHTML = '<div class="stats-grid">' +
+                '<div class="stat-card"><div class="stat-num">' + videos.length + '</div><div class="stat-label">视频总数</div></div>' +
+                '<div class="stat-card"><div class="stat-num">' + users.length + '</div><div class="stat-label">注册用户</div></div>' +
+                '<div class="stat-card"><div class="stat-num">' + files.length + '</div><div class="stat-label">集团文件</div></div>' +
+                '<div class="stat-card"><div class="stat-num">' + videos.reduce(function(s,v) { return s + (v.playCount||0); }, 0) + '</div><div class="stat-label">总播放量</div></div>' +
+                '</div>';
+        } catch(e) { el.innerHTML = '<div class="no-comments">加载失败</div>'; }
+    }
+
+    async function renderLogs() {
+        const el = $('#dash-logs');
+        try {
+            const logs = await API.getLogs();
+            if (!logs || logs.length === 0) { el.innerHTML = '<div class="no-comments">暂无操作记录</div>'; return; }
+            el.innerHTML = '<table class="log-table"><tr><th>时间</th><th>操作</th><th>用户</th><th>详情</th></tr>' +
+                logs.map(function(l) {
+                    return '<tr><td>' + formatTime(l.createdAt) + '</td><td>' + esc(l.action) + '</td><td>' + esc(l.username) + '</td><td>' + esc(l.detail || '') + '</td></tr>';
+                }).join('') + '</table>';
+        } catch(e) { el.innerHTML = '<div class="no-comments">加载失败</div>'; }
+    }
+
+    async function renderContactEdit() {
+        const el = $('#dash-contact');
+        let contact;
+        try { contact = await API.getContact(); } catch(e) {}
+        contact = contact || {};
+        el.innerHTML = '<form id="form-contact-edit"><div class="form-group"><label>地址</label><input id="ca" value="' + esc(contact.address||'') + '"></div>' +
+            '<div class="form-group"><label>电话</label><input id="cp" value="' + esc(contact.phone||'') + '"></div>' +
+            '<div class="form-group"><label>传真</label><input id="cf" value="' + esc(contact.fax||'') + '"></div>' +
+            '<div class="form-group"><label>邮箱</label><input id="ce" value="' + esc(contact.email||'') + '"></div>' +
+            '<div class="form-group"><label>HR邮箱</label><input id="ch" value="' + esc(contact.hrEmail||'') + '"></div>' +
+            '<div class="form-group"><label>工作时间</label><input id="cw" value="' + esc(contact.workHours||'') + '"></div>' +
+            '<div class="form-group"><label>地图URL</label><input id="cm" value="' + esc(contact.mapUrl||'') + '"></div>' +
+            '<button type="submit" class="btn btn-primary">💾 保存联系方式</button></form>';
+
+        $('#form-contact-edit').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = { address:$('#ca').value, phone:$('#cp').value, fax:$('#cf').value, email:$('#ce').value, hrEmail:$('#ch').value, workHours:$('#cw').value, mapUrl:$('#cm').value };
+            try { await API.updateContact(data); showToast('联系方式已更新'); auditLog('EDIT_CONTACT', ''); } catch(err) { showToast('保存失败','error'); }
+        });
+    }
+
+    async function renderBannerAdmin() {
+        const el = $('#dash-banners');
+        let banners = [];
+        try { banners = await API.getBanners(); } catch(e) {}
+        el.innerHTML = (banners.length ? banners.map(function(b) {
+            return '<div class="banner-item"><img src="' + esc(b.imageUrl || '') + '" onerror="this.style.display=\'none\'"><div class="banner-info"><span style="font-weight:600;">' + esc(b.title) + '</span><span style="color:var(--text-muted);">排序:' + b.sortOrder + ' 状态:' + (b.active?'启用':'禁用') + '</span></div>' +
+                '<button class="btn-delete-user" onclick="ADMIN_ACTIONS.deleteBanner(' + b.id + ')">删除</button></div>';
+        }).join('') : '<div class="no-comments">暂无轮播</div>') +
+        '<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px;"><h4 style="margin-bottom:8px;">+ 添加轮播</h4>' +
+        '<form id="form-add-banner"><div class="form-group"><input id="ba-title" placeholder="标题" maxlength="100"></div>' +
+        '<div class="form-group"><input id="ba-url" placeholder="图片URL" maxlength="500"></div>' +
+        '<div class="form-group"><input id="ba-link" placeholder="跳转链接（可选）" maxlength="500"></div>' +
+        '<button type="submit" class="btn btn-primary btn-sm">添加</button></form></div>';
+
+        $('#form-add-banner').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = { title:$('#ba-title').value, imageUrl:$('#ba-url').value, linkUrl:$('#ba-link').value, sortOrder:99, active:true };
+            try { await API.createBanner(data); showToast('轮播已添加'); renderBannerAdmin(); } catch(err) { showToast('添加失败','error'); }
+        });
+    }
+
+    window.ADMIN_ACTIONS.deleteBanner = async function(id) {
+        if (!confirm('确认删除？')) return;
+        try { await API.deleteBanner(id); showToast('已删除'); renderBannerAdmin(); } catch(e) { showToast('失败','error'); }
+    };
+
     // ============ ADMIN PANEL ============
     function openAdminPanel() {
         $('#modal-admin').classList.add('active');
@@ -1136,10 +1314,13 @@
 
         // Admin panel button
         const btnAdmin = $('#btn-admin-panel');
+        const btnDash = $('#btn-dashboard');
         if (user.role === 'ADMIN') {
             btnAdmin.style.display = '';
+            if (btnDash) btnDash.style.display = '';
         } else {
             btnAdmin.style.display = 'none';
+            if (btnDash) btnDash.style.display = 'none';
         }
 
         const banner = $('#visitor-banner');
@@ -1240,6 +1421,19 @@
         $('#modal-close').addEventListener('click', closeAddModal);
         $('#btn-cancel').addEventListener('click', closeAddModal);
         $('#modal-add').addEventListener('click', function(e) { if (e.target === this) closeAddModal(); });
+
+        // Dashboard
+        $('#btn-dashboard').addEventListener('click', function() { switchView('dashboard'); });
+        $$('.dash-tab').forEach(function(t) { t.addEventListener('click', function() { renderDashboard(t.dataset.dt); $$('.dash-tab').forEach(function(d) { d.classList.toggle('active', d === t); }); }); });
+
+        // Edit video modal
+        $('#form-edit-video').addEventListener('submit', handleEditVideo);
+        $('#modal-edit-close').addEventListener('click', closeEditVideoModal);
+        $('#btn-edit-cancel').addEventListener('click', closeEditVideoModal);
+        $('#modal-edit-video').addEventListener('click', function(e) { if (e.target === this) closeEditVideoModal(); });
+
+        // Search
+        initSearch();
 
         // Admin panel
         $('#btn-admin-panel').addEventListener('click', openAdminPanel);

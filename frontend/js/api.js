@@ -70,6 +70,9 @@ const API = (function() {
             if (sort) path += '?sort=' + sort;
             return request(path);
         },
+        getVideosBySearch: function(keyword) {
+            return request('/videos?search=' + encodeURIComponent(keyword));
+        },
 
         getVideo: function(id) {
             return request('/videos/' + id);
@@ -232,6 +235,24 @@ const API = (function() {
         },
         deleteBanner: function(id) {
             return request('/banners/' + id, { method: 'DELETE' });
+        },
+        deleteFile: function(id) {
+            return request('/files/' + id, { method: 'DELETE' });
+        },
+
+        // Video edit
+        updateVideo: function(id, data) {
+            return request('/videos/' + id, { method: 'PUT', body: data });
+        },
+
+        // Contact
+        getContact: function() { return request('/contact'); },
+        updateContact: function(data) { return request('/contact', { method: 'PUT', body: data }); },
+
+        // Audit Logs
+        getLogs: function() { return request('/admin/logs'); },
+        addLog: function(action, username, detail) {
+            return request('/admin/logs', { method: 'POST', body: {action:action, username:username, detail:detail} });
         },
 
         // Admin

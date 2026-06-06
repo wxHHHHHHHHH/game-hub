@@ -57,6 +57,7 @@
             <a href="#" class="nav-link" data-view="intro">集团简介</a>
             <a href="#" class="nav-link" data-view="contact">联系我们</a>
             <button class="nav-link" id="btn-add-video">+ 发布视频</button>
+            <button class="nav-link nav-admin" id="btn-dashboard" style="display:none;">📊 管理后台</button>
             <button class="nav-link nav-admin" id="btn-admin-panel" style="display:none;">⚙️ 成员管理</button>
             <div class="user-area">
                 <div class="user-badge">
@@ -99,7 +100,11 @@
         <div class="hero-badge"><img src="img/favicon.svg" width="18" height="18" style="vertical-align:middle;margin-right:4px;">中国波比集团</div>
         <h1>我们的<span>精彩时刻</span></h1>
         <p>记录每一次活动、每一个瞬间、每一段难忘的时光</p>
-        <div class="sort-buttons">
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="🔍 搜索视频标题或分类..." maxlength="100">
+            <button id="btn-search-clear" style="display:none;">✕</button>
+        </div>
+        <div class="sort-buttons" style="margin-top:12px;">
             <button class="sort-btn active" data-sort="latest">🕐 最新发布</button>
             <button class="sort-btn" data-sort="hot">🔥 最热排行</button>
         </div>
@@ -171,6 +176,21 @@
 <section id="view-news-detail" class="view">
     <button class="btn-back" data-back="news">← 返回新闻列表</button>
     <div class="news-detail-wrap" id="news-detail-content"></div>
+</section>
+
+<!-- View: Admin Dashboard -->
+<section id="view-dashboard" class="view">
+    <div class="page-header"><h2>📊 管理后台</h2></div>
+    <div class="dash-tabs">
+        <button class="dash-tab active" data-dt="stats">📈 数据看板</button>
+        <button class="dash-tab" data-dt="logs">📋 操作日志</button>
+        <button class="dash-tab" data-dt="contact">📞 联系方式</button>
+        <button class="dash-tab" data-dt="banners">🖼️ 轮播管理</button>
+    </div>
+    <div class="dash-panel active" id="dash-stats"><div class="loading"><div class="spinner"></div></div></div>
+    <div class="dash-panel" id="dash-logs"><div class="loading"><div class="spinner"></div></div></div>
+    <div class="dash-panel" id="dash-contact"><div class="loading"><div class="spinner"></div></div></div>
+    <div class="dash-panel" id="dash-banners"><div class="loading"><div class="spinner"></div></div></div>
 </section>
 
 <!-- View: Contact -->
@@ -356,11 +376,31 @@
     </div>
 </div>
 
+<!-- Edit Video Modal -->
+<div class="modal-overlay" id="modal-edit-video">
+    <div class="modal">
+        <div class="modal-header"><h2>✏️ 编辑视频</h2><button class="modal-close" id="modal-edit-close">&times;</button></div>
+        <form class="modal-body" id="form-edit-video">
+            <input type="hidden" id="edit-video-id">
+            <div class="form-group"><label>标题</label><input type="text" id="edit-video-title" required maxlength="255"></div>
+            <div class="form-group"><label>分类/标签</label><input type="text" id="edit-video-game" maxlength="50"></div>
+            <div class="form-group"><label>封面图片URL</label><input type="text" id="edit-video-cover" maxlength="500"></div>
+            <div class="form-group"><label>描述</label><textarea id="edit-video-desc" rows="4"></textarea></div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel" id="btn-edit-cancel">取消</button>
+                <button type="submit" class="btn btn-primary">💾 保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Toast container -->
 <div id="toast-container"></div>
 
+<link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/hls.js/dist/hls.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
