@@ -407,15 +407,31 @@
             return;
         }
 
-        grid.innerHTML = galleryPhotos.map(function(p, i) {
-            return '<div class="gallery-item" data-idx="' + i + '">' +
-                '<img src="' + esc(p.imageUrl) + '" alt="' + esc(p.caption || '') + '" loading="lazy" onerror="this.src=\'' + CONFIG.PLACEHOLDER_THUMB + '\'">' +
-                (p.caption ? '<div class="gal-caption">' + esc(p.caption) + '</div>' : '') +
-                (isAdmin ? '<button class="gal-del" onclick="event.stopPropagation();GALLERY_ACTIONS.deletePhoto(' + p.id + ')">🗑</button>' : '') +
-            '</div>';
-        }).join('');
+        // Group by date
+        const grouped = {};
+        galleryPhotos.forEach(function(p) {
+            const day = (p.createdAt || '').substring(0, 10) || '未分类';
+            if (!grouped[day]) grouped[day] = [];
+            grouped[day].push(p);
+        });
 
-        grid.querySelectorAll('.gallery-item').forEach(function(item) {
+        const dates = Object.keys(grouped).sort().reverse();
+
+        grid.innerHTML = '<div class="timeline">' + dates.map(function(date) {
+            const photos = grouped[date];
+            return '<div class="timeline-date">📅 ' + date + ' <span style="font-size:13px;font-weight:400;color:var(--text-muted);">(' + photos.length + '张)</span></div>' +
+                '<div class="timeline-row">' + photos.map(function(p, i) {
+                    const thumb = p.thumbnailUrl || p.imageUrl || '';
+                    const idx = galleryPhotos.indexOf(p);
+                    return '<div class="timeline-item" data-idx="' + idx + '">' +
+                        '<img src="' + esc(thumb) + '" alt="' + esc(p.caption || '') + '" loading="lazy" onerror="this.src=\'' + CONFIG.PLACEHOLDER_THUMB + '\'">' +
+                        (p.caption ? '<div class="gal-caption">' + esc(p.caption) + '</div>' : '') +
+                        (isAdmin ? '<button class="gal-del" onclick="event.stopPropagation();GALLERY_ACTIONS.deletePhoto(' + p.id + ')">🗑</button>' : '') +
+                    '</div>';
+                }).join('') + '</div>';
+        }).join('') + '</div>';
+
+        grid.querySelectorAll('.timeline-item').forEach(function(item) {
             item.addEventListener('click', function() {
                 openLightbox(parseInt(item.dataset.idx));
             });
@@ -431,8 +447,20 @@
     function updateLightbox() {
         const p = galleryPhotos[lightboxIndex];
         if (!p) return;
-        $('#lightbox-img').src = p.imageUrl;
+        // Show thumbnail first (fast), then load original
+        $('#lightbox-img').src = p.thumbnailUrl || p.imageUrl;
         $('#lightbox-caption').textContent = (p.caption || '') + (p.album ? ' · ' + p.album : '');
+        // Original view button
+        const origUrl = p.imageUrl;
+        const bar = document.querySelector('.lightbox-bar');
+        if (!bar) {
+            const b = document.createElement('div');
+            b.className = 'lightbox-bar';
+            b.innerHTML = '<a class="btn-original" id="btn-original" href="#" target="_blank">🔍 查看原图</a>';
+            $('#lightbox-caption').after(b);
+        }
+        const btn = $('#btn-original');
+        if (btn) btn.href = origUrl;
     }
     function lightboxNext() { lightboxIndex = (lightboxIndex + 1) % galleryPhotos.length; updateLightbox(); }
     function lightboxPrev() { lightboxIndex = (lightboxIndex - 1 + galleryPhotos.length) % galleryPhotos.length; updateLightbox(); }
@@ -443,7 +471,7 @@
         input.onchange = async function() {
             const files = input.files;
             if (!files || !files.length) return;
-            showToast('上传中...');
+            showToast('上传中，正在压缩处理...');
             for (let f of files) {
                 try { await API.uploadPhoto(f, '', '默认相册'); } catch(e) { showToast('上传失败: '+e.message,'error'); }
             }

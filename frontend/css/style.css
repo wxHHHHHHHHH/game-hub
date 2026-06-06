@@ -364,26 +364,36 @@ body {
 .gallery-hero { text-align:center; padding:40px 0 30px; }
 .gallery-hero h2 { font-size:32px; font-weight:800; color:#fff; }
 .gallery-hero p { color:rgba(255,200,100,0.7); font-size:15px; margin-top:4px; }
-.gallery-grid { columns:4 240px; column-gap:16px; }
-.gallery-item { break-inside:avoid; margin-bottom:16px; border-radius:12px; overflow:hidden; cursor:pointer; position:relative; transition:transform 0.3s; }
-.gallery-item:hover { transform:scale(1.02); }
-.gallery-item img { width:100%; display:block; border-radius:12px; }
-.gallery-item .gal-caption { position:absolute; bottom:0; left:0; right:0; padding:40px 16px 12px; background:linear-gradient(transparent, rgba(0,0,0,0.7)); color:#fff; font-size:13px; opacity:0; transition:opacity 0.3s; }
-.gallery-item:hover .gal-caption { opacity:1; }
-.gallery-item .gal-del { position:absolute; top:8px; right:8px; background:rgba(255,0,0,0.7); color:#fff; border:none; border-radius:4px; padding:2px 8px; font-size:12px; cursor:pointer; opacity:0; transition:opacity 0.3s; }
-.gallery-item:hover .gal-del { opacity:1; }
+
+/* Timeline */
+.timeline { position:relative; max-width:900px; margin:0 auto; padding-left:40px; }
+.timeline::before { content:''; position:absolute; left:16px; top:0; bottom:0; width:2px; background:linear-gradient(to bottom, #f90, #ff6b35, #c44dff); border-radius:2px; }
+.timeline-date { position:relative; margin:32px 0 16px; font-size:18px; font-weight:800; color:#f90; }
+.timeline-date::before { content:''; position:absolute; left:-44px; top:50%; width:12px; height:12px; background:#f90; border-radius:50%; transform:translateY(-50%); box-shadow:0 0 10px rgba(255,153,0,0.6); }
+.timeline-date:first-child { margin-top:0; }
+.timeline-row { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:12px; margin-bottom:8px; }
+.timeline-item { border-radius:10px; overflow:hidden; cursor:pointer; position:relative; transition:transform 0.3s; aspect-ratio:4/3; background:var(--bg-secondary); }
+.timeline-item:hover { transform:scale(1.03); z-index:2; }
+.timeline-item img { width:100%; height:100%; object-fit:cover; display:block; }
+.timeline-item .gal-caption { position:absolute; bottom:0; left:0; right:0; padding:24px 10px 8px; background:linear-gradient(transparent, rgba(0,0,0,0.7)); color:#fff; font-size:12px; opacity:0; transition:opacity 0.3s; }
+.timeline-item:hover .gal-caption { opacity:1; }
+.timeline-item .gal-del { position:absolute; top:4px; right:4px; background:rgba(255,0,0,0.75); color:#fff; border:none; border-radius:4px; padding:1px 6px; font-size:11px; cursor:pointer; opacity:0; transition:opacity 0.3s; }
+.timeline-item:hover .gal-del { opacity:1; }
 .gallery-upload-bar { text-align:center; margin-bottom:20px; }
 
 /* ============ LIGHTBOX ============ */
-.lightbox { display:none; position:fixed; inset:0; z-index:999; background:rgba(0,0,0,0.92); align-items:center; justify-content:center; }
+.lightbox { display:none; position:fixed; inset:0; z-index:999; background:rgba(0,0,0,0.95); flex-direction:column; align-items:center; justify-content:center; }
 .lightbox.active { display:flex; }
-.lightbox img { max-width:90vw; max-height:85vh; border-radius:8px; box-shadow:0 8px 40px rgba(0,0,0,0.6); }
+.lightbox img { max-width:90vw; max-height:80vh; border-radius:8px; box-shadow:0 8px 40px rgba(0,0,0,0.6); object-fit:contain; }
 .lightbox-close { position:absolute; top:20px; right:30px; font-size:40px; color:#fff; cursor:pointer; z-index:1; }
 .lightbox-prev, .lightbox-next { position:absolute; top:50%; font-size:36px; color:#fff; cursor:pointer; padding:16px; user-select:none; transform:translateY(-50%); }
 .lightbox-prev { left:10px; }
 .lightbox-next { right:10px; }
-.lightbox-prev:hover, .lightbox-next:hover { color:var(--accent-yellow); }
-#lightbox-caption { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); color:#fff; font-size:14px; background:rgba(0,0,0,0.6); padding:6px 20px; border-radius:20px; }
+.lightbox-prev:hover, .lightbox-next:hover { color:#f90; }
+#lightbox-caption { margin-top:12px; color:#fff; font-size:14px; text-align:center; }
+.lightbox-bar { display:flex; gap:12px; margin-top:10px; }
+.btn-original { padding:8px 20px; background:rgba(255,153,0,0.2); color:#f90; border:1px solid #f90; border-radius:20px; cursor:pointer; font-size:13px; font-weight:600; font-family:inherit; transition:all 0.3s; text-decoration:none; }
+.btn-original:hover { background:#f90; color:#000; }
 
 /* ============ CAROUSEL ============ */
 .carousel { position:relative; width:100%; max-width:1200px; height:280px; margin:0 auto 20px; border-radius:var(--radius); overflow:hidden; background:var(--bg-card); }

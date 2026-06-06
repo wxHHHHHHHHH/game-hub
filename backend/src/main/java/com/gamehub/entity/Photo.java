@@ -13,6 +13,9 @@ public class Photo {
     @Column(length = 500, nullable = false)
     private String imageUrl;
 
+    @Column(length = 500)
+    private String thumbnailUrl;
+
     @Column(length = 255)
     private String caption;
 
@@ -30,6 +33,8 @@ public class Photo {
     public void setId(Long id) { this.id = id; }
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public String getThumbnailUrl() { return thumbnailUrl; }
+    public void setThumbnailUrl(String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; }
     public String getCaption() { return caption; }
     public void setCaption(String caption) { this.caption = caption; }
     public String getAlbum() { return album; }
