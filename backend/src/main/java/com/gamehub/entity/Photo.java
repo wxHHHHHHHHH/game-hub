@@ -24,6 +24,8 @@ public class Photo {
 
     private int sortOrder = 0;
 
+    private LocalDateTime photoDate;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -41,6 +43,8 @@ public class Photo {
     public void setAlbum(String album) { this.album = album; }
     public int getSortOrder() { return sortOrder; }
     public void setSortOrder(int sortOrder) { this.sortOrder = sortOrder; }
+    public LocalDateTime getPhotoDate() { return photoDate; }
+    public void setPhotoDate(LocalDateTime photoDate) { this.photoDate = photoDate; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

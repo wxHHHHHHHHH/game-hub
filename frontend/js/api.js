@@ -243,12 +243,13 @@ const API = (function() {
         // Photos
         getPhotos: function() { return request('/photos'); },
         createPhoto: function(data) { return request('/photos', { method: 'POST', body: data }); },
-        uploadPhoto: function(file, caption, album) {
+        uploadPhoto: function(file, caption, album, date) {
             return new Promise(function(resolve, reject) {
                 var fd = new FormData();
                 fd.append('file', file);
                 fd.append('caption', caption || '');
                 fd.append('album', album || '默认相册');
+                if (date) fd.append('date', date);
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', BASE + '/photos/upload');
                 var tok = AUTH.getToken();

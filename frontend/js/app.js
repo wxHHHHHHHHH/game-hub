@@ -407,10 +407,10 @@
             return;
         }
 
-        // Group by date
+        // Group by photo date
         const grouped = {};
         galleryPhotos.forEach(function(p) {
-            const day = (p.createdAt || '').substring(0, 10) || '未分类';
+            const day = (p.photoDate || p.createdAt || '').substring(0, 10) || '未分类';
             if (!grouped[day]) grouped[day] = [];
             grouped[day].push(p);
         });
@@ -467,13 +467,15 @@
 
     async function handlePhotoUpload() {
         const input = $('#photo-upload-input');
+        const dateEl = $('#photo-date');
         input.click();
         input.onchange = async function() {
             const files = input.files;
             if (!files || !files.length) return;
+            const date = dateEl ? dateEl.value : '';
             showToast('上传中，正在压缩处理...');
             for (let f of files) {
-                try { await API.uploadPhoto(f, '', '默认相册'); } catch(e) { showToast('上传失败: '+e.message,'error'); }
+                try { await API.uploadPhoto(f, '', '默认相册', date); } catch(e) { showToast('上传失败: '+e.message,'error'); }
             }
             showToast('✅ 上传完成！');
             await renderGallery();
