@@ -117,7 +117,7 @@ public class UploadController {
     @PostMapping("/cover")
     public ResponseEntity<?> uploadCover(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) return ResponseEntity.badRequest().body(Map.of("error", "文件为空"));
-        if (file.getSize() > 10 * 1024 * 1024) return ResponseEntity.badRequest().body(Map.of("error", "图片最大10MB"));
+        if (file.getSize() > 50 * 1024 * 1024) return ResponseEntity.badRequest().body(Map.of("error", "图片最大50MB"));
 
         try {
             Path coverDir = Paths.get(uploadDir, "covers");

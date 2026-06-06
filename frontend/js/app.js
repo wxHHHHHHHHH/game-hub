@@ -74,6 +74,31 @@
         return CONFIG.AVATAR_COLORS[Math.abs(hash) % CONFIG.AVATAR_COLORS.length];
     }
 
+    function compressImage(file, maxWidth, quality) {
+        return new Promise(function(resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = new Image();
+                img.onload = function() {
+                    var w = img.width, h = img.height;
+                    if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+                    var canvas = document.createElement('canvas');
+                    canvas.width = w; canvas.height = h;
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    canvas.toBlob(function(blob) {
+                        if (blob) resolve(blob);
+                        else resolve(file); // fallback to original
+                    }, 'image/jpeg', quality);
+                };
+                img.onerror = function() { resolve(file); };
+                img.src = e.target.result;
+            };
+            reader.onerror = function() { resolve(file); };
+            reader.readAsDataURL(file);
+        });
+    }
+
     function showToast(message, type) {
         type = type || 'success';
         const toast = document.createElement('div');
@@ -1492,20 +1517,25 @@
             bvInput.addEventListener('change', fetchBilibiliInfo);
         }
 
-        // Cover upload
+        // Cover upload with client-side compression
         $('#btn-upload-cover').addEventListener('click', function() {
             $('#cover-file-input').click();
         });
         $('#cover-file-input').addEventListener('change', async function() {
             const file = this.files[0];
             if (!file) return;
-            if (file.size > 10 * 1024 * 1024) { showToast('封面图片最大10MB', 'error'); return; }
-            showToast('封面上传中...');
+            if (file.size > 50 * 1024 * 1024) { showToast('图片最大50MB', 'error'); return; }
+            showToast('正在压缩图片...');
             try {
-                const result = await API.uploadCover(file);
+                // Client-side compress
+                const compressed = await compressImage(file, 640, 0.75);
+                const originalSize = (file.size / 1024 / 1024).toFixed(1);
+                const newSize = (compressed.size / 1024).toFixed(0);
+                showToast('上传中（已压缩: ' + originalSize + 'MB → ' + newSize + 'KB）');
+                const result = await API.uploadCover(compressed);
                 $('#video-cover').value = result.coverUrl;
                 $('#cover-preview-img').src = result.coverUrl;
-                $('#cover-preview-text').textContent = '✅ 封面已上传（已自动压缩）';
+                $('#cover-preview-text').textContent = '✅ 封面已上传（已压缩）';
                 $('#cover-preview').style.display = 'block';
                 showToast('✅ 封面上传成功！');
             } catch(e) { showToast('上传失败: ' + e.message, 'error'); }
