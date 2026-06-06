@@ -238,10 +238,11 @@
         <p>记录每一次旅途、每一张笑脸、每一段美好时光 ☀️</p>
     </div>
     <div class="gallery-upload-bar" id="gallery-upload-bar" style="display:none;">
-        <div style="display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;">
-            <input type="date" id="photo-date" title="照片日期（不填默认今天）" style="padding:8px 12px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:inherit;">
-            <button class="btn btn-primary btn-sm" id="btn-upload-photo">📤 上传照片</button>
+        <div class="upload-row">
+            <input type="date" id="photo-date" title="选择照片拍摄日期，不选默认今天">
+            <button class="btn-upload-photo" id="btn-upload-photo">📤 上传照片</button>
         </div>
+        <small style="display:block;margin-top:8px;color:var(--text-muted);">💡 先选日期再上传（可选），不选默认今天</small>
         <input type="file" id="photo-upload-input" accept="image/*" multiple style="display:none;">
     </div>
     <div class="gallery-grid" id="gallery-grid">

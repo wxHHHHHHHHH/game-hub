@@ -438,12 +438,18 @@
         });
     }
 
+    let touchStartX = 0, touchStartY = 0;
+
     function openLightbox(idx) {
         lightboxIndex = idx;
         updateLightbox();
         $('#lightbox').classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
-    function closeLightbox() { $('#lightbox').classList.remove('active'); }
+    function closeLightbox() {
+        $('#lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+    }
     function updateLightbox() {
         const p = galleryPhotos[lightboxIndex];
         if (!p) return;
@@ -1544,6 +1550,19 @@
         $('#lightbox').addEventListener('click', function(e) { if (e.target === this) closeLightbox(); });
         $('#lightbox-next').addEventListener('click', lightboxNext);
         $('#lightbox-prev').addEventListener('click', lightboxPrev);
+        // Touch swipe for lightbox
+        $('#lightbox').addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+        $('#lightbox').addEventListener('touchend', function(e) {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            const dy = e.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 60) {
+                if (dx > 0) lightboxPrev(); else lightboxNext();
+            }
+            if (Math.abs(dy) > Math.abs(dx) && dy > 100) closeLightbox();
+        });
         document.addEventListener('keydown', function(e) {
             if ($('#lightbox').classList.contains('active')) {
                 if (e.key === 'Escape') closeLightbox();
