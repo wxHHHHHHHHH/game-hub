@@ -56,6 +56,7 @@
             <a href="#" class="nav-link" data-view="news">新闻资讯</a>
             <a href="#" class="nav-link" data-view="intro">集团简介</a>
             <a href="#" class="nav-link" data-view="contact">联系我们</a>
+            <a href="#" class="nav-link nav-gallery" data-view="gallery">📷 活动相册</a>
             <button class="nav-link" id="btn-add-video">+ 发布视频</button>
             <button class="nav-link nav-admin" id="btn-dashboard" style="display:none;">📊 管理后台</button>
             <button class="nav-link nav-admin" id="btn-admin-panel" style="display:none;">⚙️ 成员管理</button>
@@ -228,6 +229,30 @@
         </div>
     </div>
 </section>
+
+<!-- View: Gallery -->
+<section id="view-gallery" class="view">
+    <div class="gallery-hero">
+        <h2>📷 活动相册</h2>
+        <p>记录每一次旅途、每一张笑脸、每一段美好时光 ☀️</p>
+    </div>
+    <div class="gallery-upload-bar" id="gallery-upload-bar" style="display:none;">
+        <button class="btn btn-primary btn-sm" id="btn-upload-photo">📤 上传照片</button>
+        <input type="file" id="photo-upload-input" accept="image/*" multiple style="display:none;">
+    </div>
+    <div class="gallery-grid" id="gallery-grid">
+        <div class="loading"><div class="spinner"></div></div>
+    </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <span class="lightbox-close" id="lightbox-close">&times;</span>
+    <span class="lightbox-prev" id="lightbox-prev">&#10094;</span>
+    <span class="lightbox-next" id="lightbox-next">&#10095;</span>
+    <img src="" id="lightbox-img">
+    <p id="lightbox-caption"></p>
+</div>
 
 <!-- Video Detail -->
 <section id="view-detail" class="view">

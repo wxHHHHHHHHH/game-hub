@@ -240,6 +240,29 @@ const API = (function() {
             return request('/files/' + id, { method: 'DELETE' });
         },
 
+        // Photos
+        getPhotos: function() { return request('/photos'); },
+        createPhoto: function(data) { return request('/photos', { method: 'POST', body: data }); },
+        uploadPhoto: function(file, caption, album) {
+            return new Promise(function(resolve, reject) {
+                var fd = new FormData();
+                fd.append('file', file);
+                fd.append('caption', caption || '');
+                fd.append('album', album || '默认相册');
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', BASE + '/photos/upload');
+                var tok = AUTH.getToken();
+                if (tok) xhr.setRequestHeader('Authorization', 'Bearer ' + tok);
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText));
+                    else reject(new Error(JSON.parse(xhr.responseText).error || '上传失败'));
+                };
+                xhr.onerror = function() { reject(new Error('网络错误')); };
+                xhr.send(fd);
+            });
+        },
+        deletePhoto: function(id) { return request('/photos/' + id, { method: 'DELETE' }); },
+
         // Video edit
         updateVideo: function(id, data) {
             return request('/videos/' + id, { method: 'PUT', body: data });

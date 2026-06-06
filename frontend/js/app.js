@@ -123,6 +123,11 @@
                 if (btnAdd) btnAdd.style.display = 'none';
                 renderDashboard('stats');
                 break;
+            case 'gallery':
+                $('#view-gallery').classList.add('active');
+                if (btnAdd) btnAdd.style.display = 'none';
+                renderGallery();
+                break;
         }
 
         $$('.nav-link[data-view]').forEach(function(l) {
@@ -381,6 +386,77 @@
     window.ADMIN_ACTIONS.deleteNews = async function(id) {
         if (!confirm('确定删除该新闻？')) return;
         try { await API.deleteNews(id); showToast('已删除'); renderNewsList(); } catch(e) { showToast('删除失败', 'error'); }
+    };
+
+    // ============ GALLERY ============
+    let galleryPhotos = [];
+    let lightboxIndex = 0;
+
+    async function renderGallery() {
+        const grid = $('#gallery-grid');
+        grid.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+        try { galleryPhotos = await API.getPhotos(); } catch(e) { galleryPhotos = []; }
+
+        const isAdmin = AUTH.getUser() && (AUTH.getUser().role === 'ADMIN' || AUTH.getUser().role === 'MEMBER');
+        const bar = $('#gallery-upload-bar');
+        if (bar) bar.style.display = isAdmin ? 'block' : 'none';
+
+        if (!galleryPhotos || galleryPhotos.length === 0) {
+            grid.innerHTML = '<div class="no-comments" style="padding:80px 0;">📷 还没有照片<br>点击上方按钮上传第一张吧！</div>';
+            return;
+        }
+
+        grid.innerHTML = galleryPhotos.map(function(p, i) {
+            return '<div class="gallery-item" data-idx="' + i + '">' +
+                '<img src="' + esc(p.imageUrl) + '" alt="' + esc(p.caption || '') + '" loading="lazy" onerror="this.src=\'' + CONFIG.PLACEHOLDER_THUMB + '\'">' +
+                (p.caption ? '<div class="gal-caption">' + esc(p.caption) + '</div>' : '') +
+                (isAdmin ? '<button class="gal-del" onclick="event.stopPropagation();GALLERY_ACTIONS.deletePhoto(' + p.id + ')">🗑</button>' : '') +
+            '</div>';
+        }).join('');
+
+        grid.querySelectorAll('.gallery-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+                openLightbox(parseInt(item.dataset.idx));
+            });
+        });
+    }
+
+    function openLightbox(idx) {
+        lightboxIndex = idx;
+        updateLightbox();
+        $('#lightbox').classList.add('active');
+    }
+    function closeLightbox() { $('#lightbox').classList.remove('active'); }
+    function updateLightbox() {
+        const p = galleryPhotos[lightboxIndex];
+        if (!p) return;
+        $('#lightbox-img').src = p.imageUrl;
+        $('#lightbox-caption').textContent = (p.caption || '') + (p.album ? ' · ' + p.album : '');
+    }
+    function lightboxNext() { lightboxIndex = (lightboxIndex + 1) % galleryPhotos.length; updateLightbox(); }
+    function lightboxPrev() { lightboxIndex = (lightboxIndex - 1 + galleryPhotos.length) % galleryPhotos.length; updateLightbox(); }
+
+    async function handlePhotoUpload() {
+        const input = $('#photo-upload-input');
+        input.click();
+        input.onchange = async function() {
+            const files = input.files;
+            if (!files || !files.length) return;
+            showToast('上传中...');
+            for (let f of files) {
+                try { await API.uploadPhoto(f, '', '默认相册'); } catch(e) { showToast('上传失败: '+e.message,'error'); }
+            }
+            showToast('✅ 上传完成！');
+            await renderGallery();
+        };
+    }
+
+    window.GALLERY_ACTIONS = {
+        deletePhoto: async function(id) {
+            if (!confirm('确定删除该照片？')) return;
+            try { await API.deletePhoto(id); showToast('已删除'); await renderGallery(); } catch(e) { showToast('删除失败','error'); }
+        }
     };
 
     // ============ AUDIT LOG HELPER ============
@@ -1431,6 +1507,20 @@
         $('#modal-edit-close').addEventListener('click', closeEditVideoModal);
         $('#btn-edit-cancel').addEventListener('click', closeEditVideoModal);
         $('#modal-edit-video').addEventListener('click', function(e) { if (e.target === this) closeEditVideoModal(); });
+
+        // Gallery
+        $('#btn-upload-photo').addEventListener('click', handlePhotoUpload);
+        $('#lightbox-close').addEventListener('click', closeLightbox);
+        $('#lightbox').addEventListener('click', function(e) { if (e.target === this) closeLightbox(); });
+        $('#lightbox-next').addEventListener('click', lightboxNext);
+        $('#lightbox-prev').addEventListener('click', lightboxPrev);
+        document.addEventListener('keydown', function(e) {
+            if ($('#lightbox').classList.contains('active')) {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowRight') lightboxNext();
+                if (e.key === 'ArrowLeft') lightboxPrev();
+            }
+        });
 
         // Search
         initSearch();

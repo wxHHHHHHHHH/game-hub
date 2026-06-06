@@ -39,11 +39,14 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/news/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/banners/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/contact/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/photos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/videos/hot-plays").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/api/files/*").hasRole("ADMIN")
                 // Admin news & banner management
                 .requestMatchers("/api/news/**").hasRole("ADMIN")
                 .requestMatchers("/api/banners/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/photos/**").hasAnyRole("ADMIN", "MEMBER")
+                .requestMatchers(HttpMethod.DELETE, "/api/photos/*").hasRole("ADMIN")
                 .requestMatchers("/api/contact").hasRole("ADMIN")
                 // Authenticated users can like/unlike
                 .requestMatchers(HttpMethod.POST, "/api/videos/*/like", "/api/videos/*/unlike").authenticated()
