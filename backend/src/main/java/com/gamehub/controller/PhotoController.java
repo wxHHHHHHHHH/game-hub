@@ -41,7 +41,7 @@ public class PhotoController {
                                     @RequestParam(value = "caption", defaultValue = "") String caption,
                                     @RequestParam(value = "album", defaultValue = "默认相册") String album) {
         if (file.isEmpty()) return ResponseEntity.badRequest().body(Map.of("error", "文件为空"));
-        if (file.getSize() > 20 * 1024 * 1024) return ResponseEntity.badRequest().body(Map.of("error", "图片最大20MB"));
+        if (file.getSize() > 50 * 1024 * 1024) return ResponseEntity.badRequest().body(Map.of("error", "图片最大50MB"));
 
         try {
             Path dir = Paths.get(uploadDir, "photos");
