@@ -23,9 +23,13 @@ public class VideoController {
 
     @GetMapping
     public ResponseEntity<List<Video>> list(@RequestParam(defaultValue = "latest") String sort,
-                                            @RequestParam(required = false) String search) {
+                                            @RequestParam(required = false) String search,
+                                            @RequestParam(required = false) String type) {
         if (search != null && !search.isBlank()) {
             return ResponseEntity.ok(videoRepo.searchByKeyword(search.trim()));
+        }
+        if (type != null && !type.isBlank()) {
+            return ResponseEntity.ok(videoRepo.findByVideoTypeOrderByCreatedAtDesc(type));
         }
         return ResponseEntity.ok(videoService.getAll(sort));
     }

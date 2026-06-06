@@ -73,6 +73,9 @@ const API = (function() {
         getVideosBySearch: function(keyword) {
             return request('/videos?search=' + encodeURIComponent(keyword));
         },
+        getVideosByType: function(type) {
+            return request('/videos?type=' + encodeURIComponent(type));
+        },
 
         getVideo: function(id) {
             return request('/videos/' + id);

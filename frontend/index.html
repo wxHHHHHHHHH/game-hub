@@ -107,6 +107,11 @@
             <button id="btn-search-clear" style="display:none;">✕</button>
         </div>
         <div class="sort-buttons" style="margin-top:12px;">
+            <button class="source-btn active" data-src="all">📋 全部</button>
+            <button class="source-btn" data-src="BILIBILI">📺 B站</button>
+            <button class="source-btn" data-src="LOCAL">☁️ 123云盘</button>
+        </div>
+        <div class="sort-buttons" style="margin-top:8px;">
             <button class="sort-btn active" data-sort="latest">🕐 最新发布</button>
             <button class="sort-btn" data-sort="hot">🔥 最热排行</button>
         </div>
@@ -316,7 +321,7 @@
             <!-- Video type tabs -->
             <div class="video-type-tabs">
                 <button type="button" class="vt-tab active" data-vt="BILIBILI">📺 B站视频</button>
-                <button type="button" class="vt-tab" data-vt="LOCAL">📁 本地上传</button>
+                <button type="button" class="vt-tab" data-vt="LOCAL">☁️ 123云盘</button>
             </div>
 
             <!-- B站 fields -->
@@ -328,22 +333,12 @@
                 </div>
             </div>
 
-            <!-- Local upload fields -->
+            <!-- 123云盘 fields -->
             <div class="vt-panel" id="vt-panel-local">
                 <div class="form-group">
-                    <label>选择视频文件 *</label>
-                    <div class="upload-zone" id="upload-zone">
-                        <div class="upload-icon">📁</div>
-                        <p>点击选择或拖拽视频文件到此处</p>
-                        <small>支持 MP4, MOV, AVI, MKV, WebM, FLV 等格式（最大 2GB）</small>
-                        <input type="file" id="video-file" accept="video/*" style="display:none;">
-                    </div>
-                    <div class="upload-progress" id="upload-progress" style="display:none;">
-                        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-                        <small id="progress-text">上传中...</small>
-                    </div>
-                    <input type="hidden" id="uploaded-video-url" value="">
-                    <input type="hidden" id="uploaded-video-type" value="">
+                    <label>123云盘直链地址 *</label>
+                    <input type="text" id="cloud-url" placeholder="粘贴123云盘的视频直链链接（.mp4/.m3u8等）" maxlength="500">
+                    <small>💡 在123云盘上传视频后，获取直链地址粘贴到此处</small>
                 </div>
             </div>
 

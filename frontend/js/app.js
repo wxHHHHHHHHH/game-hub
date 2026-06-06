@@ -14,6 +14,7 @@
     let currentView = 'list';
     let currentVideoId = null;
     let currentSort = 'latest';
+    let currentSource = 'all';
     let dpInstance = null;
     let likedVideos = {};  // Track liked state per video
 
@@ -534,6 +535,14 @@
         renderVideoList();
     }
 
+    function setSourceFilter(src) {
+        currentSource = src;
+        $$('.source-btn').forEach(function(btn) {
+            btn.classList.toggle('active', btn.dataset.src === src);
+        });
+        renderVideoList();
+    }
+
     // ============ VIDEO LIST ============
     async function renderVideoList(searchTerm) {
         const grid = $('#video-grid');
@@ -549,6 +558,8 @@
         try {
             if (searchTerm && searchTerm.trim()) {
                 videos = await API.getVideosBySearch(searchTerm.trim());
+            } else if (currentSource !== 'all') {
+                videos = await API.getVideosByType(currentSource);
             } else {
                 videos = await API.getVideos(currentSort);
             }
@@ -588,6 +599,7 @@
             const gameTag = v.game ? '<span class="card-game">' + esc(v.game) + '</span>' : '';
             const isNew = v.createdAt && (new Date() - new Date(v.createdAt)) < 86400000 * 7;
             const badge = isNew ? '<span class="card-badge new">NEW</span>' : (v.game === '综合集锦' ? '<span class="card-badge">🔥</span>' : '');
+            const sourceBadge = v.videoType === 'LOCAL' ? '<span class="card-source cloud">☁️ 123云盘</span>' : '<span class="card-source bili">📺 B站</span>';
             const thumb = v.thumbnailUrl || CONFIG.PLACEHOLDER_THUMB;
             const likes = v.likes || 0;
 
@@ -595,7 +607,7 @@
                 '<div class="card-thumb">' +
                     '<img src="' + esc(thumb) + '" alt="" loading="lazy" onerror="this.src=\'' + CONFIG.PLACEHOLDER_THUMB + '\'">' +
                     '<div class="card-overlay"><div class="play-icon">▶</div></div>' +
-                    badge +
+                    badge + sourceBadge +
                     '<div class="card-likes">❤ ' + likes + '</div>' +
                 '</div>' +
                 '<div class="card-body">' +
@@ -789,7 +801,11 @@
         // Player section
         let playerHtml;
         if (isLocal && video.videoUrl) {
-            playerHtml = '<div class="dplayer-container" id="dplayer-container"></div>';
+            // 123云盘直链 - use HTML5 video player
+            playerHtml = '<div class="video-player-wrapper">' +
+                '<video controls autoplay playsinline style="width:100%;height:100%;background:#000;" preload="metadata">' +
+                '<source src="' + esc(video.videoUrl) + '" type="video/mp4">' +
+                '您的浏览器不支持视频播放</video></div>';
         } else if (bv) {
             const embedUrl = CONFIG.BILIBILI_EMBED.replace('{BV}', bv);
             playerHtml = '<div class="video-player-wrapper"><iframe src="' + embedUrl + '" allowfullscreen="true" allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"></iframe></div>';
@@ -990,12 +1006,8 @@
     }
 
     function resetAddForm() {
-        $('#uploaded-video-url').value = '';
-        $('#uploaded-video-type').value = '';
-        $('#upload-progress').style.display = 'none';
-        $('#progress-fill').style.width = '0%';
-        $('#video-file').value = '';
-        // Switch back to Bilibili tab
+        $('#cloud-url').value = '';
+        $('#video-bv').dataset.cover = '';
         switchVideoType('BILIBILI');
     }
 
@@ -1005,13 +1017,14 @@
         $$('.vt-panel').forEach(function(p) { p.classList.remove('active'); });
         const panel = type === 'BILIBILI' ? $('#vt-panel-bilibili') : $('#vt-panel-local');
         if (panel) panel.classList.add('active');
-        // Update required fields
         const bvInput = $('#video-bv');
-        const fileInput = $('#video-file');
+        const cloudInput = $('#cloud-url');
         if (type === 'BILIBILI') {
             if (bvInput) bvInput.setAttribute('required', '');
+            if (cloudInput) cloudInput.removeAttribute('required');
         } else {
             if (bvInput) bvInput.removeAttribute('required');
+            if (cloudInput) cloudInput.setAttribute('required', '');
         }
     }
 
@@ -1094,11 +1107,11 @@
         };
 
         if (videoType === 'LOCAL') {
-            const videoUrl = $('#uploaded-video-url').value;
-            if (!videoUrl) { showToast('请先上传视频文件', 'error'); return; }
+            const cloudUrl = $('#cloud-url').value.trim();
+            if (!cloudUrl) { showToast('请粘贴123云盘直链地址', 'error'); return; }
             if (!title) { showToast('请填写视频标题', 'error'); return; }
-            data.bilibiliBv = 'LOCAL_' + Date.now();
-            data.videoUrl = videoUrl;
+            data.bilibiliBv = 'CLOUD_' + Date.now();
+            data.videoUrl = cloudUrl;
         } else {
             if (!title || !bv) { showToast('请填写标题和BV号', 'error'); return; }
             data.bilibiliBv = bv;
@@ -1456,9 +1469,12 @@
 
         // Sort buttons
         $$('.sort-btn').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                setSort(btn.dataset.sort);
-            });
+            btn.addEventListener('click', function() { setSort(btn.dataset.sort); });
+        });
+
+        // Source filter buttons
+        $$('.source-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() { setSourceFilter(btn.dataset.src); });
         });
 
         // File upload button (intro page)
@@ -1480,28 +1496,6 @@
                 switchVideoType(tab.dataset.vt);
             });
         });
-
-        // Upload zone
-        const uploadZone = $('#upload-zone');
-        const fileInput = $('#video-file');
-        if (uploadZone && fileInput) {
-            uploadZone.addEventListener('click', function() { fileInput.click(); });
-            fileInput.addEventListener('change', function() {
-                if (fileInput.files && fileInput.files[0]) {
-                    handleVideoFileUpload(fileInput.files[0]);
-                }
-            });
-            // Drag & drop
-            uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.classList.add('dragover'); });
-            uploadZone.addEventListener('dragleave', function() { uploadZone.classList.remove('dragover'); });
-            uploadZone.addEventListener('drop', function(e) {
-                e.preventDefault();
-                uploadZone.classList.remove('dragover');
-                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    handleVideoFileUpload(e.dataTransfer.files[0]);
-                }
-            });
-        }
 
         // Back button (video detail)
         $('#btn-back').addEventListener('click', function() { switchView('list'); });

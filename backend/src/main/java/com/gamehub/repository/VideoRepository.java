@@ -13,6 +13,8 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     @Query("SELECT v FROM Video v WHERE LOWER(v.title) LIKE LOWER(CONCAT('%',:kw,'%')) OR LOWER(v.game) LIKE LOWER(CONCAT('%',:kw,'%')) ORDER BY v.createdAt DESC")
     List<Video> searchByKeyword(@Param("kw") String keyword);
 
+    List<Video> findByVideoTypeOrderByCreatedAtDesc(String videoType);
+
     // play count ranking
     List<Video> findTop10ByOrderByPlayCountDesc();
 }
