@@ -204,6 +204,36 @@ const API = (function() {
             });
         },
 
+        // Banners
+        getBanners: function() {
+            return request('/banners');
+        },
+
+        // News
+        getNewsList: function() {
+            return request('/news');
+        },
+        getNewsDetail: function(id) {
+            return request('/news/' + id);
+        },
+        createNews: function(data) {
+            return request('/news', { method: 'POST', body: data });
+        },
+        updateNews: function(id, data) {
+            return request('/news/' + id, { method: 'PUT', body: data });
+        },
+        deleteNews: function(id) {
+            return request('/news/' + id, { method: 'DELETE' });
+        },
+
+        // Banners admin
+        createBanner: function(data) {
+            return request('/banners', { method: 'POST', body: data });
+        },
+        deleteBanner: function(id) {
+            return request('/banners/' + id, { method: 'DELETE' });
+        },
+
         // Admin
         admin: {
             getUsers: function() {

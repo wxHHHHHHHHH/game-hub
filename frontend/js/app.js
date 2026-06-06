@@ -85,29 +85,39 @@
     // ============ VIEW SWITCHING ============
     function switchView(viewName) {
         currentView = viewName;
-        const listView = $('#view-list');
-        const detailView = $('#view-detail');
-        const introView = $('#view-intro');
+        // Hide all views
+        $$('.view').forEach(function(v) { v.classList.remove('active'); });
         const btnAdd = $('#btn-add-video');
+        destroyDPlayer();
 
-        // Hide all
-        [listView, detailView, introView].forEach(function(v) {
-            if (v) v.classList.remove('active');
-        });
-
-        if (viewName === 'list') {
-            listView.classList.add('active');
-            if (btnAdd) btnAdd.style.display = AUTH.can('addVideo') ? '' : 'none';
-            destroyDPlayer();
-            renderVideoList();
-        } else if (viewName === 'intro') {
-            introView.classList.add('active');
-            if (btnAdd) btnAdd.style.display = 'none';
-            destroyDPlayer();
-            renderIntroPage();
-        } else if (viewName === 'detail') {
-            detailView.classList.add('active');
-            if (btnAdd) btnAdd.style.display = 'none';
+        switch (viewName) {
+            case 'list':
+                $('#view-list').classList.add('active');
+                if (btnAdd) btnAdd.style.display = AUTH.can('addVideo') ? '' : 'none';
+                renderVideoList(); initCarousel();
+                break;
+            case 'intro':
+                $('#view-intro').classList.add('active');
+                if (btnAdd) btnAdd.style.display = 'none';
+                renderIntroPage();
+                break;
+            case 'news':
+                $('#view-news').classList.add('active');
+                if (btnAdd) btnAdd.style.display = 'none';
+                renderNewsList();
+                break;
+            case 'news-detail':
+                $('#view-news-detail').classList.add('active');
+                if (btnAdd) btnAdd.style.display = 'none';
+                break;
+            case 'contact':
+                $('#view-contact').classList.add('active');
+                if (btnAdd) btnAdd.style.display = 'none';
+                break;
+            case 'detail':
+                $('#view-detail').classList.add('active');
+                if (btnAdd) btnAdd.style.display = 'none';
+                break;
         }
 
         $$('.nav-link[data-view]').forEach(function(l) {
@@ -208,6 +218,155 @@
         downloadFile: function(fileId) {
             window.open(CONFIG.API_BASE + '/files/' + fileId + '/download', '_blank');
         }
+    };
+
+    // ============ CAROUSEL ============
+    let carouselSlides = [];
+    let carouselIndex = 0;
+    let carouselTimer = null;
+
+    async function initCarousel() {
+        try {
+            const banners = await API.getBanners();
+            carouselSlides = banners && banners.length > 0 ? banners : [
+                { title:'中国波比集团', imageUrl:'', linkUrl:'', sub:'诚信 · 创新 · 共赢' },
+                { title:'集团成立10周年', imageUrl:'', linkUrl:'', sub:'十年砥砺前行，再创辉煌' },
+                { title:'2026年度工作会议', imageUrl:'', linkUrl:'', sub:'凝心聚力，共谋发展' }
+            ];
+        } catch(e) {
+            carouselSlides = [
+                { title:'中国波比集团', imageUrl:'', linkUrl:'', sub:'诚信 · 创新 · 共赢' },
+                { title:'集团成立10周年', imageUrl:'', linkUrl:'', sub:'十年砥砺前行，再创辉煌' },
+                { title:'2026年度工作会议', imageUrl:'', linkUrl:'', sub:'凝心聚力，共谋发展' }
+            ];
+        }
+
+        const track = $('#carousel-track');
+        const dots = $('#carousel-dots');
+        if (!track) return;
+
+        const colors = ['linear-gradient(135deg,#C8102E,#1a1a3e)','linear-gradient(135deg,#1a3a5c,#0a1a2e)','linear-gradient(135deg,#5c1a3a,#1a1a3e)'];
+        track.innerHTML = carouselSlides.map(function(s, i) {
+            const bg = s.imageUrl
+                ? '<img src="' + esc(s.imageUrl) + '" alt="">'
+                : '<div style="position:absolute;inset:0;background:' + (colors[i] || colors[0]) + ';"></div>';
+            return '<div class="carousel-slide"' + (s.linkUrl ? ' onclick="window.open(\'' + esc(s.linkUrl) + '\',\'_blank\')" style="cursor:pointer;"' : '') + '>' +
+                '<div class="carousel-bg" style="position:relative;">' + bg +
+                '<h2 style="position:relative;z-index:1;">' + esc(s.title) + '</h2>' +
+                '<p style="position:relative;z-index:1;">' + esc(s.sub || s.imageUrl ? '' : '') + '</p>' +
+                '</div></div>';
+        }).join('');
+
+        dots.innerHTML = carouselSlides.map(function(_, i) {
+            return '<button class="carousel-dot' + (i === 0 ? ' active' : '') + '" data-index="' + i + '"></button>';
+        }).join('');
+
+        dots.querySelectorAll('.carousel-dot').forEach(function(d) {
+            d.addEventListener('click', function() { goToSlide(parseInt(d.dataset.index)); });
+        });
+
+        carouselIndex = 0;
+        startCarouselAuto();
+    }
+
+    function goToSlide(index) {
+        carouselIndex = index;
+        $('#carousel-track').style.transform = 'translateX(-' + (index * 100) + '%)';
+        $$('.carousel-dot').forEach(function(d, i) { d.classList.toggle('active', i === index); });
+        startCarouselAuto();
+    }
+
+    function startCarouselAuto() {
+        clearInterval(carouselTimer);
+        if (carouselSlides.length < 2) return;
+        carouselTimer = setInterval(function() {
+            goToSlide((carouselIndex + 1) % carouselSlides.length);
+        }, 5000);
+    }
+
+    // ============ NEWS ============
+    let currentNewsId = null;
+
+    async function renderNewsList() {
+        const grid = $('#news-grid');
+        grid.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+        let news = [];
+        try { news = await API.getNewsList(); } catch(e) { /* demo below */ }
+
+        if (!news || news.length === 0) {
+            news = [
+                { id:1, title:'中国波比集团2026年度工作会议圆满召开', summary:'集团于2026年3月召开年度工作会议…', category:'集团动态', pinned:true, createdAt:'2026-03-15T10:00:00' },
+                { id:2, title:'关于进一步加强集团内部管理的通知', summary:'为进一步规范集团内部管理流程…', category:'政策文件', pinned:false, createdAt:'2026-02-28T14:00:00' },
+                { id:3, title:'波比集团荣获2025年度行业创新奖', summary:'在第15届行业峰会上，集团荣获年度创新企业奖…', category:'行业资讯', pinned:false, createdAt:'2026-01-20T09:00:00' },
+            ];
+        }
+
+        const isAdmin = AUTH.getUser() && AUTH.getUser().role === 'ADMIN';
+        const bar = $('#news-admin-bar');
+        if (bar) bar.style.display = isAdmin ? 'block' : 'none';
+
+        grid.innerHTML = news.map(function(n) {
+            return '<div class="news-card" data-id="' + n.id + '">' +
+                '<span class="news-cat' + (n.pinned ? ' pinned' : '') + '">' + (n.pinned ? '📌 ' : '') + esc(n.category || '集团动态') + '</span>' +
+                '<h4>' + esc(n.title) + '</h4>' +
+                (n.summary ? '<div class="news-summary">' + esc(n.summary) + '</div>' : '') +
+                '<div class="news-date">' + formatTime(n.createdAt) + '</div>' +
+                (isAdmin ? '<button class="btn-delete-comment" style="float:right;margin-top:-20px;" onclick="event.stopPropagation();ADMIN_ACTIONS.deleteNews(' + n.id + ')">删除</button>' : '') +
+            '</div>';
+        }).join('');
+
+        grid.querySelectorAll('.news-card').forEach(function(card) {
+            card.addEventListener('click', function() { openNewsDetail(parseInt(card.dataset.id)); });
+        });
+    }
+
+    async function openNewsDetail(newsId) {
+        currentNewsId = newsId;
+        switchView('news-detail');
+        const wrap = $('#news-detail-content');
+        wrap.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+        let news;
+        try { news = await API.getNewsDetail(newsId); } catch(e) {}
+        if (!news) news = { title:'新闻不存在', content:'该新闻已被删除', category:'', createdAt:'' };
+
+        wrap.innerHTML = '<h1>' + esc(news.title) + '</h1>' +
+            '<div class="news-detail-meta"><span>' + esc(news.category || '') + '</span><span>' + formatTime(news.createdAt) + '</span></div>' +
+            '<div class="news-detail-body">' + esc(news.content || news.summary || '暂无正文') + '</div>';
+    }
+
+    function openNewsModal() {
+        $('#modal-news').classList.add('active');
+        $('#news-title').focus();
+    }
+    function closeNewsModal() {
+        $('#modal-news').classList.remove('active');
+        $('#form-add-news').reset();
+    }
+    async function handleAddNews(e) {
+        e.preventDefault();
+        const title = $('#news-title').value.trim();
+        const content = $('#news-content').value.trim();
+        if (!title || !content) { showToast('请填写标题和正文', 'error'); return; }
+
+        const data = {
+            title: title,
+            summary: $('#news-summary').value.trim(),
+            content: content,
+            category: $('#news-category').value.trim() || '集团动态'
+        };
+
+        try { await API.createNews(data); } catch(err) { showToast('发布失败: ' + err.message, 'error'); return; }
+        closeNewsModal();
+        showToast('📰 新闻发布成功！');
+        renderNewsList();
+    }
+
+    window.ADMIN_ACTIONS = window.ADMIN_ACTIONS || {};
+    window.ADMIN_ACTIONS.deleteNews = async function(id) {
+        if (!confirm('确定删除该新闻？')) return;
+        try { await API.deleteNews(id); showToast('已删除'); renderNewsList(); } catch(e) { showToast('删除失败', 'error'); }
     };
 
     // ============ SORT ============
@@ -1049,8 +1208,31 @@
             });
         }
 
-        // Back button
+        // Back button (video detail)
         $('#btn-back').addEventListener('click', function() { switchView('list'); });
+
+        // Back button (news detail)
+        $$('.btn-back[data-back="news"]').forEach(function(btn) {
+            btn.addEventListener('click', function() { switchView('news'); });
+        });
+
+        // Carousel buttons
+        const carPrev = $('#carousel-prev');
+        const carNext = $('#carousel-next');
+        if (carPrev) carPrev.addEventListener('click', function() {
+            goToSlide((carouselIndex - 1 + carouselSlides.length) % carouselSlides.length);
+        });
+        if (carNext) carNext.addEventListener('click', function() {
+            goToSlide((carouselIndex + 1) % carouselSlides.length);
+        });
+
+        // News modal
+        const btnNews = $('#btn-add-news');
+        if (btnNews) btnNews.addEventListener('click', openNewsModal);
+        $('#form-add-news').addEventListener('submit', handleAddNews);
+        $('#modal-news-close').addEventListener('click', closeNewsModal);
+        $('#btn-news-cancel').addEventListener('click', closeNewsModal);
+        $('#modal-news').addEventListener('click', function(e) { if (e.target === this) closeNewsModal(); });
 
         // Modal close - add video
         $('#modal-close').addEventListener('click', closeAddModal);
@@ -1066,6 +1248,7 @@
         // Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
+                if ($('#modal-news').classList.contains('active')) closeNewsModal();
                 if ($('#modal-admin').classList.contains('active')) closeAdminPanel();
                 if ($('#modal-add').classList.contains('active')) closeAddModal();
             }

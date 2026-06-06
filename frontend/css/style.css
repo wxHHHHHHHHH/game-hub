@@ -363,6 +363,55 @@ body {
 @keyframes toastIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 @keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateY(-10px); } }
 
+/* ============ CAROUSEL ============ */
+.carousel { position:relative; width:100%; max-width:1200px; height:280px; margin:0 auto 20px; border-radius:var(--radius); overflow:hidden; background:var(--bg-card); }
+.carousel-track { display:flex; height:100%; transition:transform 0.5s ease; }
+.carousel-slide { min-width:100%; height:100%; }
+.carousel-bg { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; }
+.carousel-bg h2 { font-size:36px; font-weight:800; color:#fff; margin-bottom:8px; text-shadow:0 2px 8px rgba(0,0,0,0.5); }
+.carousel-bg p { font-size:18px; color:rgba(255,255,255,0.85); }
+.carousel-bg img { width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:-1; }
+.carousel-dots { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:10; }
+.carousel-dot { width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,0.4); cursor:pointer; transition:var(--transition); border:none; }
+.carousel-dot.active { background:#fff; width:24px; border-radius:5px; }
+.carousel-btn { position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.4); color:#fff; border:none; font-size:24px; padding:12px 16px; cursor:pointer; border-radius:4px; transition:var(--transition); z-index:10; }
+.carousel-btn:hover { background:rgba(0,0,0,0.7); }
+.carousel-btn.prev { left:10px; }
+.carousel-btn.next { right:10px; }
+
+/* ============ PAGE HEADER ============ */
+.page-header { text-align:center; padding:40px 0 30px; }
+.page-header h2 { font-size:32px; font-weight:800; margin-bottom:8px; }
+.page-header p { color:var(--text-muted); font-size:15px; }
+
+/* ============ NEWS ============ */
+.news-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap:20px; }
+.news-card { background:var(--bg-card); border-radius:var(--radius); border:1px solid var(--border); padding:24px; cursor:pointer; transition:var(--transition); }
+.news-card:hover { border-color:var(--accent-cyan); transform:translateY(-2px); box-shadow:var(--shadow); }
+.news-card .news-cat { display:inline-block; font-size:12px; font-weight:700; padding:2px 10px; border-radius:4px; margin-bottom:10px; color:#fff; background:var(--accent-purple); }
+.news-card .news-cat.pinned { background:var(--accent-magenta); }
+.news-card h4 { font-size:17px; font-weight:700; margin-bottom:8px; line-height:1.4; }
+.news-card .news-summary { font-size:14px; color:var(--text-secondary); line-height:1.6; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-bottom:12px; }
+.news-card .news-date { font-size:12px; color:var(--text-muted); }
+.news-admin-bar { text-align:center; margin-top:20px; }
+
+.news-detail-wrap { max-width:800px; margin:0 auto; background:var(--bg-card); border-radius:var(--radius); border:1px solid var(--border); padding:40px; }
+.news-detail-wrap h1 { font-size:26px; font-weight:800; margin-bottom:12px; }
+.news-detail-meta { display:flex; gap:16px; color:var(--text-muted); font-size:13px; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+.news-detail-body { font-size:15px; color:var(--text-secondary); line-height:1.9; white-space:pre-wrap; }
+.news-detail-body img { max-width:100%; border-radius:8px; margin:12px 0; }
+
+/* ============ CONTACT ============ */
+.contact-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:20px; margin-bottom:32px; }
+.contact-card { background:var(--bg-card); border-radius:var(--radius); border:1px solid var(--border); padding:28px 24px; text-align:center; transition:var(--transition); }
+.contact-card:hover { border-color:var(--accent-cyan); }
+.contact-icon { font-size:40px; margin-bottom:12px; }
+.contact-card h3 { font-size:16px; font-weight:700; margin-bottom:8px; }
+.contact-card p { color:var(--text-secondary); font-size:14px; line-height:1.8; }
+.contact-map { background:var(--bg-card); border-radius:var(--radius); border:1px solid var(--border); padding:24px; }
+.contact-map h3 { font-size:18px; font-weight:700; margin-bottom:16px; }
+.map-placeholder { border-radius:8px; overflow:hidden; background:var(--bg-secondary); }
+
 /* ============ COMPANY INTRO PAGE ============ */
 .intro-page { max-width: 900px; margin: 0 auto; }
 .intro-section {
@@ -432,6 +481,11 @@ body {
     .hero-stats { gap: 20px; }
     .hero-stat-num { font-size: 24px; }
     .user-name { display: none; }
+    .carousel { height:180px; }
+    .carousel-bg h2 { font-size:22px; }
+    .carousel-bg p { font-size:14px; }
+    .news-grid { grid-template-columns:1fr; }
+    .contact-grid { grid-template-columns:1fr; }
 }
 @media (max-width: 768px) {
     .video-info h1 { font-size: 20px; }
