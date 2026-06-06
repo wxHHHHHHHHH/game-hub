@@ -8,10 +8,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -104,5 +112,52 @@ public class UploadController {
     private String getExtension(String filename) {
         int i = filename.lastIndexOf('.');
         return i > 0 ? filename.substring(i + 1).toLowerCase() : "mp4";
+    }
+
+    @PostMapping("/cover")
+    public ResponseEntity<?> uploadCover(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) return ResponseEntity.badRequest().body(Map.of("error", "文件为空"));
+        if (file.getSize() > 10 * 1024 * 1024) return ResponseEntity.badRequest().body(Map.of("error", "图片最大10MB"));
+
+        try {
+            Path coverDir = Paths.get(uploadDir, "covers");
+            Files.createDirectories(coverDir);
+            String name = UUID.randomUUID().toString() + ".jpg";
+
+            // Save and compress cover
+            Path dest = coverDir.resolve(name);
+            BufferedImage original = ImageIO.read(file.getInputStream());
+            if (original != null) {
+                // Resize to max 640px wide
+                int w = original.getWidth(), h = original.getHeight();
+                if (w > 640) { h = (int)((double)h / w * 640); w = 640; }
+                BufferedImage thumb = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+                Graphics2D g = thumb.createGraphics();
+                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g.drawImage(original, 0, 0, w, h, null);
+                g.dispose();
+
+                Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
+                if (writers.hasNext()) {
+                    ImageWriter writer = writers.next();
+                    ImageWriteParam param = writer.getDefaultWriteParam();
+                    param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                    param.setCompressionQuality(0.75f);
+                    writer.setOutput(ImageIO.createImageOutputStream(dest.toFile()));
+                    writer.write(null, new IIOImage(thumb, null, null), param);
+                    writer.dispose();
+                } else {
+                    ImageIO.write(thumb, "jpg", dest.toFile());
+                }
+            } else {
+                file.transferTo(dest.toFile());
+            }
+
+            String url = "/uploads/covers/" + name;
+            log.info("Cover saved: {}", url);
+            return ResponseEntity.ok(Map.of("message", "封面上传成功", "coverUrl", url));
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", "上传失败"));
+        }
     }
 }

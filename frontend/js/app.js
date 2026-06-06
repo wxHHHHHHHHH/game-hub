@@ -1008,6 +1008,8 @@
     function resetAddForm() {
         $('#cloud-url').value = '';
         $('#video-bv').dataset.cover = '';
+        $('#cover-preview').style.display = 'none';
+        $('#cover-file-input').value = '';
         switchVideoType('BILIBILI');
     }
 
@@ -1489,6 +1491,25 @@
             bvInput.addEventListener('blur', fetchBilibiliInfo);
             bvInput.addEventListener('change', fetchBilibiliInfo);
         }
+
+        // Cover upload
+        $('#btn-upload-cover').addEventListener('click', function() {
+            $('#cover-file-input').click();
+        });
+        $('#cover-file-input').addEventListener('change', async function() {
+            const file = this.files[0];
+            if (!file) return;
+            if (file.size > 10 * 1024 * 1024) { showToast('封面图片最大10MB', 'error'); return; }
+            showToast('封面上传中...');
+            try {
+                const result = await API.uploadCover(file);
+                $('#video-cover').value = result.coverUrl;
+                $('#cover-preview-img').src = result.coverUrl;
+                $('#cover-preview-text').textContent = '✅ 封面已上传（已自动压缩）';
+                $('#cover-preview').style.display = 'block';
+                showToast('✅ 封面上传成功！');
+            } catch(e) { showToast('上传失败: ' + e.message, 'error'); }
+        });
 
         // Video type tabs
         $$('.vt-tab').forEach(function(tab) {

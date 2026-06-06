@@ -107,6 +107,26 @@ const API = (function() {
         },
 
         // Upload
+        uploadCover: function(file, onProgress) {
+            return new Promise(function(resolve, reject) {
+                var fd = new FormData();
+                fd.append('file', file);
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', BASE + '/upload/cover');
+                var tok = AUTH.getToken();
+                if (tok) xhr.setRequestHeader('Authorization', 'Bearer ' + tok);
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable && onProgress) onProgress(Math.round(e.loaded / e.total * 100));
+                };
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText));
+                    else reject(new Error(JSON.parse(xhr.responseText).error || '上传失败'));
+                };
+                xhr.onerror = function() { reject(new Error('网络错误')); };
+                xhr.send(fd);
+            });
+        },
+
         uploadVideo: function(file, onProgress) {
             return new Promise(function(resolve, reject) {
                 var formData = new FormData();

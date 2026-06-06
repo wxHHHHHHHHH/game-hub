@@ -300,6 +300,8 @@ body {
 .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
 .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); border-radius: 3px; width: 0%; transition: width 0.3s; }
 .upload-progress small { color: var(--accent-cyan); font-size: 12px; display: block; margin-top: 4px; }
+.cover-upload-row { display:flex; gap:8px; align-items:center; }
+.cover-upload-row input[type="text"] { flex:1; }
 
 /* ============ ADMIN PANEL ============ */
 .nav-admin { background: rgba(255,0,229,0.1); border: 1px solid rgba(255,0,229,0.25) !important; color: var(--accent-magenta) !important; }
