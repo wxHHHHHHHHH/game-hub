@@ -1,0 +1,1089 @@
+/* ============================================
+   GameHub — Main Application
+   SPA routing, UI rendering, event handling
+   ============================================ */
+
+(function() {
+    'use strict';
+
+    // ============ DOM REFS ============
+    const $ = function(sel) { return document.querySelector(sel); };
+    const $$ = function(sel) { return document.querySelectorAll(sel); };
+
+    // ============ STATE ============
+    let currentView = 'list';
+    let currentVideoId = null;
+    let currentSort = 'latest';
+    let dpInstance = null;
+    let likedVideos = {};  // Track liked state per video
+
+    // Demo fallback data
+    const DEMO_VIDEOS = [
+        { id:1, title:'CS2 五杀翻盘！绝境中的逆天操作', description:'在荒漠迷城这张图上，我们队伍在 12:3 落后的绝境下实现惊天翻盘！\n\n🏆 亮点时刻：\n• 0:45 A点三杀拿下关键局\n• 1:20 残局1v3绝杀\n• 2:10 最后一局五杀收尾', bilibiliBv:'BV1xx411c7mD', game:'CS2', thumbnailUrl:'https://picsum.photos/seed/cs2/640/360', videoType:'BILIBILI', videoUrl:null, likes:42, createdAt:'2024-12-28T20:30:00', comments:[] },
+        { id:2, title:'幻兽帕鲁联机实况 — 建家第一天就遇到神兽！', description:'团队一起开荒幻兽帕鲁！第一天建家就遇到了一只闪光神兽，全员疯狂大叫 😂', bilibiliBv:'BV1xx411c7mD', game:'幻兽帕鲁', thumbnailUrl:'https://picsum.photos/seed/pal/640/360', videoType:'BILIBILI', videoUrl:null, likes:38, createdAt:'2024-12-25T15:00:00', comments:[] },
+        { id:3, title:'英雄联盟五黑 — 最搞笑的翻车集锦', description:'说好的认真上分，结果变成了全员翻车现场。包含：闪现撞墙、反向大招、以及那个经典的"我先上你跟上"...', bilibiliBv:'BV1xx411c7mD', game:'英雄联盟', thumbnailUrl:'https://picsum.photos/seed/lol/640/360', videoType:'BILIBILI', videoUrl:null, likes:67, createdAt:'2024-12-20T10:15:00', comments:[] },
+        { id:4, title:'致命公司 — 被幽灵追了整整十分钟！', description:'本期致命公司联机，被幽灵追了整整十分钟。全队笑到无法呼吸，最后全员团灭 😂💀', bilibiliBv:'BV1xx411c7mD', game:'致命公司', thumbnailUrl:'https://picsum.photos/seed/lethal/640/360', videoType:'BILIBILI', videoUrl:null, likes:25, createdAt:'2024-12-18T22:00:00', comments:[] },
+        { id:5, title:'Valorant 竞技模式 — 新赛季定级赛全记录', description:'新赛季定级赛5场全记录！从青铜到钻石，我们的团队配合正在进化！🎯', bilibiliBv:'BV1xx411c7mD', game:'Valorant', thumbnailUrl:'https://picsum.photos/seed/val/640/360', videoType:'BILIBILI', videoUrl:null, likes:53, createdAt:'2024-12-15T18:45:00', comments:[] },
+        { id:6, title:'年度集锦 — 2024 最精彩的100个瞬间', description:'整理了一整年的搞笑、高光、翻车瞬间。感谢 GameHub 每一位成员，这一年有你们真好 ❤️\n\n🎵 BGM: Legends Never Die', bilibiliBv:'BV1xx411c7mD', game:'综合集锦', thumbnailUrl:'https://picsum.photos/seed/high/640/360', videoType:'BILIBILI', videoUrl:null, likes:89, createdAt:'2024-12-31T23:59:00', comments:[] },
+    ];
+
+    const DEMO_COMMENTS = [
+        { id:101, videoId:1, author:'老张', content:'这波操作太极限了！最后那个五杀我看了十遍 🔥🔥', createdAt:'2024-12-29T09:12:00' },
+        { id:102, videoId:1, author:'Admin', content:'当时我的心脏都快跳出来了，还好赢了 😂', createdAt:'2024-12-29T10:30:00' },
+        { id:103, videoId:1, author:'游客', content:'cs2的物理引擎真的太舒服了，爆头声音好爽', createdAt:'2024-12-29T14:55:00' },
+        { id:201, videoId:2, author:'Admin', content:'哈哈哈哈建家第一天就遇到神兽是什么运气！', createdAt:'2024-12-26T11:00:00' },
+        { id:301, videoId:3, author:'游客', content:'闪现撞墙那块我反复观看了二十遍，笑死', createdAt:'2024-12-21T00:15:00' },
+        { id:302, videoId:3, author:'老张', content:'不是我！那个闪现撞墙绝对不是我！是延迟！', createdAt:'2024-12-21T08:20:00' },
+    ];
+
+    let demoVideos = [];
+    let demoComments = [];
+    let nextDemoVideoId = 100;
+    let nextDemoCommentId = 1000;
+
+    // ============ UTILS ============
+    function esc(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(c) {
+            return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+        });
+    }
+
+    function timeAgo(dateStr) {
+        if (!dateStr) return '';
+        const diff = Math.floor((new Date() - new Date(dateStr)) / 1000);
+        if (diff < 60) return '刚刚';
+        if (diff < 3600) return Math.floor(diff / 60) + ' 分钟前';
+        if (diff < 86400) return Math.floor(diff / 3600) + ' 小时前';
+        if (diff < 2592000) return Math.floor(diff / 86400) + ' 天前';
+        return dateStr.substring(0, 10);
+    }
+
+    function formatTime(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        const pad = function(n) { return String(n).padStart(2, '0'); };
+        return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    }
+
+    function getAvatarColor(name) {
+        if (!name) return CONFIG.AVATAR_COLORS[0];
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        return CONFIG.AVATAR_COLORS[Math.abs(hash) % CONFIG.AVATAR_COLORS.length];
+    }
+
+    function showToast(message, type) {
+        type = type || 'success';
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + type;
+        toast.textContent = message;
+        document.getElementById('toast-container').appendChild(toast);
+        setTimeout(function() { toast.remove(); }, 3000);
+    }
+
+    // ============ VIEW SWITCHING ============
+    function switchView(viewName) {
+        currentView = viewName;
+        const listView = $('#view-list');
+        const detailView = $('#view-detail');
+        const introView = $('#view-intro');
+        const btnAdd = $('#btn-add-video');
+
+        // Hide all
+        [listView, detailView, introView].forEach(function(v) {
+            if (v) v.classList.remove('active');
+        });
+
+        if (viewName === 'list') {
+            listView.classList.add('active');
+            if (btnAdd) btnAdd.style.display = AUTH.can('addVideo') ? '' : 'none';
+            destroyDPlayer();
+            renderVideoList();
+        } else if (viewName === 'intro') {
+            introView.classList.add('active');
+            if (btnAdd) btnAdd.style.display = 'none';
+            destroyDPlayer();
+            renderIntroPage();
+        } else if (viewName === 'detail') {
+            detailView.classList.add('active');
+            if (btnAdd) btnAdd.style.display = 'none';
+        }
+
+        $$('.nav-link[data-view]').forEach(function(l) {
+            l.classList.toggle('active', l.dataset.view === viewName);
+        });
+    }
+
+    // ============ COMPANY INTRO PAGE ============
+    async function renderIntroPage() {
+        // Show/hide file upload for admin
+        const fileArea = $('#file-upload-area');
+        if (fileArea && AUTH.getUser() && AUTH.getUser().role === 'ADMIN') {
+            fileArea.style.display = 'block';
+        }
+        // Load files
+        await loadFileList();
+    }
+
+    async function loadFileList() {
+        const listEl = $('#file-list');
+        if (!listEl) return;
+
+        listEl.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+        let files = [];
+        try {
+            files = await API.getFiles();
+        } catch(e) {
+            // Demo files
+            files = [
+                { id: 1, fileName: '中国波比集团公司简介.pdf', fileSize: 2457600, createdAt: '2025-01-15' },
+                { id: 2, fileName: '波比集团组织架构图.pdf', fileSize: 1280000, createdAt: '2025-02-20' },
+                { id: 3, fileName: '关于规范内部管理的通知（红头文件）.pdf', fileSize: 512000, createdAt: '2025-03-10' },
+                { id: 4, fileName: '集团2025年度工作计划.pdf', fileSize: 3200000, createdAt: '2025-04-01' },
+            ];
+        }
+
+        if (!files || files.length === 0) {
+            listEl.innerHTML = '<div class="no-comments">暂无文件资料</div>';
+            return;
+        }
+
+        listEl.innerHTML = files.map(function(f) {
+            const size = f.fileSize
+                ? (f.fileSize > 1048576 ? (f.fileSize / 1048576).toFixed(1) + ' MB' : Math.round(f.fileSize / 1024) + ' KB')
+                : '';
+            return '<div class="file-item">' +
+                '<div class="file-icon">📄</div>' +
+                '<div class="file-info">' +
+                    '<span class="file-name">' + esc(f.fileName) + '</span>' +
+                    '<span class="file-meta">' + (f.createdAt || '') + ' · ' + size + '</span>' +
+                '</div>' +
+                '<div class="file-actions">' +
+                    '<button class="btn-view" onclick="APP_ACTIONS.viewFile(' + f.id + ')">👁 查看</button>' +
+                    '<button class="btn-download" onclick="APP_ACTIONS.downloadFile(' + f.id + ')">⬇ 下载</button>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    async function handleFileUpload() {
+        const labelEl = $('#file-label');
+        const fileInput = $('#file-upload-input');
+        const label = labelEl.value.trim();
+        if (!label) { showToast('请先输入文件名称', 'error'); labelEl.focus(); return; }
+
+        fileInput.click();
+        fileInput.onchange = async function() {
+            const file = fileInput.files[0];
+            if (!file) return;
+            if (file.size > 100 * 1024 * 1024) {
+                showToast('文件过大，最大支持 100MB', 'error'); return;
+            }
+
+            $('#file-progress').style.display = 'block';
+            try {
+                const result = await API.uploadFile(file, label, function(pct) {
+                    $('#file-progress-fill').style.width = pct + '%';
+                    $('#file-progress-text').textContent = '上传中... ' + pct + '%';
+                });
+                $('#file-progress-text').textContent = '✅ 上传完成';
+                $('#file-progress').style.display = 'none';
+                labelEl.value = '';
+                showToast('✅ 文件上传成功！');
+                await loadFileList();
+            } catch(e) {
+                $('#file-progress').style.display = 'none';
+                showToast('上传失败: ' + e.message, 'error');
+            }
+        };
+    }
+
+    // Exposed globally for inline onclick
+    window.APP_ACTIONS = {
+        viewFile: function(fileId) {
+            window.open(CONFIG.API_BASE + '/files/' + fileId + '/view', '_blank');
+        },
+        downloadFile: function(fileId) {
+            window.open(CONFIG.API_BASE + '/files/' + fileId + '/download', '_blank');
+        }
+    };
+
+    // ============ SORT ============
+    function setSort(sort) {
+        currentSort = sort;
+        $$('.sort-btn').forEach(function(btn) {
+            btn.classList.toggle('active', btn.dataset.sort === sort);
+        });
+        renderVideoList();
+    }
+
+    // ============ VIDEO LIST ============
+    async function renderVideoList() {
+        const grid = $('#video-grid');
+        const empty = $('#empty-state');
+        const loading = $('#loading-list');
+
+        grid.innerHTML = '';
+        empty.style.display = 'none';
+        loading.style.display = 'block';
+
+        let videos = [];
+
+        try {
+            videos = await API.getVideos(currentSort);
+        } catch(e) {
+            if (CONFIG.IS_LOCAL) {
+                console.log('API not available, using demo data');
+                videos = demoVideos.length > 0 ? demoVideos : DEMO_VIDEOS;
+                if (demoVideos.length === 0) demoVideos = JSON.parse(JSON.stringify(DEMO_VIDEOS));
+                if (demoComments.length === 0) demoComments = JSON.parse(JSON.stringify(DEMO_COMMENTS));
+                // Sort demo data
+                if (currentSort === 'hot') {
+                    videos = videos.sort(function(a, b) { return (b.likes || 0) - (a.likes || 0); });
+                } else {
+                    videos = videos.sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+                }
+            } else {
+                showToast('加载失败: ' + e.message, 'error');
+                loading.style.display = 'none';
+                return;
+            }
+        }
+
+        loading.style.display = 'none';
+
+        if (!videos || videos.length === 0) {
+            empty.style.display = 'block';
+            updateStats(0, 0);
+            return;
+        }
+
+        updateStats(videos.length, demoComments.length);
+
+        // Load liked state from localStorage
+        loadLikedState();
+
+        grid.innerHTML = videos.map(function(v) {
+            const gameTag = v.game ? '<span class="card-game">' + esc(v.game) + '</span>' : '';
+            const isNew = v.createdAt && (new Date() - new Date(v.createdAt)) < 86400000 * 7;
+            const badge = isNew ? '<span class="card-badge new">NEW</span>' : (v.game === '综合集锦' ? '<span class="card-badge">🔥</span>' : '');
+            const thumb = v.thumbnailUrl || CONFIG.PLACEHOLDER_THUMB;
+            const likes = v.likes || 0;
+
+            return '<div class="video-card" data-id="' + v.id + '">' +
+                '<div class="card-thumb">' +
+                    '<img src="' + esc(thumb) + '" alt="" loading="lazy" onerror="this.src=\'' + CONFIG.PLACEHOLDER_THUMB + '\'">' +
+                    '<div class="card-overlay"><div class="play-icon">▶</div></div>' +
+                    badge +
+                    '<div class="card-likes">❤ ' + likes + '</div>' +
+                '</div>' +
+                '<div class="card-body">' +
+                    '<div class="card-title">' + esc(v.title) + '</div>' +
+                    '<div class="card-meta">' + gameTag + '<span class="card-time">' + timeAgo(v.createdAt) + '</span></div>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+
+        grid.querySelectorAll('.video-card').forEach(function(card) {
+            card.addEventListener('click', function() {
+                openVideoDetail(parseInt(card.dataset.id));
+            });
+        });
+    }
+
+    function loadLikedState() {
+        try {
+            const stored = localStorage.getItem('gamehub_likes');
+            if (stored) likedVideos = JSON.parse(stored);
+        } catch(e) {
+            likedVideos = {};
+        }
+    }
+
+    function saveLikedState() {
+        localStorage.setItem('gamehub_likes', JSON.stringify(likedVideos));
+    }
+
+    function updateStats(vCount, cCount) {
+        animateNumber('stat-videos', vCount);
+        animateNumber('stat-comments', cCount);
+        document.getElementById('stat-members').textContent = '8';
+    }
+
+    function animateNumber(id, target) {
+        const el = document.getElementById(id);
+        let cur = 0;
+        const step = Math.ceil(target / 20) || 1;
+        const timer = setInterval(function() {
+            cur += step;
+            if (cur >= target) { cur = target; clearInterval(timer); }
+            el.textContent = cur;
+        }, 30);
+    }
+
+    // ============ DPLAYER ============
+    function initDPlayer(videoUrl) {
+        destroyDPlayer();
+        const container = $('#dplayer-container');
+        if (!container) return;
+
+        // Determine if HLS stream
+        const isHls = videoUrl.endsWith('.m3u8');
+
+        let dpOptions = {
+            container: container,
+            autoplay: false,
+            theme: '#ff00e5',
+            lang: 'zh-cn',
+            screenshot: true,
+            hotkey: true,
+            preload: 'auto',
+            volume: 0.7,
+            video: {}
+        };
+
+        if (isHls && window.Hls && Hls.isSupported()) {
+            dpOptions.video = {
+                type: 'customHls',
+                customType: {
+                    customHls: function(video, player) {
+                        const hls = new Hls();
+                        hls.loadSource(videoUrl);
+                        hls.attachMedia(video);
+                    }
+                }
+            };
+        } else {
+            dpOptions.video = {
+                url: videoUrl
+            };
+        }
+
+        dpInstance = new DPlayer(dpOptions);
+    }
+
+    function destroyDPlayer() {
+        if (dpInstance) {
+            try { dpInstance.destroy(); } catch(e) {}
+            dpInstance = null;
+        }
+    }
+
+    // ============ LIKE ============
+    async function handleLike(videoId) {
+        loadLikedState();
+        const isLiked = likedVideos[videoId];
+        const btn = $('#btn-like');
+        const countEl = $('#like-count');
+
+        if (isLiked) {
+            try {
+                const res = await API.unlikeVideo(videoId);
+                likedVideos[videoId] = false;
+                if (countEl) countEl.textContent = res.likes;
+                if (btn) btn.classList.remove('liked');
+                if (btn) btn.innerHTML = '❤ 点赞 <span class="like-count" id="like-count">' + res.likes + '</span>';
+            } catch(e) {
+                // Demo fallback
+                if (CONFIG.IS_LOCAL) {
+                    const video = findDemoVideo(videoId);
+                    if (video) { video.likes = Math.max(0, (video.likes || 0) - 1); }
+                    likedVideos[videoId] = false;
+                    if (countEl) countEl.textContent = video.likes;
+                    if (btn) { btn.classList.remove('liked'); btn.innerHTML = '❤ 点赞 <span class="like-count" id="like-count">' + video.likes + '</span>'; }
+                }
+            }
+        } else {
+            try {
+                const res = await API.likeVideo(videoId);
+                likedVideos[videoId] = true;
+                if (countEl) countEl.textContent = res.likes;
+                if (btn) btn.classList.add('liked');
+                if (btn) btn.innerHTML = '❤ 已赞 <span class="like-count" id="like-count">' + res.likes + '</span>';
+            } catch(e) {
+                // Demo fallback
+                if (CONFIG.IS_LOCAL) {
+                    const video = findDemoVideo(videoId);
+                    if (video) { video.likes = (video.likes || 0) + 1; }
+                    likedVideos[videoId] = true;
+                    if (countEl) countEl.textContent = video.likes;
+                    if (btn) { btn.classList.add('liked'); btn.innerHTML = '❤ 已赞 <span class="like-count" id="like-count">' + video.likes + '</span>'; }
+                }
+            }
+        }
+        saveLikedState();
+    }
+
+    function findDemoVideo(id) {
+        const allVideos = demoVideos.length > 0 ? demoVideos : DEMO_VIDEOS;
+        return allVideos.find(function(v) { return v.id === id; });
+    }
+
+    // ============ VIDEO DETAIL ============
+    async function openVideoDetail(videoId) {
+        currentVideoId = videoId;
+        switchView('detail');
+
+        const detailEl = $('#video-detail');
+        detailEl.innerHTML = '<div class="loading"><div class="spinner"></div><p>加载中...</p></div>';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        let video, comments;
+
+        try {
+            video = await API.getVideo(videoId);
+            comments = video.comments || [];
+        } catch(e) {
+            if (CONFIG.IS_LOCAL) {
+                const allVideos = demoVideos.length > 0 ? demoVideos : DEMO_VIDEOS;
+                video = allVideos.find(function(v) { return v.id === videoId; });
+                if (!video) { detailEl.innerHTML = '<div class="empty-state"><h3>视频不存在</h3></div>'; return; }
+                const allComments = demoComments.length > 0 ? demoComments : DEMO_COMMENTS;
+                comments = allComments.filter(function(c) { return c.videoId === videoId; });
+            } else {
+                detailEl.innerHTML = '<div class="empty-state"><h3>加载失败</h3><p>' + esc(e.message) + '</p></div>';
+                return;
+            }
+        }
+
+        const isLocal = video.videoType === 'LOCAL';
+        const bv = video.bilibiliBv || '';
+        const gameTag = video.game ? '<span class="game-tag">🎮 ' + esc(video.game) + '</span>' : '';
+        const actions = AUTH.can('deleteVideo') ? '<div class="video-actions"><button class="btn-danger" id="btn-delete-video">🗑 删除此视频</button></div>' : '';
+        const user = AUTH.getUser();
+        const authorValue = user ? user.displayName : '';
+
+        loadLikedState();
+        const isLiked = likedVideos[videoId];
+        const likes = video.likes || 0;
+        const likeBtnClass = isLiked ? 'btn-like liked' : 'btn-like';
+
+        // Player section
+        let playerHtml;
+        if (isLocal && video.videoUrl) {
+            playerHtml = '<div class="dplayer-container" id="dplayer-container"></div>';
+        } else if (bv) {
+            const embedUrl = CONFIG.BILIBILI_EMBED.replace('{BV}', bv);
+            playerHtml = '<div class="video-player-wrapper"><iframe src="' + embedUrl + '" allowfullscreen="true" allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"></iframe></div>';
+        } else {
+            playerHtml = '<div style="display:flex;align-items:center;justify-content:center;height:300px;color:var(--text-muted);background:var(--bg-secondary);border-radius:var(--radius-sm);">未提供视频来源</div>';
+        }
+
+        detailEl.innerHTML =
+            playerHtml +
+            '<div class="video-info">' +
+                '<h1>' + esc(video.title) + '</h1>' +
+                '<div class="video-meta">' +
+                    '<span>📅 ' + formatTime(video.createdAt) + '</span>' +
+                    (bv ? '<span>📺 ' + esc(bv) + '</span>' : '') +
+                    gameTag +
+                '</div>' +
+                '<div class="video-actions">' +
+                    '<button class="' + likeBtnClass + '" id="btn-like" onclick="event.stopPropagation();">' +
+                        (isLiked ? '❤ 已赞' : '❤ 点赞') +
+                        ' <span class="like-count" id="like-count">' + likes + '</span>' +
+                    '</button>' +
+                    (actions ? actions.replace('<div class="video-actions">', '') : '') +
+                '</div>' +
+                (video.description ? '<div class="video-description">' + esc(video.description) + '</div>' : '') +
+            '</div>' +
+            '<div class="comments-section">' +
+                '<h2>💬 评论 <span class="comment-count">(' + comments.length + ')</span></h2>' +
+                (AUTH.can('comment')
+                    ? '<form class="comment-form" id="comment-form">' +
+                        '<input type="text" id="comment-author" placeholder="你的昵称" required maxlength="100" value="' + esc(authorValue) + '" ' + (user && user.role !== 'VISITOR' ? 'readonly' : '') + '>' +
+                        '<textarea id="comment-content" placeholder="说点什么吧..." required></textarea>' +
+                        '<button type="submit" class="btn-submit">💬 发表评论</button>' +
+                      '</form>'
+                    : '<div class="no-comments" style="border:1px dashed var(--border);border-radius:8px;">游客模式下暂不支持评论</div>'
+                ) +
+                '<div class="comments-list" id="comments-list">' +
+                    renderComments(comments) +
+                '</div>' +
+            '</div>';
+
+        // Init DPlayer for local videos
+        if (isLocal && video.videoUrl) {
+            setTimeout(function() { initDPlayer(video.videoUrl); }, 100);
+        }
+
+        // Bind events
+        const commentForm = $('#comment-form');
+        if (commentForm) commentForm.addEventListener('submit', handleCommentSubmit);
+
+        const delBtn = $('#btn-delete-video');
+        if (delBtn) delBtn.addEventListener('click', handleDeleteVideo);
+
+        const likeBtn = $('#btn-like');
+        if (likeBtn) likeBtn.addEventListener('click', function() { handleLike(videoId); });
+    }
+
+    function renderComments(commentList) {
+        if (!commentList || commentList.length === 0) {
+            return '<div class="no-comments">还没有评论，来发表第一条吧！</div>';
+        }
+        const showDel = AUTH.can('deleteComment');
+        return commentList.map(function(c) {
+            const color = getAvatarColor(c.author);
+            const initial = (c.author || '?').charAt(0).toUpperCase();
+            return '<div class="comment-item" data-comment-id="' + c.id + '">' +
+                '<div class="comment-header">' +
+                    '<span class="comment-author">' +
+                        '<span class="comment-avatar" style="background:' + color + ';">' + initial + '</span>' +
+                        esc(c.author) +
+                    '</span>' +
+                    '<span>' +
+                        '<span class="comment-time">' + timeAgo(c.createdAt) + '</span>' +
+                        (showDel ? '<button class="btn-delete-comment" data-id="' + c.id + '">删除</button>' : '') +
+                    '</span>' +
+                '</div>' +
+                '<div class="comment-content">' + esc(c.content) + '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    // ============ COMMENT ACTIONS ============
+    async function handleCommentSubmit(e) {
+        e.preventDefault();
+        const authorEl = $('#comment-author');
+        const contentEl = $('#comment-content');
+        const submitBtn = $('#comment-form .btn-submit');
+        const author = authorEl.value.trim();
+        const content = contentEl.value.trim();
+        if (!author || !content) return;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = '提交中...';
+
+        try {
+            await API.createComment(currentVideoId, author, content);
+        } catch(err) {
+            if (CONFIG.IS_LOCAL) {
+                demoComments.push({
+                    id: nextDemoCommentId++,
+                    videoId: currentVideoId,
+                    author: author,
+                    content: content,
+                    createdAt: new Date().toISOString()
+                });
+            }
+        }
+
+        authorEl.value = AUTH.getUser() ? AUTH.getUser().displayName : '';
+        contentEl.value = '';
+        submitBtn.disabled = false;
+        submitBtn.textContent = '💬 发表评论';
+        refreshComments();
+        showToast('💬 评论发表成功！');
+    }
+
+    function handleDeleteComment(e) {
+        if (!e.target.classList.contains('btn-delete-comment')) return;
+        const id = parseInt(e.target.dataset.id);
+        if (!confirm('确定要删除这条评论吗？')) return;
+
+        API.deleteComment(id).catch(function() {
+            demoComments = demoComments.filter(function(c) { return c.id !== id; });
+        });
+
+        const item = document.querySelector('[data-comment-id="' + id + '"]');
+        if (item) {
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(20px)';
+            item.style.transition = '0.3s';
+            setTimeout(function() {
+                item.remove();
+                updateCommentCount();
+            }, 300);
+        }
+        showToast('评论已删除');
+    }
+
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-delete-comment')) handleDeleteComment(e);
+    });
+
+    async function refreshComments() {
+        try {
+            const video = await API.getVideo(currentVideoId);
+            const comments = video.comments || [];
+            const list = $('#comments-list');
+            if (list) { list.innerHTML = renderComments(comments); updateCommentCount(); }
+        } catch(e) {
+            const videoComments = demoComments.filter(function(c) { return c.videoId === currentVideoId; });
+            const list = $('#comments-list');
+            if (list) { list.innerHTML = renderComments(videoComments); updateCommentCount(); }
+        }
+    }
+
+    function updateCommentCount() {
+        const remaining = $$('.comment-item').length;
+        const countEl = $('.comment-count');
+        if (countEl) countEl.textContent = '(' + remaining + ')';
+        if (remaining === 0) {
+            const list = $('#comments-list');
+            if (list) list.innerHTML = '<div class="no-comments">还没有评论，来发表第一条吧！</div>';
+        }
+    }
+
+    // ============ VIDEO ACTIONS ============
+    async function handleDeleteVideo() {
+        if (!confirm('确定要删除这个视频吗？所有评论也会被删除。此操作不可恢复！')) return;
+
+        try {
+            await API.deleteVideo(currentVideoId);
+        } catch(e) {
+            demoVideos = demoVideos.filter(function(v) { return v.id !== currentVideoId; });
+            demoComments = demoComments.filter(function(c) { return c.videoId !== currentVideoId; });
+        }
+
+        showToast('视频已删除');
+        switchView('list');
+    }
+
+    // Add video modal
+    function openAddModal() {
+        if (!AUTH.can('addVideo')) {
+            showToast('⚠️ 当前角色无权发布视频', 'error');
+            return;
+        }
+        $('#modal-add').classList.add('active');
+        resetAddForm();
+        $('#video-title').focus();
+    }
+
+    function closeAddModal() {
+        $('#modal-add').classList.remove('active');
+        $('#form-add-video').reset();
+        resetAddForm();
+    }
+
+    function resetAddForm() {
+        $('#uploaded-video-url').value = '';
+        $('#uploaded-video-type').value = '';
+        $('#upload-progress').style.display = 'none';
+        $('#progress-fill').style.width = '0%';
+        $('#video-file').value = '';
+        // Switch back to Bilibili tab
+        switchVideoType('BILIBILI');
+    }
+
+    // Video type tabs
+    function switchVideoType(type) {
+        $$('.vt-tab').forEach(function(t) { t.classList.toggle('active', t.dataset.vt === type); });
+        $$('.vt-panel').forEach(function(p) { p.classList.remove('active'); });
+        const panel = type === 'BILIBILI' ? $('#vt-panel-bilibili') : $('#vt-panel-local');
+        if (panel) panel.classList.add('active');
+        // Update required fields
+        const bvInput = $('#video-bv');
+        const fileInput = $('#video-file');
+        if (type === 'BILIBILI') {
+            if (bvInput) bvInput.setAttribute('required', '');
+        } else {
+            if (bvInput) bvInput.removeAttribute('required');
+        }
+    }
+
+    // Auto-fetch Bilibili video info
+    async function fetchBilibiliInfo() {
+        const bv = $('#video-bv').value.trim();
+        if (!bv || bv.length < 10) return;
+
+        const apiUrl = CONFIG.BILIBILI_API.replace('{BV}', bv);
+        try {
+            const res = await fetch(apiUrl);
+            const json = await res.json();
+            if (json.code === 0 && json.data) {
+                const data = json.data;
+                const titleEl = $('#video-title');
+                if (!titleEl.value.trim()) titleEl.value = data.title || '';
+                const descEl = $('#video-desc');
+                if (!descEl.value.trim()) descEl.value = data.desc || '';
+                const coverUrl = data.pic || '';
+                $('#video-bv').dataset.cover = coverUrl;
+                if (coverUrl) showToast('✅ 已获取B站视频信息');
+            }
+        } catch(e) {
+            console.log('Bilibili fetch skipped:', e.message);
+        }
+    }
+
+    // Video file upload handling
+    async function handleVideoFileUpload(file) {
+        if (!file) return;
+        if (file.size > CONFIG.MAX_UPLOAD_SIZE * 1024 * 1024) {
+            showToast('文件过大，最大支持 ' + CONFIG.MAX_UPLOAD_SIZE + 'MB', 'error');
+            return;
+        }
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (CONFIG.ALLOWED_VIDEO_TYPES.indexOf(ext) === -1) {
+            showToast('不支持的视频格式: .' + ext, 'error');
+            return;
+        }
+
+        $('#upload-progress').style.display = 'block';
+        $('#upload-zone').style.display = 'none';
+
+        try {
+            const result = await API.uploadVideo(file, function(pct) {
+                $('#progress-fill').style.width = pct + '%';
+                $('#progress-text').textContent = '上传中... ' + pct + '%';
+            });
+            $('#uploaded-video-url').value = result.videoUrl;
+            $('#uploaded-video-type').value = result.videoType;
+            $('#progress-text').textContent = '✅ ' + result.message;
+            showToast('✅ ' + result.message);
+        } catch(e) {
+            $('#upload-zone').style.display = 'block';
+            $('#upload-progress').style.display = 'none';
+            showToast('上传失败: ' + e.message, 'error');
+        }
+    }
+
+    async function handleAddVideo(e) {
+        e.preventDefault();
+        const title = $('#video-title').value.trim();
+        const bv = $('#video-bv').value.trim();
+        const game = $('#video-game').value.trim();
+        const desc = $('#video-desc').value.trim();
+        const btn = $('#form-add-video .btn-primary');
+        const coverFromBili = $('#video-bv').dataset.cover || '';
+        const coverUrl = $('#video-cover').value.trim() || coverFromBili || null;
+
+        // Determine video type
+        const activeTab = document.querySelector('.vt-tab.active');
+        const videoType = activeTab ? activeTab.dataset.vt : 'BILIBILI';
+
+        let data = {
+            title: title,
+            game: game || null,
+            description: desc || null,
+            thumbnailUrl: coverUrl,
+            videoType: videoType
+        };
+
+        if (videoType === 'LOCAL') {
+            const videoUrl = $('#uploaded-video-url').value;
+            if (!videoUrl) { showToast('请先上传视频文件', 'error'); return; }
+            if (!title) { showToast('请填写视频标题', 'error'); return; }
+            data.bilibiliBv = 'LOCAL_' + Date.now();
+            data.videoUrl = videoUrl;
+        } else {
+            if (!title || !bv) { showToast('请填写标题和BV号', 'error'); return; }
+            data.bilibiliBv = bv;
+            data.videoUrl = null;
+        }
+
+        btn.disabled = true;
+        btn.textContent = '发布中...';
+
+        try {
+            await API.createVideo(data);
+        } catch(err) {
+            if (CONFIG.IS_LOCAL) {
+                demoVideos.unshift(Object.assign(data, {
+                    id: nextDemoVideoId++,
+                    bilibiliBv: data.bilibiliBv || '',
+                    thumbnailUrl: data.thumbnailUrl || ('https://picsum.photos/seed/v' + nextDemoVideoId + '/640/360'),
+                    likes: 0,
+                    createdAt: new Date().toISOString(),
+                    comments: []
+                }));
+            }
+        }
+
+        closeAddModal();
+        btn.disabled = false;
+        btn.textContent = '🚀 发布视频';
+        renderVideoList();
+        showToast('🎉 视频发布成功！');
+    }
+
+    // ============ ADMIN PANEL ============
+    function openAdminPanel() {
+        $('#modal-admin').classList.add('active');
+        renderAdminUserList();
+    }
+
+    function closeAdminPanel() {
+        $('#modal-admin').classList.remove('active');
+    }
+
+    async function renderAdminUserList() {
+        const listEl = $('#admin-user-list');
+        listEl.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+        let users = [];
+        try {
+            users = await API.admin.getUsers();
+        } catch(e) {
+            listEl.innerHTML = '<div class="no-comments">加载失败: ' + esc(e.message) + '</div>';
+            return;
+        }
+
+        if (!users || users.length === 0) {
+            listEl.innerHTML = '<div class="no-comments">暂无成员</div>';
+            return;
+        }
+
+        listEl.innerHTML = users.map(function(u) {
+            const color = getAvatarColor(u.username);
+            const initial = (u.displayName || u.username || '?').charAt(0).toUpperCase();
+            const isBuiltin = u.username === 'admin';
+            const roles = [
+                { val: 'ADMIN', label: '👑 管理员' },
+                { val: 'MEMBER', label: '🎮 成员' },
+                { val: 'VISITOR', label: '👀 游客' }
+            ];
+            const roleOptions = roles.map(function(r) {
+                return '<option value="' + r.val + '"' + (u.role === r.val ? ' selected' : '') + '>' + r.label + '</option>';
+            }).join('');
+            const roleSelect = isBuiltin
+                ? '<span style="font-size:12px;color:var(--accent-magenta);">👑 内置管理员</span>'
+                : '<select onchange="ADMIN_ACTIONS.changeRole(' + u.id + ', this.value)">' + roleOptions + '</select>';
+            const deleteBtn = isBuiltin
+                ? ''
+                : '<button class="btn-delete-user" onclick="ADMIN_ACTIONS.deleteUser(' + u.id + ')">删除</button>';
+
+            return '<div class="admin-user-item">' +
+                '<div class="admin-user-info">' +
+                    '<span class="admin-user-avatar" style="background:' + color + ';">' + initial + '</span>' +
+                    '<div class="admin-user-detail">' +
+                        '<span class="admin-user-name">' + esc(u.displayName) + '</span>' +
+                        '<span class="admin-user-username">@' + esc(u.username) + ' · ' + (u.role || 'VISITOR') + '</span>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="admin-user-actions">' +
+                    roleSelect + deleteBtn +
+                '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    // Admin actions (exposed globally for inline onclick handlers)
+    window.ADMIN_ACTIONS = {
+        changeRole: async function(userId, role) {
+            try {
+                await API.admin.updateUserRole(userId, role);
+                showToast('角色已更新');
+                renderAdminUserList();
+            } catch(e) {
+                showToast('更新失败: ' + e.message, 'error');
+            }
+        },
+        deleteUser: async function(userId) {
+            if (!confirm('确定要删除该用户吗？')) return;
+            try {
+                await API.admin.deleteUser(userId);
+                showToast('用户已删除');
+                renderAdminUserList();
+            } catch(e) {
+                showToast('删除失败: ' + e.message, 'error');
+            }
+        }
+    };
+
+    async function handleAddUser(e) {
+        e.preventDefault();
+        const username = $('#admin-username').value.trim();
+        const password = $('#admin-password').value.trim();
+        const displayName = $('#admin-displayname').value.trim();
+        const role = $('#admin-role').value;
+
+        if (!username || !password || !displayName) {
+            showToast('请填写所有字段', 'error'); return;
+        }
+
+        try {
+            await API.admin.createUser({
+                username: username,
+                password: password,
+                displayName: displayName,
+                role: role
+            });
+            showToast('✅ 用户 ' + displayName + ' 创建成功！');
+            $('#form-add-user').reset();
+            renderAdminUserList();
+        } catch(e) {
+            showToast('创建失败: ' + e.message, 'error');
+        }
+    }
+
+    // ============ LOGIN HANDLING ============
+    async function handleLogin(e) {
+        e.preventDefault();
+        const errorEl = $('#login-error');
+        const btn = $('#login-form .btn-login');
+        const username = $('#login-username').value.trim();
+        const password = $('#login-password').value.trim();
+
+        if (!username || !password) { errorEl.textContent = '请输入用户名和密码'; return; }
+
+        errorEl.textContent = '';
+        btn.disabled = true;
+        btn.textContent = '登录中...';
+
+        try {
+            await AUTH.login(username, password);
+            onLoginSuccess();
+        } catch(err) {
+            errorEl.textContent = '❌ ' + (err.message || '登录失败');
+            btn.disabled = false;
+            btn.textContent = '🚀 登 录';
+        }
+    }
+
+    function onLoginSuccess() {
+        $('#login-page').style.display = 'none';
+        $('#app-main').classList.add('logged-in');
+        updateUserUI();
+        switchView('list');
+    }
+
+    function handleLogout() {
+        if (!confirm('确定要退出登录吗？')) return;
+        AUTH.logout();
+        $('#app-main').classList.remove('logged-in');
+        $('#login-page').style.display = '';
+        $('#login-username').value = '';
+        $('#login-password').value = '';
+        $('#login-error').textContent = '';
+    }
+
+    function updateUserUI() {
+        const user = AUTH.getUser();
+        if (!user) return;
+
+        const avatar = $('#user-avatar');
+        avatar.style.background = user.avatarColor || CONFIG.AVATAR_COLORS[0];
+        avatar.textContent = (user.displayName || '?').charAt(0).toUpperCase();
+
+        $('#user-name').textContent = user.displayName;
+
+        const roleEl = $('#user-role');
+        roleEl.textContent = AUTH.getRoleLabel();
+        roleEl.className = 'user-role role-' + user.role;
+
+        const btnAdd = $('#btn-add-video');
+        if (AUTH.can('addVideo')) {
+            btnAdd.classList.remove('hidden');
+        } else {
+            btnAdd.classList.add('hidden');
+        }
+
+        // Admin panel button
+        const btnAdmin = $('#btn-admin-panel');
+        if (user.role === 'ADMIN') {
+            btnAdmin.style.display = '';
+        } else {
+            btnAdmin.style.display = 'none';
+        }
+
+        const banner = $('#visitor-banner');
+        banner.style.display = user.role === 'VISITOR' ? 'block' : 'none';
+    }
+
+    // ============ EVENT BINDINGS ============
+    function bindEvents() {
+        // Login
+        $('#login-form').addEventListener('submit', handleLogin);
+        $('#btn-logout').addEventListener('click', handleLogout);
+        $('#logo-home').addEventListener('click', function() { switchView('list'); });
+
+        // Nav links
+        $$('.nav-link[data-view]').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                switchView(link.dataset.view);
+            });
+        });
+
+        // Sort buttons
+        $$('.sort-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                setSort(btn.dataset.sort);
+            });
+        });
+
+        // File upload button (intro page)
+        const btnUploadFile = $('#btn-upload-file');
+        if (btnUploadFile) btnUploadFile.addEventListener('click', handleFileUpload);
+
+        // Add video
+        $('#btn-add-video').addEventListener('click', openAddModal);
+        $('#form-add-video').addEventListener('submit', handleAddVideo);
+        var bvInput = $('#video-bv');
+        if (bvInput) {
+            bvInput.addEventListener('blur', fetchBilibiliInfo);
+            bvInput.addEventListener('change', fetchBilibiliInfo);
+        }
+
+        // Video type tabs
+        $$('.vt-tab').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                switchVideoType(tab.dataset.vt);
+            });
+        });
+
+        // Upload zone
+        const uploadZone = $('#upload-zone');
+        const fileInput = $('#video-file');
+        if (uploadZone && fileInput) {
+            uploadZone.addEventListener('click', function() { fileInput.click(); });
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files && fileInput.files[0]) {
+                    handleVideoFileUpload(fileInput.files[0]);
+                }
+            });
+            // Drag & drop
+            uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.classList.add('dragover'); });
+            uploadZone.addEventListener('dragleave', function() { uploadZone.classList.remove('dragover'); });
+            uploadZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    handleVideoFileUpload(e.dataTransfer.files[0]);
+                }
+            });
+        }
+
+        // Back button
+        $('#btn-back').addEventListener('click', function() { switchView('list'); });
+
+        // Modal close - add video
+        $('#modal-close').addEventListener('click', closeAddModal);
+        $('#btn-cancel').addEventListener('click', closeAddModal);
+        $('#modal-add').addEventListener('click', function(e) { if (e.target === this) closeAddModal(); });
+
+        // Admin panel
+        $('#btn-admin-panel').addEventListener('click', openAdminPanel);
+        $('#modal-admin-close').addEventListener('click', closeAdminPanel);
+        $('#modal-admin').addEventListener('click', function(e) { if (e.target === this) closeAdminPanel(); });
+        $('#form-add-user').addEventListener('submit', handleAddUser);
+
+        // Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if ($('#modal-admin').classList.contains('active')) closeAdminPanel();
+                if ($('#modal-add').classList.contains('active')) closeAddModal();
+            }
+        });
+    }
+
+    // ============ INIT ============
+    function init() {
+        bindEvents();
+
+        if (AUTH.isLoggedIn()) {
+            onLoginSuccess();
+        } else {
+            $('#login-page').style.display = '';
+            $('#app-main').classList.remove('logged-in');
+            $('#login-username').focus();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+})();

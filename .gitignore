@@ -1,0 +1,40 @@
+# Maven build output
+backend/target/
+*.jar
+!wrapper/*.jar
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.class
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Upload directory (local test files)
+uploads/
+
+# Logs
+logs/
+*.log
+
+# Environment config
+*.env
+.env.*
+/etc/gamehub/env.conf
+
+# Node (if any)
+node_modules/
+
+# Temp
+tmp/
+temp/
+*.tmp
+*.bak
+
+# HS error logs
+hs_err_pid*.log
