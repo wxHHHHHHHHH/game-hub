@@ -530,28 +530,82 @@ body {
 }
 .file-upload-row input:focus { outline: none; border-color: var(--accent-cyan); }
 
+/* ============ MOBILE NAV TOGGLE ============ */
+.nav-toggle { display:none; background:none; border:none; color:var(--text-primary); font-size:24px; cursor:pointer; padding:4px; }
+@media (max-width: 900px) {
+    .nav-toggle { display:block; }
+    .nav-links { display:none; position:absolute; top:56px; left:0; right:0; background:var(--bg-secondary); flex-direction:column; padding:12px; border-bottom:1px solid var(--border); gap:4px; z-index:200; }
+    .nav-links.open { display:flex; }
+    .nav-link, #btn-add-video, #btn-dashboard, #btn-admin-panel { width:100%; text-align:left; justify-content:flex-start; font-size:14px; padding:10px 14px; }
+    .user-area { flex-direction:row; padding:8px 14px; border-top:1px solid var(--border); margin-top:4px; width:100%; }
+}
+
 /* ============ RESPONSIVE ============ */
 @media (max-width: 900px) {
     .video-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-    .hero h1 { font-size: 32px; }
-    .hero-stats { gap: 30px; }
+    .hero h1 { font-size: 28px; }
+    .hero-stats { gap: 24px; }
+    .timeline { padding-left:28px; }
+    .timeline-date::before { left:-32px; }
+    .timeline-row { grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); }
+    .news-grid { grid-template-columns:1fr; }
+    .contact-grid { grid-template-columns:repeat(2,1fr); }
+    .dash-tabs { gap:4px; }
+    .dash-tab { font-size:12px; padding:6px 12px; }
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .news-detail-wrap { padding:24px; }
+    .intro-section { padding:24px; }
+    .file-upload-row { flex-direction:column; }
+    .carousel { height:200px; }
+    .carousel-bg h2 { font-size:24px; }
+    .carousel-bg p { font-size:14px; }
+    .admin-add-form .admin-form-row { grid-template-columns:1fr 1fr; }
 }
 @media (max-width: 560px) {
     .video-grid { grid-template-columns: 1fr; }
-    .hero h1 { font-size: 26px; }
-    .hero p { font-size: 15px; }
-    .header-inner { height: 56px; }
-    .logo { font-size: 18px; }
-    .hero-stats { gap: 20px; }
-    .hero-stat-num { font-size: 24px; }
+    .hero h1 { font-size: 22px; }
+    .hero p { font-size: 14px; }
+    .header-inner { height: 52px; }
+    .logo { font-size: 16px; }
+    .logo span:last-child { display:none; }
+    .logo .highlight { display:inline; }
+    .hero-stats { gap: 16px; }
+    .hero-stat-num { font-size: 22px; }
+    .hero-stat-label { font-size:11px; }
     .user-name { display: none; }
-    .carousel { height:180px; }
-    .carousel-bg h2 { font-size:22px; }
-    .carousel-bg p { font-size:14px; }
+    .carousel { height:150px; }
+    .carousel-bg h2 { font-size:18px; }
+    .carousel-bg p { font-size:12px; }
+    .carousel-btn { font-size:16px; padding:8px 10px; }
     .news-grid { grid-template-columns:1fr; }
     .contact-grid { grid-template-columns:1fr; }
+    .timeline { padding-left:20px; }
+    .timeline::before { left:10px; }
+    .timeline-date { font-size:15px; margin:20px 0 10px; }
+    .timeline-date::before { left:-14px; width:10px; height:10px; }
+    .timeline-row { grid-template-columns:repeat(2,1fr); gap:8px; }
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .stat-card { padding:16px; }
+    .stat-card .stat-num { font-size:24px; }
+    .dash-tab { font-size:11px; padding:5px 10px; }
+    .gallery-hero h2 { font-size:24px; }
+    .contact-map iframe { height:250px; }
+    .lightbox-prev, .lightbox-next { font-size:24px; padding:8px; }
+    .modal { width:95%; max-width:95%; margin:10px; }
+    .intro-section { padding:20px; }
+    .video-info h1 { font-size: 18px; }
+    .btn-back { width: 100%; justify-content: center; }
+    .sort-btn { padding:8px 16px; font-size:13px; }
+    .search-bar input { font-size:13px; padding:8px 14px 8px 12px; }
+    .page-header h2 { font-size:24px; }
+    .login-logo-img { width:70px; height:70px; }
+    .login-card { padding:24px; }
+    .logo-img { width:28px; height:28px; }
 }
 @media (max-width: 768px) {
     .video-info h1 { font-size: 20px; }
-    .btn-back { width: 100%; justify-content: center; }
+    .modal-admin { max-width:95%; }
+    .admin-add-form .admin-form-row { grid-template-columns:1fr; }
+    .file-item { flex-wrap:wrap; }
+    .file-actions { width:100%; margin-top:8px; justify-content:flex-end; display:flex; gap:6px; }
 }

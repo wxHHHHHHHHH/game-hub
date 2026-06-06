@@ -1571,6 +1571,20 @@
         });
     }
 
+    // Mobile nav toggle
+    const navToggle = $('#nav-toggle');
+    const navLinks = $('#nav-links');
+    if (navToggle && navLinks) {
+        navToggle.addEventListener('click', function() { navLinks.classList.toggle('open'); });
+        document.addEventListener('click', function(e) {
+            if (!navLinks.contains(e.target) && e.target !== navToggle) navLinks.classList.remove('open');
+        });
+        // Close after clicking a link
+        navLinks.querySelectorAll('.nav-link').forEach(function(l) {
+            l.addEventListener('click', function() { navLinks.classList.remove('open'); });
+        });
+    }
+
     // ============ INIT ============
     function init() {
         bindEvents();
