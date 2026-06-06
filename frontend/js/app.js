@@ -468,11 +468,13 @@
     function updateStats(vCount, cCount) {
         animateNumber('stat-videos', vCount);
         animateNumber('stat-comments', cCount);
-        document.getElementById('stat-members').textContent = '8';
+        const mEl = document.getElementById('stat-members');
+        if (mEl) mEl.textContent = '8';
     }
 
     function animateNumber(id, target) {
         const el = document.getElementById(id);
+        if (!el) return;
         let cur = 0;
         const step = Math.ceil(target / 20) || 1;
         const timer = setInterval(function() {
