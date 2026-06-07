@@ -25,12 +25,12 @@
 }
 
 /* ============ COLOR THEMES ============ */
-body.theme-warmgold { --accent-cyan:#D4A853; --accent-magenta:#C8963E; --accent-purple:#B8860B; --accent-green:#D4A853; --accent-yellow:#D4A853; }
-body.theme-deepblue { --accent-cyan:#06B6D4; --accent-magenta:#3B82F6; --accent-purple:#2563EB; --accent-green:#06B6D4; --accent-yellow:#3B82F6; }
-body.theme-emerald { --accent-cyan:#34D399; --accent-magenta:#10B981; --accent-purple:#059669; --accent-green:#34D399; --accent-yellow:#10B981; }
-body.theme-purple  { --accent-cyan:#C084FC; --accent-magenta:#8B5CF6; --accent-purple:#7C3AED; --accent-green:#C084FC; --accent-yellow:#8B5CF6; }
-body.theme-sunset  { --accent-cyan:#F97316; --accent-magenta:#F59E0B; --accent-purple:#EA580C; --accent-green:#F59E0B; --accent-yellow:#F59E0B; }
-body.theme-ice     { --accent-cyan:#22D3EE; --accent-magenta:#06B6D4; --accent-purple:#0891B2; --accent-green:#22D3EE; --accent-yellow:#06B6D4; }
+body.theme-warmgold { --accent-cyan:#D4A853; --accent-magenta:#C8963E; --accent-purple:#B8860B; --accent-green:#D4A853; --accent-yellow:#D4A853; --bg-primary:#0d0b08; }
+body.theme-deepblue { --accent-cyan:#06B6D4; --accent-magenta:#3B82F6; --accent-purple:#2563EB; --accent-green:#06B6D4; --accent-yellow:#3B82F6; --bg-primary:#050d18; }
+body.theme-emerald { --accent-cyan:#34D399; --accent-magenta:#10B981; --accent-purple:#059669; --accent-green:#34D399; --accent-yellow:#10B981; --bg-primary:#050f0a; }
+body.theme-purple  { --accent-cyan:#C084FC; --accent-magenta:#8B5CF6; --accent-purple:#7C3AED; --accent-green:#C084FC; --accent-yellow:#8B5CF6; --bg-primary:#0c0818; }
+body.theme-sunset  { --accent-cyan:#F97316; --accent-magenta:#F59E0B; --accent-purple:#EA580C; --accent-green:#F59E0B; --accent-yellow:#F59E0B; --bg-primary:#0f0805; }
+body.theme-ice     { --accent-cyan:#22D3EE; --accent-magenta:#06B6D4; --accent-purple:#0891B2; --accent-green:#22D3EE; --accent-yellow:#06B6D4; --bg-primary:#050e10; }
 
 html { font-size:16px; scroll-behavior:smooth; }
 body {
@@ -186,8 +186,8 @@ body {
 .card-badge.new { background: var(--accent-green); color: #000; }
 .card-likes { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: var(--accent-magenta); font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 4px; }
 .card-source { position: absolute; top: 10px; left: 10px; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; }
-.card-source.bili { background: rgba(251,114,153,0.85); }
-.card-source.cloud { background: rgba(255,153,0,0.85); }
+.card-source.bili { background: var(--accent-magenta); }
+.card-source.cloud { background: var(--accent-cyan); }
 .card-body { padding: 16px; }
 .card-title { font-size: 16px; font-weight:700; margin-bottom:6px; color:var(--text-primary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .card-meta { display:flex; justify-content:space-between; align-items:center; }
@@ -408,7 +408,7 @@ body {
     filter:invert(0.7) sepia(1) saturate(5) hue-rotate(360deg); cursor:pointer; width:20px; height:20px;
 }
 .gallery-upload-bar .btn-upload-photo {
-    padding:10px 24px; background:linear-gradient(135deg,#f90,#ff6b35); color:#000;
+    padding:10px 24px; background:linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color:#fff;
     border:none; border-radius:var(--radius-sm); cursor:pointer; font-size:15px;
     font-weight:700; font-family:inherit; transition:var(--transition); white-space:nowrap;
 }
@@ -416,7 +416,7 @@ body {
 
 /* Timeline */
 .timeline { position:relative; max-width:900px; margin:0 auto; padding-left:40px; }
-.timeline::before { content:''; position:absolute; left:16px; top:0; bottom:0; width:3px; background:linear-gradient(to bottom, #f90, #ff6b35, #f09819, #c44dff); border-radius:2px; }
+.timeline::before { content:''; position:absolute; left:16px; top:0; bottom:0; width:3px; background:linear-gradient(to bottom, var(--accent-cyan), var(--accent-purple)); border-radius:2px; }
 .timeline-date { position:relative; margin:36px 0 16px; font-size:18px; font-weight:800; color:#f90; display:flex; align-items:center; gap:10px; }
 .timeline-date::before { content:''; position:absolute; left:-46px; top:50%; width:14px; height:14px; background:#f90; border-radius:50%; transform:translateY(-50%); box-shadow:0 0 12px rgba(255,153,0,0.7), 0 0 24px rgba(255,153,0,0.3); border:3px solid var(--bg-primary); }
 .timeline-date:first-child { margin-top:0; }
