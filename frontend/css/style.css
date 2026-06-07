@@ -61,8 +61,10 @@ body {
 .logo-img { width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 6px var(--accent-cyan)); }
 .logo-col { display:inline-flex; align-items:center; }
 .logo-img-wrap { position:relative; display:inline-flex; align-items:center; justify-content:center; }
-.logo-text-vertical { position:absolute; bottom:2px; left:50%; transform:translateX(-50%); display:inline-flex; flex-direction:row; line-height:1; letter-spacing:3px; background:rgba(0,0,0,0.5); padding:1px 6px; border-radius:3px; }
-.logo-text-vertical i { font-style:normal; font-size:12px; font-weight:900; color:#fff; font-family:'STKaiti','KaiTi','楷体',serif; }
+.logo-text-vertical { position:absolute; bottom:12px; left:50%; transform:translateX(-50%); display:inline-flex; flex-direction:row; line-height:1; letter-spacing:3px; background:none; padding:0; }
+.logo-text-vertical i { font-style:normal; font-size:13px; font-weight:900; color:var(--accent-cyan); font-family:'STKaiti','KaiTi','楷体',serif; text-shadow:0 0 8px rgba(0,0,0,0.6); }
+.login-logo-text { position:static; transform:none; display:inline-flex; flex-direction:row; letter-spacing:12px; margin-top:6px; }
+.login-logo-text i { font-size:28px; text-shadow:0 0 12px var(--accent-cyan); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; height: 88px; padding: 0; }
 .nav-link { font-size:13px; padding:5px 8px; }
 .nav-links { gap:3px; }
