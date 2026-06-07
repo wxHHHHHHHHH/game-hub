@@ -4,6 +4,20 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
     --bg-primary: #0a0a1a;
     --bg-secondary: #12122a;
     --bg-card: #1a1a3e;
@@ -70,8 +84,8 @@ n@media (prefers-reduced-motion: reduce) {
 }
 .login-container { width: 100%; max-width: 420px; }
 .login-brand { text-align: center; margin-bottom: 36px; }
-.login-logo { font-size: 56px; display: block; margin-bottom: 12px; animation: bounce 2s ease infinite; }
-.login-logo-img { width: 140px; height: 140px; display: block; animation: bounce 2s ease infinite; }
+.login-logo { font-size: 56px; display: block; margin-bottom: 12px; animation: float 3s ease-in-out infinite; }
+.login-logo-img { width: 140px; height: 140px; display: block; animation: float 3s ease-in-out infinite; }
 .login-brand .logo-img-wrap { display:block; margin:0 auto 12px; width:140px; height:140px; }
 .logo-img { width: 80px; height: 80px; object-fit: contain; }
 .logo-col { display:inline-flex; align-items:center; }
@@ -102,9 +116,7 @@ n@media (prefers-reduced-motion: reduce) {
 .user-role { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
 .btn-logout { padding: 4px 10px; font-size: 12px; border-radius: var(--radius-sm); background: transparent; color: var(--text-muted); border: 1px solid var(--border); cursor: pointer; transition: var(--transition); font-family: inherit; }
 .header-inner { display: flex; align-items: center; justify-content: space-between; height: 56px; }
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+@keyframes float {
 }
 n@media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration:0.01ms!important; animation-iteration-count:1!important; transition-duration:0.01ms!important; }
@@ -860,3 +872,7 @@ n@media (prefers-reduced-motion: reduce) {
 n@media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration:0.01ms!important; animation-iteration-count:1!important; transition-duration:0.01ms!important; }
 }
+
+/* Focus visible for keyboard nav */
+:focus-visible { outline: 2px solid var(--accent-cyan); outline-offset: 2px; border-radius: 2px; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent-cyan); outline-offset: 2px; }
