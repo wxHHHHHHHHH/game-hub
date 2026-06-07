@@ -466,6 +466,7 @@
             <div class="form-group"><label>卡片/导航栏色</label><input type="color" id="c-card" value="#1a1a3e"></div>
             <div class="form-group"><label>按钮主色</label><input type="color" id="c-a1" value="#00e5ff"></div>
             <div class="form-group"><label>按钮辅色</label><input type="color" id="c-a2" value="#ff00e5"></div>
+            <div class="form-group"><label>文字颜色</label><input type="color" id="c-text" value="#e8e8f0"></div>
             <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">快捷预设：</p>
             <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;" id="preset-btns"></div>
             <div class="form-actions">
@@ -491,22 +492,21 @@
 // ============ THEME SWITCHER ============
 window.THEME = {
   presets: [
-    { bg:'#0a0a1a', card:'#1a1a3e', a1:'#00e5ff', a2:'#ff00e5', name:'默认' },
-    { bg:'#1a1410', card:'#2a221a', a1:'#D4A853', a2:'#C8963E', name:'暖金' },
-    { bg:'#0a1628', card:'#162542', a1:'#06B6D4', a2:'#3B82F6', name:'深海蓝' },
-    { bg:'#0a1a15', card:'#152e26', a1:'#34D399', a2:'#10B981', name:'翡翠绿' },
-    { bg:'#120e1a', card:'#221a30', a1:'#C084FC', a2:'#8B5CF6', name:'紫韵' },
-    { bg:'#1a1008', card:'#2e1e12', a1:'#F97316', a2:'#F59E0B', name:'日落橙' },
-    { bg:'#0a1418', card:'#142428', a1:'#22D3EE', a2:'#06B6D4', name:'冰蓝' },
-    { bg:'#000000', card:'#111111', a1:'#9CA3AF', a2:'#6B7280', name:'纯黑' },
-    { bg:'#f0f0f4', card:'#ffffff', a1:'#6366F1', a2:'#4F46E5', name:'浅色' },
-    { bg:'#181614', card:'#262320', a1:'#C97D45', a2:'#B86E3A', name:'灰烬行者' },
-    { bg:'#060b13', card:'#0e1525', a1:'#00c8e8', a2:'#0080ff', name:'幻塔' }
+    { bg:'#060b13', card:'#0e1525', a1:'#00c8e8', a2:'#0080ff', text:'#c8d6e5', name:'幻塔' },
+    { bg:'#181614', card:'#262320', a1:'#C97D45', a2:'#B86E3A', text:'#e8dcc8', name:'灰烬' },
+    { bg:'#0a0a1a', card:'#1a1a3e', a1:'#00e5ff', a2:'#ff00e5', text:'#e8e8f0', name:'霓虹' },
+    { bg:'#1a1410', card:'#2a221a', a1:'#D4A853', a2:'#C8963E', text:'#e8dcc8', name:'暖金' },
+    { bg:'#0a1628', card:'#162542', a1:'#06B6D4', a2:'#3B82F6', text:'#c8d8e8', name:'深海' },
+    { bg:'#0a1a15', card:'#152e26', a1:'#34D399', a2:'#10B981', text:'#c8e8d8', name:'翡翠' },
+    { bg:'#120e1a', card:'#221a30', a1:'#C084FC', a2:'#8B5CF6', text:'#d8c8e8', name:'紫韵' },
+    { bg:'#000000', card:'#111111', a1:'#9CA3AF', a2:'#6B7280', text:'#d0d0d0', name:'纯黑' },
+    { bg:'#f0f0f4', card:'#ffffff', a1:'#6366F1', a2:'#4F46E5', text:'#1a1a2e', name:'浅色' }
   ],
   current: localStorage.getItem('bobi_theme') || '',
   getC: function() { try { return JSON.parse(this.current); } catch(e) { return null; } },
-  apply: function(bg, card, a1, a2) {
-    var css = ':root{--bg-primary:'+bg+'!important;--bg-secondary:'+bg+'!important;--bg-card:'+card+'!important;--bg-card-hover:'+card+'!important;--accent-cyan:'+a1+'!important;--accent-magenta:'+a2+'!important;--accent-purple:'+a2+'!important;--accent-green:'+a1+'!important;--accent-yellow:'+a2+'!important;}';
+  apply: function(bg, card, a1, a2, text) {
+    text = text || '#c8d6e5';
+    var css = ':root{--bg-primary:'+bg+'!important;--bg-secondary:'+bg+'!important;--bg-card:'+card+'!important;--bg-card-hover:'+card+'!important;--accent-cyan:'+a1+'!important;--accent-magenta:'+a2+'!important;--accent-purple:'+a2+'!important;--accent-green:'+a1+'!important;--accent-yellow:'+a2+'!important;--text-primary:'+text+'!important;--text-secondary:'+text+'!important;}';
     var el = document.getElementById('theme-style');
     if (el) el.textContent = css;
     else { el = document.createElement('style'); el.id = 'theme-style'; el.textContent = css; document.head.appendChild(el); }
@@ -519,6 +519,7 @@ window.THEME = {
     document.getElementById('c-card').value = c.card;
     document.getElementById('c-a1').value = c.a1;
     document.getElementById('c-a2').value = c.a2;
+    document.getElementById('c-text').value = c.text || '#c8d6e5';
     this._render();
   },
   close: function() { document.getElementById('modal-color').classList.remove('active'); },
@@ -527,31 +528,34 @@ window.THEME = {
     var card = document.getElementById('c-card').value;
     var a1 = document.getElementById('c-a1').value;
     var a2 = document.getElementById('c-a2').value;
-    var data = JSON.stringify({bg:bg, card:card, a1:a1, a2:a2});
+    var text = document.getElementById('c-text').value;
+    var data = JSON.stringify({bg:bg, card:card, a1:a1, a2:a2, text:text});
     localStorage.setItem('bobi_theme', data);
     this.current = data;
-    this.apply(bg, card, a1, a2);
+    this.apply(bg, card, a1, a2, text);
     this.close();
   },
-  _apply: function(bg, card, a1, a2) {
-    var data = JSON.stringify({bg:bg, card:card, a1:a1, a2:a2});
+  _apply: function(bg, card, a1, a2, text) {
+    text = text || '#c8d6e5';
+    var data = JSON.stringify({bg:bg, card:card, a1:a1, a2:a2, text:text});
     localStorage.setItem('bobi_theme', data);
     this.current = data;
-    this.apply(bg, card, a1, a2);
+    this.apply(bg, card, a1, a2, text);
     this.close();
   },
   _render: function() {
     var self = this, cur = this.getC();
     var html = this.presets.map(function(p) {
       var active = cur && cur.bg===p.bg && cur.a1===p.a1;
-      return '<button onclick="THEME._apply(\''+p.bg+'\',\''+p.card+'\',\''+p.a1+'\',\''+p.a2+'\')" style="width:32px;height:32px;border-radius:50%;border:2px solid '+(active?'#fff':'#444')+';background:linear-gradient(135deg,'+p.a1+','+p.a2+');cursor:pointer;" title="'+p.name+'"></button>';
+      var txt = p.text||'#c8d6e5';
+      return '<button onclick="THEME._apply(\''+p.bg+'\',\''+p.card+'\',\''+p.a1+'\',\''+p.a2+'\',\''+txt+'\')" style="width:32px;height:32px;border-radius:50%;border:2px solid '+(active?'#fff':'#444')+';background:linear-gradient(135deg,'+p.a1+','+p.a2+');cursor:pointer;" title="'+p.name+'"></button>';
     }).join('');
     document.getElementById('preset-btns').innerHTML = html;
   },
   init: function() {
     var c = this.getC();
-    if (c) { this.apply(c.bg, c.card, c.a1, c.a2); }
-    else { this.apply('#060b13', '#0e1525', '#00c8e8', '#0080ff'); }
+    if (c) { this.apply(c.bg, c.card, c.a1, c.a2, c.text); }
+    else { this.apply('#060b13', '#0e1525', '#00c8e8', '#0080ff', '#c8d6e5'); }
   }
 };
 THEME.init();
