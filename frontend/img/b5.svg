@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C8963E"/><stop offset="1" stop-color="#D4A853"/></linearGradient></defs>
+  <polygon points="120,28 175,55 175,125 120,152 65,125 65,55" fill="none" stroke="url(#g)" stroke-width="2"/>
+  <polygon points="120,25 172,52 172,122 120,148 68,122 68,52" fill="url(#g)" opacity=".04"/>
+  <path d="M95 65 L110 65 L110 115 L95 115 Z" fill="url(#g)" opacity=".25"/>
+  <path d="M120 65 L130 65 L130 115 L120 115 Z" fill="url(#g)" opacity=".45"/>
+  <path d="M140 65 L148 65 L148 115 L140 115 Z" fill="url(#g)" opacity=".2"/>
+  <text x="120" y="200" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="700" fill="#8E9196" letter-spacing="5">波 比</text>
+</svg>

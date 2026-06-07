@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C8963E"/><stop offset="1" stop-color="#D4A853"/></linearGradient></defs>
+  <!-- 对称六边形外框 -->
+  <polygon points="120,25 180,55 180,115 120,145 60,115 60,55" fill="none" stroke="url(#g)" stroke-width="2.5"/>
+  <polygon points="120,40 165,62 165,108 120,130 75,108 75,62" fill="url(#g)" opacity=".06"/>
+  <!-- 中心 B 字母抽象 -->
+  <path d="M95 65 L95 125 M95 65 L125 65 Q140 65 140 80 Q140 95 125 95 L95 95 M125 95 L140 110 Q145 125 130 125 L95 125" fill="none" stroke="url(#g)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 隐藏三角(播放) -->
+  <polygon points="155,80 155,108 172,94" fill="url(#g)" opacity=".25"/>
+  <!-- 底部文字 -->
+  <text x="120" y="195" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#8E9196" letter-spacing="4">波 比</text>
+  <text x="120" y="218" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="500" fill="#9CA3AF" letter-spacing="6">BOBI GROUP</text>
+</svg>
