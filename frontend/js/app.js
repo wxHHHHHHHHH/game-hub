@@ -1871,22 +1871,9 @@
         document.body.classList.add('theme-' + currentTheme);
     }
 
-    // Apply chosen logo from localStorage
-    function applyStoredLogo() {
-        var chosen = localStorage.getItem('bobi_logo');
-        if (!chosen || chosen === 'logo.svg') return;
-        var src = 'img/' + chosen;
-        document.querySelectorAll('img[src*="logo.svg"]').forEach(function(el) {
-            el.src = src;
-        });
-        var fav = document.querySelector('link[rel="icon"]');
-        if (fav && chosen === 'logo7.svg') fav.href = 'img/favicon.svg';
-    }
-
     // ============ INIT ============
     function init() {
         bindEvents();
-        applyStoredLogo();
 
         if (AUTH.isLoggedIn()) {
             onLoginSuccess();
