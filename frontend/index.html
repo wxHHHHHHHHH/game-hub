@@ -51,7 +51,7 @@
         <div class="logo" id="logo-home">
             <img src="img/logo.png" alt="波比" class="logo-img" id="header-logo-img">
             <span class="highlight">波比</span>
-            <span class="logo-pick-btn" onclick="THEME.next()" title="切换配色" style="cursor:pointer;">🎨</span>
+            <span class="logo-pick-btn" onclick="THEME.open()" title="自定义配色" style="cursor:pointer;">🎨</span>
         </div>
         <button class="nav-toggle" id="nav-toggle">☰</button>
         <nav class="nav-links" id="nav-links">
@@ -458,6 +458,25 @@
     </div>
 </div>
 
+<!-- Color Settings Modal -->
+<div class="modal-overlay" id="modal-color">
+    <div class="modal" style="max-width:420px;">
+        <div class="modal-header"><h2>🎨 自定义配色</h2><button class="modal-close" onclick="THEME.close()">&times;</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>背景色</label><input type="color" id="c-bg" value="#0a0a1a"></div>
+            <div class="form-group"><label>卡片/导航栏色</label><input type="color" id="c-card" value="#1a1a3e"></div>
+            <div class="form-group"><label>按钮主色</label><input type="color" id="c-a1" value="#00e5ff"></div>
+            <div class="form-group"><label>按钮辅色</label><input type="color" id="c-a2" value="#ff00e5"></div>
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">快捷预设：</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;" id="preset-btns"></div>
+            <div class="form-actions">
+                <button class="btn btn-cancel" onclick="THEME.close()">取消</button>
+                <button class="btn btn-primary" onclick="THEME.save()">💾 应用</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Toast container -->
 <div id="toast-container"></div>
 
@@ -472,49 +491,65 @@
 <script>
 // ============ THEME SWITCHER ============
 window.THEME = {
-  themes: {
-    '':     { bg:'#0a0a1a', b2:'#12122a', card:'#1a1a3e', a1:'#00e5ff', a2:'#ff00e5', a3:'#7b61ff' },
-    warmgold: { bg:'#1a1410', b2:'#221c16', card:'#2a221a', a1:'#D4A853', a2:'#C8963E', a3:'#B8860B' },
-    deepblue: { bg:'#0a1628', b2:'#101e35', card:'#162542', a1:'#06B6D4', a2:'#3B82F6', a3:'#2563EB' },
-    emerald:  { bg:'#0a1a15', b2:'#0e241e', card:'#152e26', a1:'#34D399', a2:'#10B981', a3:'#059669' },
-    purple:   { bg:'#120e1a', b2:'#1a1424', card:'#221a30', a1:'#C084FC', a2:'#8B5CF6', a3:'#7C3AED' },
-    sunset:   { bg:'#1a1008', b2:'#24180e', card:'#2e1e12', a1:'#F97316', a2:'#F59E0B', a3:'#EA580C' },
-    ice:      { bg:'#0a1418', b2:'#0e1c20', card:'#142428', a1:'#22D3EE', a2:'#06B6D4', a3:'#0891B2' },
-    rose:     { bg:'#1a0e12', b2:'#24141a', card:'#2e1a22', a1:'#FB7185', a2:'#E11D48', a3:'#BE123C' },
-    mint:     { bg:'#0a1816', b2:'#0e201e', card:'#142826', a1:'#2DD4BF', a2:'#14B8A6', a3:'#0D9488' },
-    dark:     { bg:'#000000', b2:'#0a0a0a', card:'#111111', a1:'#9CA3AF', a2:'#6B7280', a3:'#4B5563' },
-    light:    { bg:'#f0f0f4', b2:'#e4e4ea', card:'#ffffff', a1:'#6366F1', a2:'#4F46E5', a3:'#4338CA' }
-  },
-  names: ['默认霓虹','暖金','深海蓝','翡翠绿','紫韵','日落橙','冰蓝','玫瑰红','薄荷绿','纯黑','浅色'],
-  keys: ['','warmgold','deepblue','emerald','purple','sunset','ice','rose','mint','dark','light'],
+  presets: [
+    { bg:'#0a0a1a', card:'#1a1a3e', a1:'#00e5ff', a2:'#ff00e5', name:'默认' },
+    { bg:'#1a1410', card:'#2a221a', a1:'#D4A853', a2:'#C8963E', name:'暖金' },
+    { bg:'#0a1628', card:'#162542', a1:'#06B6D4', a2:'#3B82F6', name:'深海蓝' },
+    { bg:'#0a1a15', card:'#152e26', a1:'#34D399', a2:'#10B981', name:'翡翠绿' },
+    { bg:'#120e1a', card:'#221a30', a1:'#C084FC', a2:'#8B5CF6', name:'紫韵' },
+    { bg:'#1a1008', card:'#2e1e12', a1:'#F97316', a2:'#F59E0B', name:'日落橙' },
+    { bg:'#0a1418', card:'#142428', a1:'#22D3EE', a2:'#06B6D4', name:'冰蓝' },
+    { bg:'#000000', card:'#111111', a1:'#9CA3AF', a2:'#6B7280', name:'纯黑' },
+    { bg:'#f0f0f4', card:'#ffffff', a1:'#6366F1', a2:'#4F46E5', name:'浅色' }
+  ],
   current: localStorage.getItem('bobi_theme') || '',
-  apply: function(key) {
-    var t = this.themes[key] || this.themes[''];
-    var css = ':root{--bg-primary:'+t.bg+'!important;--bg-secondary:'+t.b2+'!important;--bg-card:'+t.card+'!important;--bg-card-hover:'+t.card+'!important;--accent-cyan:'+t.a1+'!important;--accent-magenta:'+t.a2+'!important;--accent-purple:'+t.a3+'!important;--accent-green:'+t.a1+'!important;--accent-yellow:'+t.a2+'!important;}';
+  getC: function() { try { return JSON.parse(this.current); } catch(e) { return null; } },
+  apply: function(bg, card, a1, a2) {
+    var css = ':root{--bg-primary:'+bg+'!important;--bg-secondary:'+bg+'!important;--bg-card:'+card+'!important;--bg-card-hover:'+card+'!important;--accent-cyan:'+a1+'!important;--accent-magenta:'+a2+'!important;--accent-purple:'+a2+'!important;--accent-green:'+a1+'!important;--accent-yellow:'+a2+'!important;}';
     var el = document.getElementById('theme-style');
-    if (el) {
-      el.textContent = css;
-    } else {
-      el = document.createElement('style');
-      el.id = 'theme-style';
-      el.textContent = css;
-      document.head.appendChild(el);
-    }
-    localStorage.setItem('bobi_theme', key);
-    this.current = key;
+    if (el) el.textContent = css;
+    else { el = document.createElement('style'); el.id = 'theme-style'; el.textContent = css; document.head.appendChild(el); }
+    document.body.style.background = bg;
   },
-  next: function() {
-    var i = this.keys.indexOf(this.current);
-    i = (i + 1) % this.keys.length;
-    var key = this.keys[i];
-    this.apply(key);
-    var body = document.body;
-    body.style.transition = 'background 0.5s';
-    body.style.background = this.themes[key].bg;
-    setTimeout(function(){ body.style.transition = ''; }, 500);
+  open: function() {
+    document.getElementById('modal-color').classList.add('active');
+    var c = this.getC() || this.presets[0];
+    document.getElementById('c-bg').value = c.bg;
+    document.getElementById('c-card').value = c.card;
+    document.getElementById('c-a1').value = c.a1;
+    document.getElementById('c-a2').value = c.a2;
+    this._render();
+  },
+  close: function() { document.getElementById('modal-color').classList.remove('active'); },
+  save: function() {
+    var bg = document.getElementById('c-bg').value;
+    var card = document.getElementById('c-card').value;
+    var a1 = document.getElementById('c-a1').value;
+    var a2 = document.getElementById('c-a2').value;
+    var data = JSON.stringify({bg:bg, card:card, a1:a1, a2:a2});
+    localStorage.setItem('bobi_theme', data);
+    this.current = data;
+    this.apply(bg, card, a1, a2);
+    this.close();
+  },
+  _apply: function(bg, card, a1, a2) {
+    var data = JSON.stringify({bg:bg, card:card, a1:a1, a2:a2});
+    localStorage.setItem('bobi_theme', data);
+    this.current = data;
+    this.apply(bg, card, a1, a2);
+    this.close();
+  },
+  _render: function() {
+    var self = this, cur = this.getC();
+    var html = this.presets.map(function(p) {
+      var active = cur && cur.bg===p.bg && cur.a1===p.a1;
+      return '<button onclick="THEME._apply(\''+p.bg+'\',\''+p.card+'\',\''+p.a1+'\',\''+p.a2+'\')" style="width:32px;height:32px;border-radius:50%;border:2px solid '+(active?'#fff':'#444')+';background:linear-gradient(135deg,'+p.a1+','+p.a2+');cursor:pointer;" title="'+p.name+'"></button>';
+    }).join('');
+    document.getElementById('preset-btns').innerHTML = html;
   },
   init: function() {
-    this.apply(this.current);
+    var c = this.getC();
+    if (c) this.apply(c.bg, c.card, c.a1, c.a2);
   }
 };
 THEME.init();
