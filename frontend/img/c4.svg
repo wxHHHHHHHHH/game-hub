@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs><linearGradient id="g4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14B8A6"/><stop offset="1" stop-color="#0D9488"/></linearGradient></defs>
+  <!-- 云朵笑脸 -->
+  <path d="M50 120 Q50 80 85 75 Q100 45 130 50 Q155 35 175 60 Q210 55 200 100 Q220 120 200 135 Q195 155 170 150 L70 150 Q40 150 50 120Z" fill="url(#g4)" opacity=".12" stroke="url(#g4)" stroke-width="2.5"/>
+  <circle cx="100" cy="100" r="6" fill="url(#g4)"/>
+  <circle cx="145" cy="95" r="6" fill="url(#g4)"/>
+  <path d="M100 120 Q122 135 145 120" fill="none" stroke="url(#g4)" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="120" y="200" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="800" fill="#14B8A6" letter-spacing="3">波比</text>
+</svg>

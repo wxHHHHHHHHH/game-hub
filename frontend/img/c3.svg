@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <!-- 像素风方块脸 -->
+  <rect x="65" y="55" width="110" height="110" rx="18" fill="#1E293B"/>
+  <rect x="75" y="68" width="90" height="25" rx="6" fill="#38BDF8" opacity=".7"/>
+  <rect x="75" y="105" width="90" height="12" rx="4" fill="#38BDF8" opacity=".4"/>
+  <rect x="85" y="140" width="70" height="8" rx="3" fill="#38BDF8" opacity=".3"/>
+  <!-- 眼睛两点 -->
+  <circle cx="95" cy="85" r="6" fill="#38BDF8"/>
+  <circle cx="145" cy="85" r="6" fill="#38BDF8"/>
+  <text x="120" y="215" text-anchor="middle" font-family="monospace" font-size="14" font-weight="700" fill="#38BDF8" letter-spacing="2">波比.BOBI</text>
+</svg>
