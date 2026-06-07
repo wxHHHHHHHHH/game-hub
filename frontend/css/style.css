@@ -934,3 +934,76 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     .hero p { font-size: 1rem; }
     .carousel { height: 180px; }
 }
+
+/* ============ FULL SITE IMPECCABLE REDESIGN ============ */
+
+/* --- Typography scale --- */
+h1 { font-size: clamp(1.75rem, 4vw, 3rem); letter-spacing: -0.02em; font-weight: 800; }
+h2 { font-size: clamp(1.25rem, 3vw, 1.75rem); font-weight: 700; }
+h3 { font-size: 1.125rem; font-weight: 600; }
+p { line-height: 1.7; max-width: 65ch; }
+
+/* --- All buttons --- */
+.btn, .btn-login, .btn-submit, .btn-primary, .btn-cancel, #btn-add-video,
+.btn-download, .btn-view, .btn-upload-photo, .btn-sm {
+    border-radius: 10px; font-weight: 600;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, opacity 0.2s ease-out;
+}
+.btn:hover, .btn-login:hover, .btn-submit:hover, .btn-primary:hover,
+.btn-download:hover { transform: translateY(-2px); }
+
+/* --- All cards: single layer only --- */
+.video-info, .comments-section, .contact-card, .news-card, .stat-card,
+.intro-section, .dash-panel, .timeline-item, .news-detail-wrap,
+.gallery-upload-bar, .file-upload-area {
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 14px;
+    box-shadow: none;
+}
+.video-detail-wrap { border-radius: 14px; overflow: hidden; }
+
+/* --- Forms & inputs --- */
+input, textarea, select {
+    border-radius: 10px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+input:focus, textarea:focus, select:focus {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px rgba(0,229,255,0.1);
+}
+
+/* --- News grid → horizontal band --- */
+.news-grid { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; }
+.news-grid::-webkit-scrollbar { height: 5px; }
+.news-grid::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
+.news-card { flex: 0 0 340px; scroll-snap-align: start; }
+.news-card:hover { transform: translateY(-3px); border-color: var(--accent-cyan); }
+
+/* --- Contact cards --- */
+.contact-card { text-align: left; display: flex; align-items: flex-start; gap: 16px; padding: 24px; }
+.contact-icon { font-size: 32px; margin-bottom: 0; flex-shrink: 0; }
+.contact-card h3 { margin-bottom: 4px; }
+
+/* --- Gallery timeline --- */
+.timeline-row { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.timeline-item { border-radius: 14px; }
+.timeline-item:hover { transform: scale(1.02); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+
+/* --- Modals --- */
+.modal { border-radius: 16px; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.06); }
+.modal-header { padding: 20px 28px; }
+.modal-body { padding: 20px 28px 28px; }
+
+/* --- Dashboard --- */
+.stats-grid { gap: 16px; }
+.stat-card { padding: 28px; }
+.stat-card .stat-num { font-size: 2.5rem; }
+.dash-tab { border-radius: 10px; }
+
+/* --- Mobile --- */
+@media (max-width: 560px) {
+    .news-card { flex: 0 0 280px; }
+    .contact-card { flex-direction: column; align-items: center; text-align: center; }
+    .timeline-row { grid-template-columns: repeat(2, 1fr); }
+}
