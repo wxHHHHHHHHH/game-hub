@@ -500,7 +500,8 @@ window.THEME = {
     { bg:'#1a1008', card:'#2e1e12', a1:'#F97316', a2:'#F59E0B', name:'日落橙' },
     { bg:'#0a1418', card:'#142428', a1:'#22D3EE', a2:'#06B6D4', name:'冰蓝' },
     { bg:'#000000', card:'#111111', a1:'#9CA3AF', a2:'#6B7280', name:'纯黑' },
-    { bg:'#f0f0f4', card:'#ffffff', a1:'#6366F1', a2:'#4F46E5', name:'浅色' }
+    { bg:'#f0f0f4', card:'#ffffff', a1:'#6366F1', a2:'#4F46E5', name:'浅色' },
+    { bg:'#181614', card:'#262320', a1:'#C97D45', a2:'#B86E3A', name:'灰烬行者' }
   ],
   current: localStorage.getItem('bobi_theme') || '',
   getC: function() { try { return JSON.parse(this.current); } catch(e) { return null; } },
@@ -549,7 +550,8 @@ window.THEME = {
   },
   init: function() {
     var c = this.getC();
-    if (c) this.apply(c.bg, c.card, c.a1, c.a2);
+    if (c) { this.apply(c.bg, c.card, c.a1, c.a2); }
+    else { this.apply('#181614', '#262320', '#C97D45', '#B86E3A'); }
   }
 };
 THEME.init();
