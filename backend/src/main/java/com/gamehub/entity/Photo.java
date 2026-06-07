@@ -22,6 +22,9 @@ public class Photo {
     @Column(length = 100)
     private String album = "默认相册";
 
+    @Column(length = 100)
+    private String uploaderName;
+
     private int sortOrder = 0;
 
     private LocalDateTime photoDate;
@@ -41,6 +44,8 @@ public class Photo {
     public void setCaption(String caption) { this.caption = caption; }
     public String getAlbum() { return album; }
     public void setAlbum(String album) { this.album = album; }
+    public String getUploaderName() { return uploaderName; }
+    public void setUploaderName(String uploaderName) { this.uploaderName = uploaderName; }
     public int getSortOrder() { return sortOrder; }
     public void setSortOrder(int sortOrder) { this.sortOrder = sortOrder; }
     public LocalDateTime getPhotoDate() { return photoDate; }

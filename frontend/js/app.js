@@ -589,7 +589,10 @@
                     const idx = galleryPhotos.indexOf(p);
                     return '<div class="timeline-item" data-idx="' + idx + '">' +
                         '<img src="' + esc(thumb) + '" alt="' + esc(p.caption || '') + '" loading="lazy" onerror="this.src=\'' + CONFIG.PLACEHOLDER_THUMB + '\'">' +
-                        (p.caption ? '<div class="gal-caption">' + esc(p.caption) + '</div>' : '') +
+                        '<div class="gal-caption" style="' + (p.caption || p.uploaderName ? '' : 'opacity:0;') + '">' +
+                            (p.caption ? esc(p.caption) : '') +
+                            (p.uploaderName ? '<small style="display:block;opacity:0.7;">📷 ' + esc(p.uploaderName) + '</small>' : '') +
+                        '</div>' +
                         (isAdmin ? '<button class="gal-del" onclick="event.stopPropagation();GALLERY_ACTIONS.deletePhoto(' + p.id + ')">🗑</button>' : '') +
                     '</div>';
                 }).join('') + '</div>';
@@ -619,7 +622,7 @@
         if (!p) return;
         // Show thumbnail first (fast), then load original
         $('#lightbox-img').src = p.thumbnailUrl || p.imageUrl;
-        $('#lightbox-caption').textContent = (p.caption || '') + (p.album ? ' · ' + p.album : '');
+        $('#lightbox-caption').textContent = (p.caption || '') + (p.album ? ' · ' + p.album : '') + (p.uploaderName ? ' · 📷 ' + p.uploaderName : '');
         // Original view button
         const origUrl = p.imageUrl;
         const bar = document.querySelector('.lightbox-bar');
@@ -644,8 +647,9 @@
             if (!files || !files.length) return;
             const date = dateEl ? dateEl.value : '';
             showToast('上传中，正在压缩处理...');
+            var uploader = AUTH.getUser() ? AUTH.getUser().displayName : '';
             for (let f of files) {
-                try { await API.uploadPhoto(f, '', '默认相册', date); } catch(e) { showToast('上传失败: '+e.message,'error'); }
+                try { await API.uploadPhoto(f, '', '默认相册', date, uploader); } catch(e) { showToast('上传失败: '+e.message,'error'); }
             }
             showToast('✅ 上传完成！');
             await renderGallery();
