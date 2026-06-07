@@ -1810,6 +1810,10 @@
             }
         });
 
+        // Theme switch
+        var ts = $('#theme-switch');
+        if (ts) ts.addEventListener('click', cycleTheme);
+
         // Search
         initSearch();
 
@@ -1841,6 +1845,30 @@
         navLinks.querySelectorAll('.nav-link').forEach(function(l) {
             l.addEventListener('click', function() { navLinks.classList.remove('open'); });
         });
+    }
+
+    // Theme switcher
+    var themes = ['', 'warmgold', 'deepblue', 'emerald', 'purple', 'sunset', 'ice'];
+    var themeNames = ['默认霓虹', '暖金', '深海蓝', '翡翠绿', '紫韵', '日落橙', '冰蓝'];
+    var currentTheme = localStorage.getItem('bobi_theme') || '';
+
+    function applyTheme(name) {
+        document.body.className = document.body.className.replace(/theme-\w+/g, '').trim();
+        if (name) document.body.classList.add('theme-' + name);
+        localStorage.setItem('bobi_theme', name);
+        currentTheme = name;
+    }
+
+    function cycleTheme() {
+        var idx = themes.indexOf(currentTheme);
+        idx = (idx + 1) % themes.length;
+        applyTheme(themes[idx]);
+        showToast('配色: ' + themeNames[idx]);
+    }
+
+    // Apply stored theme on load
+    if (currentTheme) {
+        document.body.classList.add('theme-' + currentTheme);
     }
 
     // Apply chosen logo from localStorage

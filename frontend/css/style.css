@@ -24,6 +24,14 @@
     --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
 }
 
+/* ============ COLOR THEMES ============ */
+body.theme-warmgold { --accent-cyan:#D4A853; --accent-magenta:#C8963E; --accent-purple:#B8860B; --accent-green:#D4A853; --accent-yellow:#D4A853; }
+body.theme-deepblue { --accent-cyan:#06B6D4; --accent-magenta:#3B82F6; --accent-purple:#2563EB; --accent-green:#06B6D4; --accent-yellow:#3B82F6; }
+body.theme-emerald { --accent-cyan:#34D399; --accent-magenta:#10B981; --accent-purple:#059669; --accent-green:#34D399; --accent-yellow:#10B981; }
+body.theme-purple  { --accent-cyan:#C084FC; --accent-magenta:#8B5CF6; --accent-purple:#7C3AED; --accent-green:#C084FC; --accent-yellow:#8B5CF6; }
+body.theme-sunset  { --accent-cyan:#F97316; --accent-magenta:#F59E0B; --accent-purple:#EA580C; --accent-green:#F59E0B; --accent-yellow:#F59E0B; }
+body.theme-ice     { --accent-cyan:#22D3EE; --accent-magenta:#06B6D4; --accent-purple:#0891B2; --accent-green:#22D3EE; --accent-yellow:#06B6D4; }
+
 html { font-size:16px; scroll-behavior:smooth; }
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
