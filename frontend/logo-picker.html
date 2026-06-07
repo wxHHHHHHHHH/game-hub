@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>波比集团 LOGO 选择器</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0f172a; color:#e2e8f0; font-family:sans-serif; min-height:100vh; padding:40px 20px; }
+  h1 { text-align:center; font-size:28px; margin-bottom:8px; }
+  .sub { text-align:center; color:#64748b; margin-bottom:32px; font-size:14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:20px; max-width:1000px; margin:0 auto; }
+  .card { background:#1e293b; border:2px solid #334155; border-radius:16px; padding:24px; cursor:pointer; transition:all .25s; text-align:center; }
+  .card:hover { border-color:#6366f1; transform:translateY(-4px); box-shadow:0 8px 30px rgba(99,102,241,.2); }
+  .card.selected { border-color:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,.3); }
+  .card img { width:120px; height:120px; object-fit:contain; margin-bottom:12px; }
+  .card h3 { font-size:14px; color:#94a3b8; }
+  .card .badge { display:inline-block; padding:2px 10px; border-radius:10px; font-size:11px; font-weight:700; margin-top:8px; }
+  .badge.selected { background:#22c55e; color:#000; }
+  .badge.default { background:#6366f1; color:#fff; }
+  .actions { text-align:center; margin-top:32px; }
+  .btn { padding:12px 32px; border:none; border-radius:10px; font-size:16px; font-weight:700; cursor:pointer; margin:0 8px; transition:all .2s; }
+  .btn-apply { background:#6366f1; color:#fff; }
+  .btn-apply:hover { background:#4f46e5; }
+  .btn-reset { background:#334155; color:#fff; }
+  .btn-reset:hover { background:#475569; }
+  .tip { text-align:center; color:#64748b; font-size:13px; margin-top:16px; }
+</style>
+</head>
+<body>
+<h1>🎨 选择 LOGO</h1>
+<p class="sub">点击卡片预览，选择后点击"应用"生效 | 共 8 款简约设计</p>
+
+<div class="grid" id="grid"></div>
+
+<div class="actions">
+  <button class="btn btn-apply" onclick="applyLogo()">✅ 应用选中 LOGO</button>
+  <button class="btn btn-reset" onclick="resetLogo()">🔄 恢复默认</button>
+</div>
+<p class="tip">选择后会保存到本地存储，下次打开自动生效</p>
+
+<script>
+var logos = [
+  { id:'logo1.svg', name:'靛蓝·方框', desc:'方正稳重 / 紫色渐变' },
+  { id:'logo2.svg', name:'天蓝·虚线环', desc:'活泼现代 / 蓝色渐变' },
+  { id:'logo3.svg', name:'深蓝·几何', desc:'科技感 / 深色背景' },
+  { id:'logo4.svg', name:'翠绿·折线', desc:'增长曲线 / 绿色渐变' },
+  { id:'logo5.svg', name:'靛蓝·柱状', desc:'数据图表 / 多层叠加' },
+  { id:'logo6.svg', name:'紫罗兰·圆环', desc:'极简优雅 / 紫色渐变' },
+  { id:'logo7.svg', name:'深色·蓝点', desc:'高端商务 / 藏蓝底' },
+  { id:'logo8.svg', name:'青绿·水滴', desc:'清新自然 / 蓝绿渐变' },
+];
+
+var selected = localStorage.getItem('bobi_logo') || 'logo.svg';
+var grid = document.getElementById('grid');
+
+logos.forEach(function(l) {
+  var card = document.createElement('div');
+  card.className = 'card' + (selected === l.id ? ' selected' : '');
+  card.onclick = function() {
+    document.querySelectorAll('.card').forEach(function(c) { c.classList.remove('selected'); });
+    card.classList.add('selected');
+    selected = l.id;
+  };
+  card.innerHTML = '<img src="img/' + l.id + '" alt="' + l.name + '">' +
+    '<h3>' + l.name + '</h3>' +
+    '<p style="font-size:12px;color:#64748b;margin-top:4px;">' + l.desc + '</p>' +
+    '<span class="badge ' + (selected === l.id ? 'selected' : 'default') + '">' + (selected === l.id ? '已选中' : '点击选择') + '</span>';
+  grid.appendChild(card);
+});
+
+function applyLogo() {
+  localStorage.setItem('bobi_logo', selected);
+  alert('LOGO 已应用！\n请返回主站刷新页面查看效果。');
+  window.close();
+}
+
+function resetLogo() {
+  localStorage.setItem('bobi_logo', 'logo.svg');
+  selected = 'logo.svg';
+  document.querySelectorAll('.card').forEach(function(c) {
+    c.classList.remove('selected');
+    if (c.querySelector('img').src.includes('logo.svg')) c.classList.add('selected');
+  });
+  alert('已恢复默认 LOGO');
+}
+</script>
+</body>
+</html>

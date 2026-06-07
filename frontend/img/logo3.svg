@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <rect x="45" y="45" width="150" height="150" rx="20" fill="#1E293B"/>
+  <circle cx="120" cy="95" r="30" fill="none" stroke="#38BDF8" stroke-width="4"/>
+  <rect x="105" y="65" width="30" height="40" rx="6" fill="#38BDF8"/>
+  <text x="120" y="155" text-anchor="middle" font-family="sans-serif" font-size="36" font-weight="900" fill="#F1F5F9">波比</text>
+</svg>
