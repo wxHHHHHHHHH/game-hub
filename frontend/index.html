@@ -55,9 +55,9 @@
         <button class="nav-toggle" id="nav-toggle">☰</button>
         <nav class="nav-links" id="nav-links">
             <a href="#" class="nav-link active" data-view="list">首页</a>
-            <a href="#" class="nav-link" data-view="news">新闻资讯</a>
-            <a href="#" class="nav-link" data-view="intro">集团简介</a>
-            <a href="#" class="nav-link" data-view="contact">联系我们</a>
+            <a href="#" class="nav-link" data-view="news">新闻</a>
+            <a href="#" class="nav-link" data-view="intro">简介</a>
+            <a href="#" class="nav-link" data-view="contact">联系</a>
             <a href="#" class="nav-link nav-gallery" data-view="gallery">📷 活动相册</a>
             <button class="nav-link" id="btn-add-video">+ 发布视频</button>
             <button class="nav-link nav-admin" id="btn-dashboard" style="display:none;">📊 管理后台</button>
@@ -134,7 +134,7 @@
     <div class="intro-page">
         <!-- 集团简介 -->
         <div class="intro-section">
-            <h2>🏛️ 波比简介</h2>
+            <h2>🏛️ 简介</h2>
             <div class="intro-content">
                 <p>波比是一家综合性企业集团，致力于多领域的业务发展。集团秉承"创新、协作、共赢"的核心价值观，在行业内树立了良好的企业形象。</p>
                 <p>集团汇聚了一批优秀的专业人才，建立了完善的内部管理体系，形成了独特的企业文化。我们注重团队建设，定期组织各类活动，增强团队凝聚力。</p>
@@ -290,6 +290,11 @@
             <div class="form-group">
                 <label>摘要</label>
                 <textarea id="news-summary" rows="2" placeholder="简短摘要（列表页显示）"></textarea>
+            </div>
+            <div class="form-group">
+                <label style="display:flex;align-items:center;gap:8px;">
+                    <input type="checkbox" id="news-important" style="width:auto;"> 标记为重要（轮播展示）
+                </label>
             </div>
             <div class="form-group">
                 <label>正文内容 *</label>

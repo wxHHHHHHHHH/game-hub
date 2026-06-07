@@ -23,6 +23,7 @@ public class News {
     private String category = "集团动态";
 
     private boolean pinned = false;
+    private boolean important = false;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -41,6 +42,8 @@ public class News {
     public void setCategory(String category) { this.category = category; }
     public boolean isPinned() { return pinned; }
     public void setPinned(boolean pinned) { this.pinned = pinned; }
+    public boolean isImportant() { return important; }
+    public void setImportant(boolean important) { this.important = important; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

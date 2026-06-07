@@ -41,6 +41,7 @@ public class NewsController {
         news.setContent(body.getContent());
         news.setCategory(body.getCategory());
         news.setPinned(body.isPinned());
+        news.setImportant(body.isImportant());
         return ResponseEntity.ok(newsRepo.save(news));
     }
 

@@ -357,8 +357,7 @@
     async function handleFileUpload() {
         const labelEl = $('#file-label');
         const fileInput = $('#file-upload-input');
-        const label = labelEl.value.trim();
-        if (!label) { showToast('请先输入文件名称', 'error'); labelEl.focus(); return; }
+        var label = labelEl.value.trim();
 
         fileInput.click();
         fileInput.onchange = async function() {
@@ -367,6 +366,8 @@
             if (file.size > 100 * 1024 * 1024) {
                 showToast('文件过大，最大支持 100MB', 'error'); return;
             }
+            // Auto-use original filename if label is empty
+            if (!label) label = file.name;
 
             $('#file-progress').style.display = 'block';
             try {
@@ -387,6 +388,10 @@
     }
 
     // Exposed globally for inline onclick
+    window.APP_VIEW = {
+        openVideo: function(id) { openVideoDetail(id); },
+        openNews: function(id) { openNewsDetail(id); }
+    };
     window.APP_ACTIONS = {
         viewFile: function(fileId) {
             window.open(CONFIG.API_BASE + '/files/' + fileId + '/view', '_blank');
@@ -410,33 +415,52 @@
 
     async function initCarousel() {
         try {
-            const banners = await API.getBanners();
-            carouselSlides = banners && banners.length > 0 ? banners : [
-                { title:'波比', imageUrl:'', linkUrl:'', sub:'诚信 · 创新 · 共赢' },
-                { title:'集团成立10周年', imageUrl:'', linkUrl:'', sub:'十年砥砺前行，再创辉煌' },
-                { title:'2026年度工作会议', imageUrl:'', linkUrl:'', sub:'凝心聚力，共谋发展' }
-            ];
+            var banners = await API.getBanners();
+            var slides = [];
+            if (banners && banners.length > 0) {
+                banners.forEach(function(b) { slides.push({title:b.title, imageUrl:b.imageUrl, linkUrl:b.linkUrl, sub:''}); });
+            } else {
+                slides.push({title:'波比', imageUrl:'', linkUrl:'', sub:'诚信 · 创新 · 共赢'});
+            }
+            // Slide 2: top liked video
+            try {
+                var hotV = await API.getVideos('hot');
+                if (hotV && hotV.length > 0) {
+                    var top = hotV[0];
+                    slides.push({title:'🔥 '+top.title, imageUrl:top.thumbnailUrl||'', linkUrl:'', sub:'最多点赞 · '+(top.likes||0)+' ❤', videoId:top.id});
+                }
+            } catch(e) {}
+            // Slide 3+: pinned important news
+            try {
+                var allNews = await API.getNewsList();
+                if (allNews) {
+                    allNews.filter(function(n){return n.important;}).forEach(function(n){
+                        slides.push({title:'📌 '+n.title, imageUrl:'', linkUrl:'', sub:n.category||'重要通知', newsId:n.id, isNews:true});
+                    });
+                }
+            } catch(e) {}
+            carouselSlides = slides.length > 0 ? slides : [{title:'波比', imageUrl:'', linkUrl:'', sub:'诚信 · 创新 · 共赢'}];
         } catch(e) {
-            carouselSlides = [
-                { title:'波比', imageUrl:'', linkUrl:'', sub:'诚信 · 创新 · 共赢' },
-                { title:'集团成立10周年', imageUrl:'', linkUrl:'', sub:'十年砥砺前行，再创辉煌' },
-                { title:'2026年度工作会议', imageUrl:'', linkUrl:'', sub:'凝心聚力，共谋发展' }
-            ];
+            carouselSlides = [{title:'波比', imageUrl:'', linkUrl:'', sub:'诚信 · 创新 · 共赢'}];
         }
 
         const track = $('#carousel-track');
         const dots = $('#carousel-dots');
         if (!track) return;
 
-        const colors = ['linear-gradient(135deg,#C8102E,#1a1a3e)','linear-gradient(135deg,#1a3a5c,#0a1a2e)','linear-gradient(135deg,#5c1a3a,#1a1a3e)'];
+        const cols = ['linear-gradient(135deg,#63666A,#1a1a2e)','linear-gradient(135deg,#C8963E,#1a1a2e)','linear-gradient(135deg,#8E9196,#0a1a2e)','linear-gradient(135deg,#4a4a5e,#1a1a2e)','linear-gradient(135deg,#2a3a4e,#0a1a2e)'];
         track.innerHTML = carouselSlides.map(function(s, i) {
             const bg = s.imageUrl
                 ? '<img src="' + esc(s.imageUrl) + '" alt="">'
-                : '<div style="position:absolute;inset:0;background:' + (colors[i] || colors[0]) + ';"></div>';
-            return '<div class="carousel-slide"' + (s.linkUrl ? ' onclick="window.open(\'' + esc(s.linkUrl) + '\',\'_blank\')" style="cursor:pointer;"' : '') + '>' +
+                : '<div style="position:absolute;inset:0;background:' + (cols[i % cols.length]) + ';"></div>';
+            var onclick = '';
+            if (s.videoId) onclick = ' onclick="event.stopPropagation();window.APP_VIEW.openVideo(' + s.videoId + ')" style="cursor:pointer;"';
+            else if (s.newsId) onclick = ' onclick="event.stopPropagation();window.APP_VIEW.openNews(' + s.newsId + ')" style="cursor:pointer;"';
+            else if (s.linkUrl) onclick = ' onclick="window.open(\'' + esc(s.linkUrl) + '\',\'_blank\')" style="cursor:pointer;"';
+            return '<div class="carousel-slide"' + onclick + '>' +
                 '<div class="carousel-bg" style="position:relative;">' + bg +
                 '<h2 style="position:relative;z-index:1;">' + esc(s.title) + '</h2>' +
-                '<p style="position:relative;z-index:1;">' + esc(s.sub || s.imageUrl ? '' : '') + '</p>' +
+                '<p style="position:relative;z-index:1;">' + esc(s.sub || '') + '</p>' +
                 '</div></div>';
         }).join('');
 
@@ -537,7 +561,8 @@
             title: title,
             summary: $('#news-summary').value.trim(),
             content: content,
-            category: $('#news-category').value.trim() || '集团动态'
+            category: $('#news-category').value.trim() || '集团动态',
+            important: $('#news-important').checked || false
         };
 
         try { await API.createNews(data); } catch(err) { showToast('发布失败: ' + err.message, 'error'); return; }
