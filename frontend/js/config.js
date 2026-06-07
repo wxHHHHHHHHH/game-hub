@@ -1,7 +1,7 @@
 /* ============================================
    GameHub — Environment Configuration
    ============================================
-   LOCAL:   Open index.html directly, API at localhost:8080
+   LOCAL:   Open index.html directly, API at localhost:27890
    PROD:    Serve via nginx, API at same domain or custom URL
    ============================================ */
 
@@ -13,10 +13,10 @@ const CONFIG = (function() {
 
     return {
         // API base URL — change for production
-        // Local:  Spring Boot default at localhost:8080
+        // Local:  Spring Boot default at localhost:27890
         // Prod:   Same domain with nginx proxy, or full URL
         API_BASE: isLocal
-            ? 'http://localhost:8080/api'
+            ? 'http://localhost:27890/api'
             : '/api',
 
         // App info

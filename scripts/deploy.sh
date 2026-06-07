@@ -98,7 +98,7 @@ sudo rm -rf "$DEPLOY_DIR/frontend" 2>/dev/null || true
 sudo cp -r "$FRONTEND_DIR" "$DEPLOY_DIR/frontend"
 
 # Update frontend config for production
-sudo sed -i "s|http://localhost:8080/api|/api|g" "$DEPLOY_DIR/frontend/js/config.js" 2>/dev/null || true
+sudo sed -i "s|http://localhost:27890/api|/api|g" "$DEPLOY_DIR/frontend/js/config.js" 2>/dev/null || true
 sudo sed -i "s|http://localhost:8081/api|/api|g" "$DEPLOY_DIR/frontend/js/config.js" 2>/dev/null || true
 
 log "文件部署完成"
@@ -134,12 +134,12 @@ if [ ! -f "$ENV_FILE" ]; then
     sudo mkdir -p /etc/gamehub
     sudo tee "$ENV_FILE" > /dev/null <<EOF
 DB_HOST=127.0.0.1
-DB_PORT=3306
+DB_PORT=35087
 DB_NAME=gamehub
 DB_USERNAME=root
 DB_PASSWORD=Root@123456
 JWT_SECRET=$JWT_SECRET
-SERVER_PORT=8080
+SERVER_PORT=27890
 UPLOAD_DIR=$UPLOAD_DIR
 EOF
     sudo chmod 600 "$ENV_FILE"
@@ -218,7 +218,7 @@ server {
     }
 
     location /api/ {
-        proxy_pass http://127.0.0.1:8080;
+        proxy_pass http://127.0.0.1:27890;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -247,7 +247,7 @@ NGINX
     sudo nginx -t 2>/dev/null && sudo systemctl reload nginx 2>/dev/null && log "Nginx 配置完成" || warn "Nginx 配置有误，请手动检查"
 else
     info "Nginx 未安装，跳过反向代理配置"
-    info "后端直接运行在 http://$(hostname -I 2>/dev/null | awk '{print $1}' || echo 'localhost'):8080"
+    info "后端直接运行在 http://$(hostname -I 2>/dev/null | awk '{print $1}' || echo 'localhost'):27890"
 fi
 
 # ============================================================
@@ -262,7 +262,7 @@ echo "访问地址:"
 if command -v nginx &>/dev/null; then
     echo "  http://$(hostname -I 2>/dev/null | awk '{print $1}' || echo 'your-server')"
 else
-    echo "  http://$(hostname -I 2>/dev/null | awk '{print $1}' || echo 'localhost'):8080"
+    echo "  http://$(hostname -I 2>/dev/null | awk '{print $1}' || echo 'localhost'):27890"
 fi
 echo ""
 echo "演示账号:"

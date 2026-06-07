@@ -121,8 +121,8 @@ if [ "$STEP" = "all" ] || [ "$STEP" = "frontend" ]; then
     sudo cp -r "$REPO_DIR/frontend" "$DEPLOY_DIR/frontend"
 
     # 修正生产环境 API 地址
-    sudo sed -i "s|http://localhost:8080/api|/api|g" "$DEPLOY_DIR/frontend/js/config.js"
-    sudo sed -i "s|http://localhost:8081/api|/api|g" "$DEPLOY_DIR/frontend/js/config.js"
+    sudo sed -i "s|http://localhost:27890/api|/api|g" "$DEPLOY_DIR/frontend/js/config.js"
+    sudo sed -i "s|http://localhost:27890/api|/api|g" "$DEPLOY_DIR/frontend/js/config.js"
     log "前端已部署（API 已指向 /api）"
 fi
 
@@ -158,9 +158,9 @@ if [ "$STEP" = "all" ] || [ "$STEP" = "backend" ]; then
     sleep 8
 
     # 验证
-    if curl -s -o /dev/null http://127.0.0.1:8080/api/videos; then
+    if curl -s -o /dev/null http://127.0.0.1:27890/api/videos; then
         log "后端启动成功"
-        curl -s http://127.0.0.1:8080/api/videos | head -c 80 && echo ""
+        curl -s http://127.0.0.1:27890/api/videos | head -c 80 && echo ""
     else
         warn "后端启动可能异常"
         echo "查看日志: tail -30 $LOG_DIR/app.log"
