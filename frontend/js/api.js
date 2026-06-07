@@ -95,15 +95,13 @@ const API = (function() {
         },
 
         likeVideo: function(id) {
-            return request('/videos/' + id + '/like', {
-                method: 'POST'
-            });
+            return request('/videos/' + id + '/like', { method: 'POST' });
         },
-
         unlikeVideo: function(id) {
-            return request('/videos/' + id + '/unlike', {
-                method: 'POST'
-            });
+            return request('/videos/' + id + '/unlike', { method: 'POST' });
+        },
+        checkLiked: function(id) {
+            return request('/videos/' + id + '/liked');
         },
 
         // Upload

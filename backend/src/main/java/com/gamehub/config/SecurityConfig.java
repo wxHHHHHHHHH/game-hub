@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/photos/*").hasRole("ADMIN")
                 .requestMatchers("/api/contact").hasRole("ADMIN")
                 // Authenticated users can like/unlike
+                .requestMatchers(HttpMethod.GET, "/api/videos/*/liked").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/videos/*/like", "/api/videos/*/unlike").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/videos/hot-plays").permitAll()
                 // Admin only

@@ -16,7 +16,7 @@
     let currentSort = 'latest';
     let currentSource = 'all';
     let dpInstance = null;
-    let likedVideos = {};  // Track liked state per video
+    // Like state now managed by server (user_likes table)
 
     // Demo fallback data
     const DEMO_VIDEOS = [
@@ -785,9 +785,6 @@
 
         updateStats(videos.length, demoComments.length);
 
-        // Load liked state from localStorage
-        loadLikedState();
-
         grid.innerHTML = videos.map(function(v) {
             const gameTag = v.game ? '<span class="card-game">' + esc(v.game) + '</span>' : '';
             const isNew = v.createdAt && (new Date() - new Date(v.createdAt)) < 86400000 * 7;
@@ -815,19 +812,6 @@
                 openVideoDetail(parseInt(card.dataset.id));
             });
         });
-    }
-
-    function loadLikedState() {
-        try {
-            const stored = localStorage.getItem('gamehub_likes');
-            if (stored) likedVideos = JSON.parse(stored);
-        } catch(e) {
-            likedVideos = {};
-        }
-    }
-
-    function saveLikedState() {
-        localStorage.setItem('gamehub_likes', JSON.stringify(likedVideos));
     }
 
     function updateStats(vCount, cCount) {
@@ -909,47 +893,23 @@
 
     // ============ LIKE ============
     async function handleLike(videoId) {
-        loadLikedState();
-        const isLiked = likedVideos[videoId];
         const btn = $('#btn-like');
         const countEl = $('#like-count');
+        const isLiked = btn ? btn.classList.contains('liked') : false;
 
         if (isLiked) {
             try {
                 const res = await API.unlikeVideo(videoId);
-                likedVideos[videoId] = false;
                 if (countEl) countEl.textContent = res.likes;
-                if (btn) btn.classList.remove('liked');
-                if (btn) btn.innerHTML = '❤ 点赞 <span class="like-count" id="like-count">' + res.likes + '</span>';
-            } catch(e) {
-                // Demo fallback
-                if (CONFIG.IS_LOCAL) {
-                    const video = findDemoVideo(videoId);
-                    if (video) { video.likes = Math.max(0, (video.likes || 0) - 1); }
-                    likedVideos[videoId] = false;
-                    if (countEl) countEl.textContent = video.likes;
-                    if (btn) { btn.classList.remove('liked'); btn.innerHTML = '❤ 点赞 <span class="like-count" id="like-count">' + video.likes + '</span>'; }
-                }
-            }
+                if (btn) { btn.classList.remove('liked'); btn.innerHTML = '❤ 点赞 <span class="like-count" id="like-count">' + res.likes + '</span>'; }
+            } catch(e) { showToast('取消点赞失败: ' + e.message, 'error'); }
         } else {
             try {
                 const res = await API.likeVideo(videoId);
-                likedVideos[videoId] = true;
                 if (countEl) countEl.textContent = res.likes;
-                if (btn) btn.classList.add('liked');
-                if (btn) btn.innerHTML = '❤ 已赞 <span class="like-count" id="like-count">' + res.likes + '</span>';
-            } catch(e) {
-                // Demo fallback
-                if (CONFIG.IS_LOCAL) {
-                    const video = findDemoVideo(videoId);
-                    if (video) { video.likes = (video.likes || 0) + 1; }
-                    likedVideos[videoId] = true;
-                    if (countEl) countEl.textContent = video.likes;
-                    if (btn) { btn.classList.add('liked'); btn.innerHTML = '❤ 已赞 <span class="like-count" id="like-count">' + video.likes + '</span>'; }
-                }
-            }
+                if (btn) { btn.classList.add('liked'); btn.innerHTML = '❤ 已赞 <span class="like-count" id="like-count">' + res.likes + '</span>'; }
+            } catch(e) { showToast('点赞失败: ' + e.message, 'error'); }
         }
-        saveLikedState();
     }
 
     function findDemoVideo(id) {
@@ -996,8 +956,10 @@
         const user = AUTH.getUser();
         const authorValue = user ? user.displayName : '';
 
-        loadLikedState();
-        const isLiked = likedVideos[videoId];
+        // Check if user already liked from server
+        var liked = false;
+        try { var r = await API.checkLiked(videoId); liked = r.liked; } catch(e) {}
+        const isLiked = liked;
         const likes = video.likes || 0;
         const likeBtnClass = isLiked ? 'btn-like liked' : 'btn-like';
 
