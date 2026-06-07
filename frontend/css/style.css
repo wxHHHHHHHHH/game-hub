@@ -58,10 +58,10 @@ body {
 .login-brand { text-align: center; margin-bottom: 36px; }
 .login-logo { font-size: 56px; display: block; margin-bottom: 12px; animation: bounce 2s ease infinite; }
 .login-logo-img { width: 140px; height: 140px; display: block; margin: 0 auto 16px; animation: bounce 2s ease infinite; filter: drop-shadow(0 0 12px var(--accent-cyan)); }
-.logo-img { width: 52px; height: 52px; object-fit: contain; filter: drop-shadow(0 0 8px var(--accent-cyan)); }
-.logo-col { display:inline-flex; flex-direction:column; align-items:center; gap:2px; }
-.logo-text-vertical { display:inline-flex; flex-direction:column; line-height:1; }
-.logo-text-vertical i { font-style:normal; font-size:13px; font-weight:900; color:var(--accent-cyan); font-family:'STKaiti','KaiTi','楷体',serif; text-shadow:0 0 8px var(--accent-cyan); }
+.logo-img { width: 68px; height: 68px; object-fit: contain; filter: drop-shadow(0 0 8px var(--accent-cyan)); }
+.logo-col { display:inline-flex; flex-direction:column; align-items:center; gap:1px; }
+.logo-text-vertical { display:inline-flex; flex-direction:row; line-height:1; letter-spacing:4px; }
+.logo-text-vertical i { font-style:normal; font-size:14px; font-weight:900; color:var(--accent-cyan); font-family:'STKaiti','KaiTi','楷体',serif; text-shadow:0 0 8px var(--accent-cyan); }
 .login-logo-text { display:inline-flex; flex-direction:row; gap:4px; margin-top:8px; }
 .login-logo-text i { font-size:28px; letter-spacing:0; text-shadow:0 0 12px var(--accent-cyan); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }
