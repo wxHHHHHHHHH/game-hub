@@ -59,6 +59,9 @@ const API = (function() {
                 body: { username: username, password: password }
             });
         },
+        logout: function() {
+            return request('/auth/logout', { method: 'POST' });
+        },
 
         getMe: function() {
             return request('/auth/me');

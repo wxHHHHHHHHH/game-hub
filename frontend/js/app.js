@@ -1575,6 +1575,7 @@
 
     function handleLogout() {
         if (!confirm('确定要退出登录吗？')) return;
+        API.logout().catch(function(){});
         AUTH.logout();
         $('#app-main').classList.remove('logged-in');
         $('#login-page').style.display = '';
