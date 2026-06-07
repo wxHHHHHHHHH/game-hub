@@ -71,8 +71,8 @@ logos.forEach(function(l) {
 
 function applyLogo() {
   localStorage.setItem('bobi_logo', selected);
-  alert('LOGO 已应用！\n请返回主站刷新页面查看效果。');
-  window.close();
+  alert('LOGO 已应用！\n即将跳转回首页。');
+  window.location.href = 'index.html';
 }
 
 function resetLogo() {

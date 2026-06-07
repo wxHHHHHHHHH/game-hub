@@ -47,6 +47,8 @@ body {
 .login-logo { font-size: 56px; display: block; margin-bottom: 12px; animation: bounce 2s ease infinite; }
 .login-logo-img { width: 100px; height: 100px; display: block; margin: 0 auto 16px; animation: bounce 2s ease infinite; }
 .logo-img { width: 32px; height: 32px; object-fit: contain; }
+.logo-pick-btn { font-size:14px; opacity:0.4; transition:opacity 0.2s; text-decoration:none; margin-left:2px; }
+.logo-pick-btn:hover { opacity:1; }
 .nav-links { display:flex; align-items:center; gap:4px; flex-wrap:nowrap; }
 .nav-link {
     color: var(--text-secondary); font-size:13px; padding:5px 10px;
