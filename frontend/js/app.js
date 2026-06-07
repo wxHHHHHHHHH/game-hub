@@ -87,8 +87,13 @@
             reader.onload = function(e) {
                 cropImg = new Image();
                 cropImg.onload = function() {
-                    initCropUI();
                     $('#modal-crop').classList.add('active');
+                    // Delay to let DOM reflow before canvas sizing
+                    setTimeout(function() { initCropUI(); }, 50);
+                };
+                cropImg.onerror = function() {
+                    showToast('图片加载失败，请尝试其他图片', 'error');
+                    if (cropReject) cropReject(new Error('load failed'));
                 };
                 cropImg.src = e.target.result;
             };
