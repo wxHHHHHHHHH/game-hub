@@ -563,7 +563,7 @@ window.THEME = {
   init: function() {
     var c = this.getC();
     if (c) { this.apply(c.bg, c.card, c.a1, c.a2, c.text); }
-    else { this.apply('#f5f5f0', '#ffffff', '#6366F1', '#818CF8', '#1e1e2e'); }
+    else { var p=this.presets[0]; this.apply(p.bg, p.card, p.a1, p.a2, p.text); }
   }
 };
 THEME.init();

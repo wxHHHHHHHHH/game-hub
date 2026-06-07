@@ -1582,6 +1582,9 @@
         $('#login-username').value = '';
         $('#login-password').value = '';
         $('#login-error').textContent = '';
+        // Reset login button state
+        var btn = $('#login-form .btn-login');
+        if (btn) { btn.disabled = false; btn.textContent = '🚀 登 录'; }
     }
 
     function updateUserUI() {
@@ -1837,6 +1840,11 @@
     // ============ INIT ============
     function init() {
         bindEvents();
+
+        // Reset login form to initial state
+        var loginBtn = $('#login-form .btn-login');
+        if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = '🚀 登 录'; }
+        $('#login-error').textContent = '';
 
         if (AUTH.isLoggedIn()) {
             onLoginSuccess();
