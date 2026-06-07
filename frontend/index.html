@@ -500,21 +500,19 @@
 // ============ THEME SWITCHER ============
 window.THEME = {
   presets: [
-    { bg:'#0d1117', card:'#161b22', a1:'#58a6ff', a2:'#3fb950', text:'#c9d1d9', name:'GitHub暗' },
-    { bg:'#1a1a2e', card:'#16213e', a1:'#e94560', a2:'#0f3460', text:'#eaeaea', name:'午夜红' },
-    { bg:'#0f0f1a', card:'#1a1a30', a1:'#7c3aed', a2:'#a78bfa', text:'#e2e8f0', name:'暗紫' },
-    { bg:'#fffdf7', card:'#ffffff', a1:'#1a1a2e', a2:'#e94560', text:'#1a1a2e', name:'纸白' },
-    { bg:'#f8fafc', card:'#ffffff', a1:'#2563eb', a2:'#0891b2', text:'#0f172a', name:'蓝白' },
-    { bg:'#18181b', card:'#27272a', a1:'#facc15', a2:'#f97316', text:'#e4e4e7', name:'暗金' },
-    { bg:'#0c0a09', card:'#1c1917', a1:'#d97706', a2:'#92400e', text:'#d6d3d1', name:'暖棕' },
-    { bg:'#022c22', card:'#064e3b', a1:'#34d399', a2:'#059669', text:'#d1fae5', name:'森林绿' },
-    { bg:'#1e1b4b', card:'#312e81', a1:'#818cf8', a2:'#c084fc', text:'#e0e7ff', name:'靛蓝紫' }
+    { bg:'#000000', card:'#111111', a1:'#ffffff', a2:'#cccccc', text:'#e5e5e5', name:'纯黑' },
+    { bg:'#ffffff', card:'#f5f5f5', a1:'#000000', a2:'#333333', text:'#111111', name:'纯白' },
+    { bg:'#0a0a0a', card:'#1a1a1a', a1:'#e5e5e5', a2:'#a0a0a0', text:'#d4d4d4', name:'暗黑' },
+    { bg:'#fafafa', card:'#ffffff', a1:'#171717', a2:'#525252', text:'#171717', name:'亮白' },
+    { bg:'#1a1a1a', card:'#262626', a1:'#f5f5f5', a2:'#d4d4d4', text:'#e5e5e5', name:'深灰' },
+    { bg:'#f5f5f5', card:'#ffffff', a1:'#262626', a2:'#737373', text:'#171717', name:'浅灰' }
   ],
   current: localStorage.getItem('bobi_theme') || '',
   getC: function() { try { return JSON.parse(this.current); } catch(e) { return null; } },
   apply: function(bg, card, a1, a2, text) {
     text = text || '#c8d6e5';
-    var css = ':root{--bg-primary:'+bg+'!important;--bg-secondary:'+bg+'!important;--bg-card:'+card+'!important;--bg-card-hover:'+card+'!important;--accent-cyan:'+a1+'!important;--accent-magenta:'+a2+'!important;--accent-purple:'+a2+'!important;--accent-green:'+a1+'!important;--accent-yellow:'+a2+'!important;--text-primary:'+text+'!important;--text-secondary:'+text+'!important;}';
+    var muted = text||'#a0a0a0';
+    var css = ':root{--bg-primary:'+bg+'!important;--bg-secondary:'+bg+'!important;--bg-card:'+card+'!important;--bg-card-hover:'+card+'!important;--accent-cyan:'+a1+'!important;--accent-magenta:'+a2+'!important;--accent-purple:'+a2+'!important;--accent-green:'+a1+'!important;--accent-yellow:'+a2+'!important;--text-primary:'+text+'!important;--text-secondary:'+text+'!important;--text-muted:'+muted+'!important;--border:'+muted+'33!important;}';
     var el = document.getElementById('theme-style');
     if (el) el.textContent = css;
     else { el = document.createElement('style'); el.id = 'theme-style'; el.textContent = css; document.head.appendChild(el); }
@@ -563,7 +561,7 @@ window.THEME = {
   init: function() {
     var c = this.getC();
     if (c) { this.apply(c.bg, c.card, c.a1, c.a2, c.text); }
-    else { var p=this.presets[0]; this.apply(p.bg, p.card, p.a1, p.a2, p.text||'#c9d1d9'); }
+    else { var p=this.presets[0]; this.apply(p.bg, p.card, p.a1, p.a2, p.text); }
   }
 };
 THEME.init();
