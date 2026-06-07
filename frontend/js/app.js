@@ -322,8 +322,8 @@
         } catch(e) {
             // Demo files
             files = [
-                { id: 1, fileName: '波比圈公司简介.pdf', fileSize: 2457600, createdAt: '2025-01-15' },
-                { id: 2, fileName: '波比圈组织架构图.pdf', fileSize: 1280000, createdAt: '2025-02-20' },
+                { id: 1, fileName: '波比公司简介.pdf', fileSize: 2457600, createdAt: '2025-01-15' },
+                { id: 2, fileName: '波比组织架构图.pdf', fileSize: 1280000, createdAt: '2025-02-20' },
                 { id: 3, fileName: '关于规范内部管理的通知（红头文件）.pdf', fileSize: 512000, createdAt: '2025-03-10' },
                 { id: 4, fileName: '集团2025年度工作计划.pdf', fileSize: 3200000, createdAt: '2025-04-01' },
             ];
@@ -412,13 +412,13 @@
         try {
             const banners = await API.getBanners();
             carouselSlides = banners && banners.length > 0 ? banners : [
-                { title:'波比圈', imageUrl:'', linkUrl:'', sub:'诚信 · 创新 · 共赢' },
+                { title:'波比', imageUrl:'', linkUrl:'', sub:'诚信 · 创新 · 共赢' },
                 { title:'集团成立10周年', imageUrl:'', linkUrl:'', sub:'十年砥砺前行，再创辉煌' },
                 { title:'2026年度工作会议', imageUrl:'', linkUrl:'', sub:'凝心聚力，共谋发展' }
             ];
         } catch(e) {
             carouselSlides = [
-                { title:'波比圈', imageUrl:'', linkUrl:'', sub:'诚信 · 创新 · 共赢' },
+                { title:'波比', imageUrl:'', linkUrl:'', sub:'诚信 · 创新 · 共赢' },
                 { title:'集团成立10周年', imageUrl:'', linkUrl:'', sub:'十年砥砺前行，再创辉煌' },
                 { title:'2026年度工作会议', imageUrl:'', linkUrl:'', sub:'凝心聚力，共谋发展' }
             ];
@@ -479,9 +479,9 @@
 
         if (!news || news.length === 0) {
             news = [
-                { id:1, title:'波比圈2026年度工作会议圆满召开', summary:'集团于2026年3月召开年度工作会议…', category:'集团动态', pinned:true, createdAt:'2026-03-15T10:00:00' },
+                { id:1, title:'波比2026年度工作会议圆满召开', summary:'集团于2026年3月召开年度工作会议…', category:'集团动态', pinned:true, createdAt:'2026-03-15T10:00:00' },
                 { id:2, title:'关于进一步加强集团内部管理的通知', summary:'为进一步规范集团内部管理流程…', category:'政策文件', pinned:false, createdAt:'2026-02-28T14:00:00' },
-                { id:3, title:'波比圈荣获2025年度行业创新奖', summary:'在第15届行业峰会上，集团荣获年度创新企业奖…', category:'行业资讯', pinned:false, createdAt:'2026-01-20T09:00:00' },
+                { id:3, title:'波比荣获2025年度行业创新奖', summary:'在第15届行业峰会上，集团荣获年度创新企业奖…', category:'行业资讯', pinned:false, createdAt:'2026-01-20T09:00:00' },
             ];
         }
 

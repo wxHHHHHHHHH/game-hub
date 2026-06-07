@@ -22,7 +22,7 @@ const CONFIG = (function() {
         // App info
         APP_NAME: 'GameHub',
         APP_VERSION: '1.0.0',
-        COMPANY_NAME: '波比圈',
+        COMPANY_NAME: '波比',
 
         // Environment
         IS_LOCAL: isLocal,
