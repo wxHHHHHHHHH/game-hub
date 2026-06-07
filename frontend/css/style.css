@@ -59,6 +59,9 @@ body {
 .login-logo { font-size: 56px; display: block; margin-bottom: 12px; animation: bounce 2s ease infinite; }
 .login-logo-img { width: 140px; height: 140px; display: block; margin: 0 auto 16px; animation: bounce 2s ease infinite; filter: drop-shadow(0 0 12px var(--accent-cyan)); }
 .logo-img { width: 90px; height: 90px; object-fit: contain; filter: drop-shadow(0 0 8px var(--accent-cyan)); }
+.logo-text-vertical { display:inline-block; writing-mode:vertical-rl; font-size:20px; font-weight:900; letter-spacing:6px; color:var(--accent-cyan); font-family:'STKaiti','KaiTi','楷体','SimSun',serif; text-shadow:0 0 10px var(--accent-cyan); margin:0 4px; }
+.login-logo-text { display:block; writing-mode:horizontal-tb; font-size:28px; letter-spacing:12px; text-align:center; margin-top:4px; text-shadow:0 0 12px var(--accent-cyan); }
+.login-logo-text br { display:none; }
 .header-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }
 .nav-links { display:flex; align-items:center; gap:4px; flex-wrap:nowrap; }
 .nav-link {
