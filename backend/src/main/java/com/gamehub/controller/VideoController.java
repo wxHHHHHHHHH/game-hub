@@ -84,9 +84,8 @@ public class VideoController {
     public ResponseEntity<Map<String, Object>> unlike(@PathVariable Long id,
                                                        @RequestAttribute(value = "userId") Long userId) {
         if (userId == null) return ResponseEntity.status(401).body(Map.of("error", "请先登录"));
-        userLikeRepo.deleteByUserIdAndVideoId(userId, id);
-        Video v = videoService.unlike(id);
-        return ResponseEntity.ok(Map.of("likes", v.getLikes(), "message", "取消点赞"));
+        videoService.unlikeWithUser(userId, id);
+        return ResponseEntity.ok(Map.of("likes", videoService.getById(id).getLikes(), "message", "取消点赞"));
     }
 
     @DeleteMapping("/{id}")
