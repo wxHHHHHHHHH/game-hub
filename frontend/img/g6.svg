@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34D399"/><stop offset=".5" stop-color="#60A5FA"/><stop offset="1" stop-color="#A78BFA"/></linearGradient></defs>
+  <circle cx="120" cy="100" r="70" fill="url(#g)" opacity=".08"/>
+  <path d="M55 100 Q70 50 120 60" fill="none" stroke="url(#g)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M185 100 Q170 50 120 60" fill="none" stroke="url(#g)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M60 110 Q75 170 120 160" fill="none" stroke="url(#g)" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+  <path d="M180 110 Q165 170 120 160" fill="none" stroke="url(#g)" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+  <circle cx="120" cy="105" r="22" fill="url(#g)" opacity=".15"/>
+  <circle cx="120" cy="105" r="18" fill="none" stroke="url(#g)" stroke-width="2"/>
+  <rect x="68" y="70" width="5" height="5" rx="1" fill="#34D399" opacity=".5"/>
+  <rect x="167" y="70" width="5" height="5" rx="1" fill="#A78BFA" opacity=".5"/>
+  <text x="120" y="205" text-anchor="middle" font-family="sans-serif" font-size="17" font-weight="900" fill="url(#g)" letter-spacing="3">波比</text>
+  <text x="120" y="225" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="600" fill="#60A5FA">BOBI</text>
+</svg>
