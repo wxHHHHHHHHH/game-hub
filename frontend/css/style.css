@@ -251,7 +251,7 @@ n@media (prefers-reduced-motion: reduce) {
 n@media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration:0.01ms!important; animation-iteration-count:1!important; transition-duration:0.01ms!important; }
 }
-.video-card:hover { transform: translateY(-6px); box-shadow: var(--shadow), 0 0 30px color-mix(in srgb, var(--accent-cyan) 30%, transparent); border-color: var(--accent-cyan); background: var(--bg-card-hover); }
+.video-card:hover { transform: translateY(-6px); box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 0 1px var(--accent-cyan); border-color: var(--accent-cyan); background: var(--bg-card-hover); }
 .video-card:hover .card-overlay { opacity: 1; }
 .card-thumb { position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; background:var(--bg-secondary); }
 .card-thumb img { width:100%; height:100%; object-fit:cover; transition: transform 0.4s; }
@@ -876,3 +876,61 @@ n@media (prefers-reduced-motion: reduce) {
 /* Focus visible for keyboard nav */
 :focus-visible { outline: 2px solid var(--accent-cyan); outline-offset: 2px; border-radius: 2px; }
 button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent-cyan); outline-offset: 2px; }
+
+/* ============ IMPECCABLE REDESIGN ============ */
+/* Horizontal video band instead of card grid */
+.video-grid {
+    display: flex !important;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 8px 0 20px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-cyan) transparent;
+}
+.video-grid::-webkit-scrollbar { height: 5px; }
+.video-grid::-webkit-scrollbar-track { background: transparent; }
+.video-grid::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
+.video-card {
+    flex: 0 0 320px;
+    scroll-snap-align: start;
+    transform: none !important;
+}
+.video-card:hover { transform: translateY(-4px) !important; }
+
+/* Clean hero section */
+.hero { padding: 60px 0 20px; }
+.hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -0.02em; }
+.hero p { font-size: 1.125rem; max-width: 560px; color: var(--text-secondary); }
+.hero-stats { gap: 40px; margin-top: 32px; }
+.hero-stat-num { font-size: 2.5rem; font-weight: 800; }
+
+/* Carousel refinements */
+.carousel { height: 240px; border-radius: var(--radius); }
+.carousel-bg h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
+
+/* File list - clean separators */
+.file-item { background: none; border-radius: 0; }
+.file-item:hover { background: rgba(255,255,255,0.02); }
+
+/* Sort/source buttons */
+.sort-buttons { gap: 8px; }
+.sort-btn, .source-btn { padding: 8px 20px; font-size: 13px; border-radius: 20px; }
+
+/* Nav refinements */
+.header { backdrop-filter: blur(12px); background: rgba(10,10,26,0.85); }
+
+/* Card subtlety */
+.intro-section { border: none; background: var(--bg-secondary); }
+.timeline-item { border-radius: var(--radius); }
+
+/* Search bar */
+.search-bar input { padding: 12px 44px 12px 18px; border-radius: 28px; font-size: 15px; }
+
+/* Mobile responsive band */
+@media (max-width: 560px) {
+    .video-card { flex: 0 0 260px; }
+    .hero h1 { font-size: 1.8rem; }
+    .hero p { font-size: 1rem; }
+    .carousel { height: 180px; }
+}
