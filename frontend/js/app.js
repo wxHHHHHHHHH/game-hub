@@ -1848,8 +1848,8 @@
     }
 
     // Theme switcher
-    var themes = ['', 'warmgold', 'deepblue', 'emerald', 'purple', 'sunset', 'ice'];
-    var themeNames = ['默认霓虹', '暖金', '深海蓝', '翡翠绿', '紫韵', '日落橙', '冰蓝'];
+    var themes = ['', 'warmgold', 'deepblue', 'emerald', 'purple', 'sunset', 'ice', 'rose', 'mint', 'dark', 'light'];
+    var themeNames = ['默认霓虹', '暖金', '深海蓝', '翡翠绿', '紫韵', '日落橙', '冰蓝', '玫瑰红', '薄荷绿', '纯黑', '浅色'];    var themeLights = [false, false, false, false, false, false, false, false, false, false, true];
     var currentTheme = localStorage.getItem('bobi_theme') || '';
 
     function applyTheme(name) {
