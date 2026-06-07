@@ -57,8 +57,8 @@ body {
 .login-container { width: 100%; max-width: 420px; }
 .login-brand { text-align: center; margin-bottom: 36px; }
 .login-logo { font-size: 56px; display: block; margin-bottom: 12px; animation: bounce 2s ease infinite; }
-.login-logo-img { width: 140px; height: 140px; display: block; margin: 0 auto 16px; animation: bounce 2s ease infinite; }
-.logo-img { width: 90px; height: 90px; object-fit: contain; }
+.login-logo-img { width: 140px; height: 140px; display: block; margin: 0 auto 16px; animation: bounce 2s ease infinite; filter: drop-shadow(0 0 12px var(--accent-cyan)); }
+.logo-img { width: 90px; height: 90px; object-fit: contain; filter: drop-shadow(0 0 8px var(--accent-cyan)); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }
 .nav-links { display:flex; align-items:center; gap:4px; flex-wrap:nowrap; }
 .nav-link {
