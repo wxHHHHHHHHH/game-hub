@@ -469,27 +469,45 @@
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/app.js"></script>
+<style id="theme-style"></style>
 <script>
 // ============ THEME SWITCHER ============
 window.THEME = {
-  themes: ['', 'warmgold', 'deepblue', 'emerald', 'purple', 'sunset', 'ice', 'rose', 'mint', 'dark', 'light'],
+  themes: {
+    '':     { bg:'#0a0a1a', b2:'#12122a', card:'#1a1a3e', a1:'#00e5ff', a2:'#ff00e5', a3:'#7b61ff' },
+    warmgold: { bg:'#1a1410', b2:'#221c16', card:'#2a221a', a1:'#D4A853', a2:'#C8963E', a3:'#B8860B' },
+    deepblue: { bg:'#0a1628', b2:'#101e35', card:'#162542', a1:'#06B6D4', a2:'#3B82F6', a3:'#2563EB' },
+    emerald:  { bg:'#0a1a15', b2:'#0e241e', card:'#152e26', a1:'#34D399', a2:'#10B981', a3:'#059669' },
+    purple:   { bg:'#120e1a', b2:'#1a1424', card:'#221a30', a1:'#C084FC', a2:'#8B5CF6', a3:'#7C3AED' },
+    sunset:   { bg:'#1a1008', b2:'#24180e', card:'#2e1e12', a1:'#F97316', a2:'#F59E0B', a3:'#EA580C' },
+    ice:      { bg:'#0a1418', b2:'#0e1c20', card:'#142428', a1:'#22D3EE', a2:'#06B6D4', a3:'#0891B2' },
+    rose:     { bg:'#1a0e12', b2:'#24141a', card:'#2e1a22', a1:'#FB7185', a2:'#E11D48', a3:'#BE123C' },
+    mint:     { bg:'#0a1816', b2:'#0e201e', card:'#142826', a1:'#2DD4BF', a2:'#14B8A6', a3:'#0D9488' },
+    dark:     { bg:'#000000', b2:'#0a0a0a', card:'#111111', a1:'#9CA3AF', a2:'#6B7280', a3:'#4B5563' },
+    light:    { bg:'#f0f0f4', b2:'#e4e4ea', card:'#ffffff', a1:'#6366F1', a2:'#4F46E5', a3:'#4338CA' }
+  },
   names: ['默认霓虹','暖金','深海蓝','翡翠绿','紫韵','日落橙','冰蓝','玫瑰红','薄荷绿','纯黑','浅色'],
+  keys: ['','warmgold','deepblue','emerald','purple','sunset','ice','rose','mint','dark','light'],
   current: localStorage.getItem('bobi_theme') || '',
-  apply: function(name) {
-    document.body.className = document.body.className.replace(/theme-\w+/g, '').trim();
-    if (name) document.body.classList.add('theme-' + name);
-    localStorage.setItem('bobi_theme', name);
-    this.current = name;
+  apply: function(key) {
+    var t = this.themes[key] || this.themes[''];
+    var css = ':root{--bg-primary:'+t.bg+';--bg-secondary:'+t.b2+';--bg-card:'+t.card+';--bg-card-hover:'+t.card+';--accent-cyan:'+t.a1+';--accent-magenta:'+t.a2+';--accent-purple:'+t.a3+';--accent-green:'+t.a1+';--accent-yellow:'+t.a2+';}';
+    document.getElementById('theme-style').textContent = css;
+    localStorage.setItem('bobi_theme', key);
+    this.current = key;
   },
   next: function() {
-    var i = this.themes.indexOf(this.current);
-    i = (i + 1) % this.themes.length;
-    var name = this.themes[i];
-    this.apply(name);
-    if (typeof showToast === 'function') { try { showToast('配色: ' + this.names[i]); } catch(e){} }
+    var i = this.keys.indexOf(this.current);
+    i = (i + 1) % this.keys.length;
+    var key = this.keys[i];
+    this.apply(key);
+    var body = document.body;
+    body.style.transition = 'background 0.5s';
+    body.style.background = this.themes[key].bg;
+    setTimeout(function(){ body.style.transition = ''; }, 500);
   },
   init: function() {
-    if (this.current) document.body.classList.add('theme-' + this.current);
+    this.apply(this.current);
   }
 };
 THEME.init();
