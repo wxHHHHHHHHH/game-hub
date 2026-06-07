@@ -50,7 +50,6 @@
     <div class="container header-inner">
         <div class="logo" id="logo-home">
             <img src="img/logo.png" alt="波比" class="logo-img" id="header-logo-img">
-            <span class="highlight">波比</span>
             <span class="logo-pick-btn" onclick="THEME.open()" title="自定义配色" style="cursor:pointer;">🎨</span>
         </div>
         <button class="nav-toggle" id="nav-toggle">☰</button>
@@ -501,7 +500,8 @@ window.THEME = {
     { bg:'#0a1418', card:'#142428', a1:'#22D3EE', a2:'#06B6D4', name:'冰蓝' },
     { bg:'#000000', card:'#111111', a1:'#9CA3AF', a2:'#6B7280', name:'纯黑' },
     { bg:'#f0f0f4', card:'#ffffff', a1:'#6366F1', a2:'#4F46E5', name:'浅色' },
-    { bg:'#181614', card:'#262320', a1:'#C97D45', a2:'#B86E3A', name:'灰烬行者' }
+    { bg:'#181614', card:'#262320', a1:'#C97D45', a2:'#B86E3A', name:'灰烬行者' },
+    { bg:'#060b13', card:'#0e1525', a1:'#00c8e8', a2:'#0080ff', name:'幻塔' }
   ],
   current: localStorage.getItem('bobi_theme') || '',
   getC: function() { try { return JSON.parse(this.current); } catch(e) { return null; } },
@@ -551,7 +551,7 @@ window.THEME = {
   init: function() {
     var c = this.getC();
     if (c) { this.apply(c.bg, c.card, c.a1, c.a2); }
-    else { this.apply('#181614', '#262320', '#C97D45', '#B86E3A'); }
+    else { this.apply('#060b13', '#0e1525', '#00c8e8', '#0080ff'); }
   }
 };
 THEME.init();
