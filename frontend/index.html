@@ -51,7 +51,7 @@
             <img src="img/logo.svg" alt="波比" class="logo-img" id="header-logo-img">
             <span class="highlight">波比</span>
             <a href="logo-picker.html" class="logo-pick-btn" title="选择LOGO">🖼️</a>
-            <span class="logo-pick-btn" id="theme-switch" title="切换配色" style="cursor:pointer;">🎨</span>
+            <span class="logo-pick-btn" onclick="THEME.next()" title="切换配色" style="cursor:pointer;">🎨</span>
         </div>
         <button class="nav-toggle" id="nav-toggle">☰</button>
         <nav class="nav-links" id="nav-links">
@@ -469,5 +469,30 @@
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/app.js"></script>
+<script>
+// ============ THEME SWITCHER ============
+window.THEME = {
+  themes: ['', 'warmgold', 'deepblue', 'emerald', 'purple', 'sunset', 'ice', 'rose', 'mint', 'dark', 'light'],
+  names: ['默认霓虹','暖金','深海蓝','翡翠绿','紫韵','日落橙','冰蓝','玫瑰红','薄荷绿','纯黑','浅色'],
+  current: localStorage.getItem('bobi_theme') || '',
+  apply: function(name) {
+    document.body.className = document.body.className.replace(/theme-\w+/g, '').trim();
+    if (name) document.body.classList.add('theme-' + name);
+    localStorage.setItem('bobi_theme', name);
+    this.current = name;
+  },
+  next: function() {
+    var i = this.themes.indexOf(this.current);
+    i = (i + 1) % this.themes.length;
+    var name = this.themes[i];
+    this.apply(name);
+    if (typeof showToast === 'function') { try { showToast('配色: ' + this.names[i]); } catch(e){} }
+  },
+  init: function() {
+    if (this.current) document.body.classList.add('theme-' + this.current);
+  }
+};
+THEME.init();
+</script>
 </body>
 </html>
