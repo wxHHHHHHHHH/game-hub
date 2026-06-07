@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9CA3AF"/><stop offset=".5" stop-color="#C8963E"/><stop offset="1" stop-color="#9CA3AF"/></linearGradient></defs>
-  <rect x="50" y="45" width="140" height="140" rx="16" fill="none" stroke="url(#g)" stroke-width="2"/>
-  <rect x="60" y="55" width="120" height="120" rx="10" fill="url(#g)" opacity=".04"/>
-  <line x1="85" y1="55" x2="85" y2="175" stroke="url(#g)" stroke-width="1.5" opacity=".3"/>
-  <line x1="155" y1="55" x2="155" y2="175" stroke="url(#g)" stroke-width="1.5" opacity=".3"/>
-  <text x="120" y="115" text-anchor="middle" font-family="sans-serif" font-size="52" font-weight="800" fill="url(#g)" letter-spacing="8">B</text>
-  <text x="120" y="210" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="600" fill="#8E9196" letter-spacing="4">波 比 集 团</text>
-</svg>
