@@ -100,27 +100,48 @@
         cropCanvas = $('#crop-canvas');
         cropBoxEl = $('#crop-box');
         var container = $('#crop-container');
-        var maxW = container.clientWidth, maxH = 420;
+        if (!cropCanvas || !cropBoxEl || !container || !cropImg) {
+            console.error('Crop elements not found');
+            return;
+        }
+
+        var maxW = container.clientWidth || 680;
+        var maxH = 420;
         var scale = Math.min(1, maxW / cropImg.width, maxH / cropImg.height);
-        cropCanvas.width = cropImg.width * scale;
-        cropCanvas.height = cropImg.height * scale;
+        cropCanvas.width = Math.round(cropImg.width * scale);
+        cropCanvas.height = Math.round(cropImg.height * scale);
+        cropCanvas.style.width = cropCanvas.width + 'px';
+        cropCanvas.style.height = cropCanvas.height + 'px';
+
         var ctx = cropCanvas.getContext('2d');
+        ctx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
         ctx.drawImage(cropImg, 0, 0, cropCanvas.width, cropCanvas.height);
 
         // Init crop box at center, 16:9
         var bw = Math.min(cropCanvas.width * 0.8, cropCanvas.width);
-        var bh = bw * 9 / 16;
-        if (bh > cropCanvas.height) { bh = cropCanvas.height * 0.8; bw = bh * 16 / 9; }
-        cropBoxX = (cropCanvas.width - bw) / 2;
-        cropBoxY = (cropCanvas.height - bh) / 2;
+        var bh = Math.round(bw * 9 / 16);
+        if (bh > cropCanvas.height) { bh = Math.round(cropCanvas.height * 0.8); bw = Math.round(bh * 16 / 9); }
+        cropBoxX = Math.round((cropCanvas.width - bw) / 2);
+        cropBoxY = Math.round((cropCanvas.height - bh) / 2);
         cropBoxW = bw; cropBoxH = bh;
         updateCropBoxPos();
 
-        // Events
-        cropBoxEl.onmousedown = cropBoxEl.ontouchstart = function(e) { dragMode = 'move'; startDrag(e); };
-        $('#crop-handle').onmousedown = $('#crop-handle').ontouchstart = function(e) { dragMode = 'resize'; e.stopPropagation(); startDrag(e); };
-        document.onmousemove = document.ontouchmove = function(e) { doDrag(e); };
-        document.onmouseup = document.ontouchend = function() { dragMode = null; };
+        // Clear old events
+        document.onmousemove = document.ontouchmove = null;
+        document.onmouseup = document.ontouchend = null;
+
+        // Events for crop box
+        cropBoxEl.addEventListener('mousedown', function(e) { dragMode = 'move'; startDrag(e); });
+        cropBoxEl.addEventListener('touchstart', function(e) { dragMode = 'move'; startDrag(e); }, {passive: false});
+        var handle = $('#crop-handle');
+        if (handle) {
+            handle.addEventListener('mousedown', function(e) { dragMode = 'resize'; e.stopPropagation(); startDrag(e); });
+            handle.addEventListener('touchstart', function(e) { dragMode = 'resize'; e.stopPropagation(); startDrag(e); }, {passive: false});
+        }
+        document.addEventListener('mousemove', function(e) { doDrag(e); });
+        document.addEventListener('touchmove', function(e) { doDrag(e); }, {passive: false});
+        document.addEventListener('mouseup', function() { dragMode = null; });
+        document.addEventListener('touchend', function() { dragMode = null; });
     }
 
     function startDrag(e) {
@@ -177,7 +198,10 @@
 
     function closeCropModal() {
         $('#modal-crop').classList.remove('active');
+        document.onmousemove = document.ontouchmove = null;
+        document.onmouseup = document.ontouchend = null;
         cropResolve = null; cropReject = null;
+        cropImg = null; cropCanvas = null; cropBoxEl = null;
     }
 
     // ============ UTILS: Compress ============
