@@ -428,6 +428,29 @@
     </div>
 </div>
 
+<!-- Cover Crop Modal -->
+<div class="modal-overlay" id="modal-crop">
+    <div class="modal" style="max-width:700px;">
+        <div class="modal-header">
+            <h2>✂️ 裁剪封面（16:9）</h2>
+            <button class="modal-close" id="modal-crop-close">&times;</button>
+        </div>
+        <div class="modal-body" style="padding:16px;">
+            <div class="crop-container" id="crop-container">
+                <canvas id="crop-canvas"></canvas>
+                <div class="crop-box" id="crop-box">
+                    <div class="crop-handle" id="crop-handle"></div>
+                </div>
+            </div>
+            <p style="text-align:center;color:var(--text-muted);font-size:12px;margin:8px 0;">拖拽选框调整裁剪区域</p>
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel" id="btn-crop-cancel">取消</button>
+                <button type="button" class="btn btn-primary" id="btn-crop-confirm">✅ 确认裁剪</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Toast container -->
 <div id="toast-container"></div>
 

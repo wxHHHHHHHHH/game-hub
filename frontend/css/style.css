@@ -308,6 +308,12 @@ body {
 .cover-upload-row { display:flex; gap:8px; align-items:center; }
 .cover-upload-row input[type="text"] { flex:1; }
 
+/* ============ IMAGE CROPPER ============ */
+.crop-container { position:relative; width:100%; max-height:420px; overflow:hidden; background:#000; border-radius:8px; user-select:none; -webkit-user-select:none; }
+.crop-container canvas { display:block; max-width:100%; max-height:420px; margin:0 auto; }
+.crop-box { position:absolute; border:2px dashed #fff; box-shadow:0 0 0 9999px rgba(0,0,0,0.5); cursor:move; }
+.crop-handle { position:absolute; right:0; bottom:0; width:20px; height:20px; background:#f90; border-radius:0 0 4px 0; cursor:se-resize; }
+
 /* ============ ADMIN PANEL ============ */
 .nav-admin { background: rgba(255,0,229,0.1); border: 1px solid rgba(255,0,229,0.25) !important; color: var(--accent-magenta) !important; }
 .nav-admin:hover { background: rgba(255,0,229,0.2) !important; }

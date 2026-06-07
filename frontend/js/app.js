@@ -74,6 +74,113 @@
         return CONFIG.AVATAR_COLORS[Math.abs(hash) % CONFIG.AVATAR_COLORS.length];
     }
 
+    // ============ IMAGE CROPPER ============
+    let cropResolve = null, cropReject = null;
+    let cropImg = null, cropBoxEl = null, cropCanvas = null;
+    let cropStartX = 0, cropStartY = 0, cropBoxX = 0, cropBoxY = 0, cropBoxW = 0, cropBoxH = 0;
+    let dragMode = null; // 'move' | 'resize'
+
+    function openCropper(file) {
+        return new Promise(function(resolve, reject) {
+            cropResolve = resolve; cropReject = reject;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                cropImg = new Image();
+                cropImg.onload = function() {
+                    initCropUI();
+                    $('#modal-crop').classList.add('active');
+                };
+                cropImg.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function initCropUI() {
+        cropCanvas = $('#crop-canvas');
+        cropBoxEl = $('#crop-box');
+        var container = $('#crop-container');
+        var maxW = container.clientWidth, maxH = 420;
+        var scale = Math.min(1, maxW / cropImg.width, maxH / cropImg.height);
+        cropCanvas.width = cropImg.width * scale;
+        cropCanvas.height = cropImg.height * scale;
+        var ctx = cropCanvas.getContext('2d');
+        ctx.drawImage(cropImg, 0, 0, cropCanvas.width, cropCanvas.height);
+
+        // Init crop box at center, 16:9
+        var bw = Math.min(cropCanvas.width * 0.8, cropCanvas.width);
+        var bh = bw * 9 / 16;
+        if (bh > cropCanvas.height) { bh = cropCanvas.height * 0.8; bw = bh * 16 / 9; }
+        cropBoxX = (cropCanvas.width - bw) / 2;
+        cropBoxY = (cropCanvas.height - bh) / 2;
+        cropBoxW = bw; cropBoxH = bh;
+        updateCropBoxPos();
+
+        // Events
+        cropBoxEl.onmousedown = cropBoxEl.ontouchstart = function(e) { dragMode = 'move'; startDrag(e); };
+        $('#crop-handle').onmousedown = $('#crop-handle').ontouchstart = function(e) { dragMode = 'resize'; e.stopPropagation(); startDrag(e); };
+        document.onmousemove = document.ontouchmove = function(e) { doDrag(e); };
+        document.onmouseup = document.ontouchend = function() { dragMode = null; };
+    }
+
+    function startDrag(e) {
+        var t = e.touches ? e.touches[0] : e;
+        cropStartX = t.clientX; cropStartY = t.clientY;
+        e.preventDefault();
+    }
+    function doDrag(e) {
+        if (!dragMode) return;
+        var t = e.touches ? e.touches[0] : e;
+        var dx = t.clientX - cropStartX, dy = t.clientY - cropStartY;
+        cropStartX = t.clientX; cropStartY = t.clientY;
+        var maxX = cropCanvas.width - cropBoxW, maxY = cropCanvas.height - cropBoxH;
+
+        if (dragMode === 'move') {
+            cropBoxX = Math.max(0, Math.min(maxX, cropBoxX + dx));
+            cropBoxY = Math.max(0, Math.min(maxY, cropBoxY + dy));
+        } else if (dragMode === 'resize') {
+            var nw = cropBoxW + dx;
+            var nh = nw * 9 / 16;
+            if (nw >= 80 && nh >= 45 && cropBoxX + nw <= cropCanvas.width && cropBoxY + nh <= cropCanvas.height) {
+                cropBoxW = nw; cropBoxH = nh;
+            }
+        }
+        updateCropBoxPos();
+        e.preventDefault();
+    }
+
+    function updateCropBoxPos() {
+        cropBoxEl.style.left = cropBoxX + 'px';
+        cropBoxEl.style.top = cropBoxY + 'px';
+        cropBoxEl.style.width = cropBoxW + 'px';
+        cropBoxEl.style.height = cropBoxH + 'px';
+    }
+
+    function confirmCrop() {
+        if (!cropImg || !cropResolve) return;
+        // Crop from original image coordinates
+        var scaleX = cropImg.width / cropCanvas.width;
+        var scaleY = cropImg.height / cropCanvas.height;
+        var sx = cropBoxX * scaleX, sy = cropBoxY * scaleY;
+        var sw = cropBoxW * scaleX, sh = cropBoxH * scaleY;
+
+        var canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 360;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(cropImg, sx, sy, sw, sh, 0, 0, 640, 360);
+        canvas.toBlob(function(blob) {
+            closeCropModal();
+            cropResolve(blob);
+        }, 'image/jpeg', 0.8);
+    }
+
+    function closeCropModal() {
+        $('#modal-crop').classList.remove('active');
+        cropResolve = null; cropReject = null;
+    }
+
+    // ============ UTILS: Compress ============
     function compressImage(file, maxWidth, quality) {
         return new Promise(function(resolve, reject) {
             var reader = new FileReader();
@@ -1529,6 +1636,19 @@
             bvInput.addEventListener('change', fetchBilibiliInfo);
         }
 
+        // Crop modal
+        $('#btn-crop-confirm').addEventListener('click', confirmCrop);
+        $('#btn-crop-cancel').addEventListener('click', function() {
+            closeCropModal();
+            if (cropReject) cropReject(new Error('cancelled'));
+            $('#cover-file-input').value = '';
+        });
+        $('#modal-crop-close').addEventListener('click', function() {
+            closeCropModal();
+            if (cropReject) cropReject(new Error('cancelled'));
+            $('#cover-file-input').value = '';
+        });
+
         // Cover upload with client-side compression
         $('#btn-upload-cover').addEventListener('click', function() {
             $('#cover-file-input').click();
@@ -1537,20 +1657,23 @@
             const file = this.files[0];
             if (!file) return;
             if (file.size > 50 * 1024 * 1024) { showToast('图片最大50MB', 'error'); return; }
-            showToast('正在压缩图片...');
             try {
-                // Client-side compress
-                const compressed = await compressImage(file, 640, 0.75);
-                const originalSize = (file.size / 1024 / 1024).toFixed(1);
-                const newSize = (compressed.size / 1024).toFixed(0);
-                showToast('上传中（已压缩: ' + originalSize + 'MB → ' + newSize + 'KB）');
-                const result = await API.uploadCover(compressed);
+                // Open cropper
+                showToast('请裁剪封面为16:9比例');
+                const cropped = await openCropper(file);
+                var originalSize = (file.size / 1024 / 1024).toFixed(1);
+                var newSize = (cropped.size / 1024).toFixed(0);
+                showToast('上传中（' + originalSize + 'MB → ' + newSize + 'KB）');
+                var result = await API.uploadCover(cropped);
                 $('#video-cover').value = result.coverUrl;
                 $('#cover-preview-img').src = result.coverUrl;
-                $('#cover-preview-text').textContent = '✅ 封面已上传（已压缩）';
+                $('#cover-preview-text').textContent = '✅ 封面已上传（已裁剪压缩）';
                 $('#cover-preview').style.display = 'block';
                 showToast('✅ 封面上传成功！');
-            } catch(e) { showToast('上传失败: ' + e.message, 'error'); }
+            } catch(e) {
+                if (e && e.message === 'cancelled') return; // user cancelled
+                if (e) showToast('上传失败: ' + e.message, 'error');
+            }
         });
 
         // Video type tabs
