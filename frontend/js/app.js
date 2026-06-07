@@ -562,9 +562,10 @@
 
         try { galleryPhotos = await API.getPhotos(); } catch(e) { galleryPhotos = []; }
 
-        const isAdmin = AUTH.getUser() && (AUTH.getUser().role === 'ADMIN' || AUTH.getUser().role === 'MEMBER');
-        const bar = $('#gallery-upload-bar');
-        if (bar) bar.style.display = isAdmin ? 'block' : 'none';
+        var canUpload = AUTH.getUser() && (AUTH.getUser().role === 'ADMIN' || AUTH.getUser().role === 'MEMBER');
+        var canDelete = AUTH.getUser() && AUTH.getUser().role === 'ADMIN';
+        var bar = $('#gallery-upload-bar');
+        if (bar) bar.style.display = canUpload ? 'block' : 'none';
 
         if (!galleryPhotos || galleryPhotos.length === 0) {
             grid.innerHTML = '<div class="no-comments" style="padding:80px 0;">📷 还没有照片<br>点击上方按钮上传第一张吧！</div>';
@@ -593,7 +594,7 @@
                             (p.caption ? esc(p.caption) : '') +
                             (p.uploaderName ? '<small style="display:block;opacity:0.7;">📷 ' + esc(p.uploaderName) + '</small>' : '') +
                         '</div>' +
-                        (isAdmin ? '<button class="gal-del" onclick="event.stopPropagation();GALLERY_ACTIONS.deletePhoto(' + p.id + ')">🗑</button>' : '') +
+                        (canDelete ? '<button class="gal-del" onclick="event.stopPropagation();GALLERY_ACTIONS.deletePhoto(' + p.id + ')">🗑</button>' : '') +
                     '</div>';
                 }).join('') + '</div>';
         }).join('') + '</div>';
