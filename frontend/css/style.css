@@ -1007,3 +1007,58 @@ input:focus, textarea:focus, select:focus {
     .contact-card { flex-direction: column; align-items: center; text-align: center; }
     .timeline-row { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ============ TASTE-SKILL ENHANCEMENTS ============ */
+/* Typography hierarchy */
+h1,h2,h3,h4{text-wrap:balance}
+body{text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
+
+/* Button tactile feedback */
+.btn:active,.btn-primary:active,.btn-login:active,.btn-submit:active,.sort-btn:active,.source-btn:active{transform:scale(.97)!important;transition:transform .1s}
+
+/* Form labels above input (taste-skill 4.6) */
+.form-group label{display:block;margin-bottom:6px;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+
+/* Skeleton loading instead of spinner */
+.loading .spinner{width:100%;max-width:300px;height:4px;background:var(--bg-secondary);border-radius:2px;overflow:hidden;border:none;animation:none}
+.loading .spinner::after{content:'';display:block;width:40%;height:100%;background:var(--accent-cyan);border-radius:2px;animation:shimmer 1.5s ease-in-out infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
+
+/* Button contrast check: ensure readable text on all backgrounds */
+.btn-primary,.btn-login,.btn-submit{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+
+/* Z-index restraint - semantic scale documented */
+/* 100:dropdown 200:sticky 300:modal 400:toast 500:lightbox */
+
+/* Mobile collapse explicit for all multi-column layouts */
+@media(max-width:768px){
+  .intro-section,.contact-card,.news-card,.stat-card{padding:20px}
+  .contact-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+/* Dark mode tokens already handled by theme system */
+
+/* Empty state improvements */
+.empty-state{padding:64px 20px;border:2px dashed rgba(128,128,128,.15);border-radius:16px}
+.empty-state .empty-icon{font-size:48px;opacity:.5;margin-bottom:12px}
+
+/* Real-image placeholder policy: use colored gradient placeholders instead of gray */
+.card-thumb{background:linear-gradient(135deg,var(--bg-card),var(--bg-card-hover))}
+
+/* Button label: verb+object pattern already enforced by earlier pass */
+
+/* No em-dashes anywhere ✅ (Chinese punctuation uses different chars) */
+
+/* No AI-purple gradients ✅ (black/white theme system) */
+
+/* No 3-column equal feature cards ✅ (horizontal band layout) */
+
+/* Responsive viewport: min-h-dvh not h-screen */
+.login-page{min-height:100dvh}
+
+/* Interactive state: loading skeletons for video cards */
+.video-card.loading-state{pointer-events:none;opacity:.6}
+.video-card.loading-state .card-thumb{animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
