@@ -1144,3 +1144,27 @@ button:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
 .reply-form input, .reply-form textarea { padding:8px 12px; font-size:13px; border:1px solid var(--border); border-radius:8px; background:var(--bg-secondary); color:var(--text-primary); font-family:inherit }
 .reply-form textarea { min-height:50px; resize:vertical }
 .btn-submit-reply { align-self:flex-end; padding:6px 16px; font-size:12px; background:var(--accent-cyan); color:#fff; border:none; border-radius:8px; cursor:pointer; font-family:inherit; font-weight:600 }
+
+/* ============ BLUE NAVIGATION TEXT COLORS ============ */
+.header .nav-link { color: rgba(255,255,255,0.85) !important; }
+.header .nav-link:hover { color: #fff !important; background: rgba(255,255,255,0.12) !important; }
+.header .nav-link.active { color: #fff !important; background: rgba(255,255,255,0.18) !important; }
+.header .user-name { color: rgba(255,255,255,0.9) !important; }
+.header .user-role { color: rgba(255,255,255,0.7) !important; }
+.header .btn-logout { color: rgba(255,255,255,0.8) !important; border-color: rgba(255,255,255,0.3) !important; }
+.header .btn-logout:hover { color: #fff !important; border-color: #fff !important; background: rgba(255,255,255,0.1) !important; }
+.header .logo .highlight { color: #fff !important; -webkit-text-fill-color: #fff !important; background: none !important; }
+.header .logo-pick-btn { color: rgba(255,255,255,0.6) !important; }
+.header .logo-pick-btn:hover { color: #fff !important; }
+.header .nav-toggle { color: #fff !important; }
+.header .nav-gallery { color: rgba(255,255,255,0.85) !important; background: rgba(255,255,255,0.1) !important; border-color: rgba(255,255,255,0.2) !important; }
+.header .nav-admin { color: rgba(255,255,255,0.85) !important; background: rgba(255,255,255,0.1) !important; border-color: rgba(255,255,255,0.2) !important; }
+.header #btn-add-video { background: rgba(255,255,255,0.2) !important; color: #fff !important; border: 1px solid rgba(255,255,255,0.3) !important; }
+.header #btn-add-video:hover { background: rgba(255,255,255,0.3) !important; }
+.header .user-badge { background: rgba(255,255,255,0.15) !important; border-color: rgba(255,255,255,0.2) !important; }
+.header .user-avatar { color: #fff !important; }
+/* Mobile nav when open */
+@media (max-width:900px) {
+  .nav-links.open { background: rgb(37,99,235) !important; }
+  .nav-links.open .nav-link { color: rgba(255,255,255,0.9) !important; }
+}
