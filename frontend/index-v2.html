@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>波比</title>
+<link rel="icon" type="image/png" href="img/logo.png">
+<link rel="stylesheet" href="css/style-v2.css">
+</head>
+<body>
+
+<div id="app">
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <img src="img/logo.png" alt="波比" class="sidebar-logo">
+    <span class="sidebar-name">波比</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" data-page="home">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>首页</span>
+    </a>
+    <a class="nav-item" data-page="videos">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      <span>视频</span>
+    </a>
+    <a class="nav-item" data-page="news">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span>新闻</span>
+    </a>
+    <a class="nav-item" data-page="gallery">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <span>相册</span>
+    </a>
+    <a class="nav-item" data-page="intro">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span>关于</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="btn-ghost" id="btn-login">登录</button>
+    <div class="user-info" id="user-info" style="display:none">
+      <span class="user-avatar" id="user-avatar"></span>
+      <span class="user-name" id="user-name"></span>
+    </div>
+    <button class="btn-ghost" onclick="THEME2.next()" title="配色">◐</button>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main-content" id="main-content">
+
+  <!-- Home Page -->
+  <section class="page active" id="page-home">
+    <div class="hero-block">
+      <h1>记录每一刻</h1>
+      <p>波比团队的视频空间 — 分享活动、交流想法、留存记忆</p>
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="搜索视频...">
+      </div>
+    </div>
+    <div class="video-feed" id="video-feed"></div>
+  </section>
+
+  <!-- Videos Page -->
+  <section class="page" id="page-videos">
+    <div class="page-top">
+      <h2>视频库</h2>
+      <button class="btn-primary" id="btn-add-video">发布视频</button>
+    </div>
+    <div class="filter-row">
+      <button class="chip active" data-filter="all">全部</button>
+      <button class="chip" data-filter="BILIBILI">B站</button>
+      <button class="chip" data-filter="LOCAL">云盘</button>
+      <select id="sort-select" class="chip">
+        <option value="latest">最新</option>
+        <option value="hot">最热</option>
+      </select>
+    </div>
+    <div class="video-grid-v2" id="video-grid-v2"></div>
+  </section>
+
+  <!-- News Page -->
+  <section class="page" id="page-news">
+    <div class="page-top"><h2>新闻</h2><button class="btn-primary" id="btn-add-news">发布新闻</button></div>
+    <div class="news-list" id="news-list"></div>
+  </section>
+
+  <!-- Gallery Page -->
+  <section class="page" id="page-gallery">
+    <div class="page-top"><h2>相册</h2><button class="btn-primary" id="btn-upload-photo">上传照片</button><input type="file" id="photo-input" accept="image/*" multiple hidden><input type="date" id="photo-date" class="date-input"></div>
+    <div class="gallery-wall" id="gallery-wall"></div>
+  </section>
+
+  <!-- Intro Page -->
+  <section class="page" id="page-intro">
+    <div class="page-top"><h2>关于</h2></div>
+    <div class="about-card">
+      <p>波比是一个综合性企业集团，致力于多领域业务发展，秉承创新、协作、共赢的核心价值观。</p>
+    </div>
+    <div class="file-section">
+      <h3>文件资料</h3>
+      <div id="file-list"></div>
+      <div class="file-upload-row-v2" id="file-upload-area-v2" style="display:none">
+        <input type="text" id="file-label" placeholder="文件名称">
+        <input type="file" id="file-input" hidden>
+        <button class="btn-primary btn-sm" id="btn-upload-file">上传文件</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox-v2" id="lightbox-v2">
+  <span class="lb-close" id="lb-close">&times;</span>
+  <span class="lb-prev" id="lb-prev">‹</span>
+  <span class="lb-next" id="lb-next">›</span>
+  <img src="" id="lb-img">
+  <p id="lb-cap"></p>
+  <a class="btn-original-v2" id="lb-original" href="#" target="_blank">查看原图</a>
+</div>
+
+<!-- Video Modal -->
+<div class="modal-v2" id="modal-video">
+  <div class="modal-v2-box">
+    <span class="modal-v2-close" id="modal-video-close">&times;</span>
+    <h2>发布视频</h2>
+    <div class="tabs-v2">
+      <button class="tab-v2 active" data-vt="BILIBILI">B站视频</button>
+      <button class="tab-v2" data-vt="LOCAL">123云盘</button>
+    </div>
+    <form id="form-video">
+      <div id="panel-bilibili"><label>BV号</label><input type="text" id="v-bv" placeholder="BV1xx411c7mD"></div>
+      <div id="panel-cloud" style="display:none"><label>直链地址</label><input type="text" id="v-url" placeholder="粘贴123云盘直链"></div>
+      <label>标题</label><input type="text" id="v-title" required placeholder="视频标题">
+      <label>分类</label><input type="text" id="v-game" placeholder="分类标签">
+      <label>封面图</label><div class="cover-row-v2"><input type="text" id="v-cover" placeholder="图片URL"><input type="file" id="v-cover-file" accept="image/*" hidden><button type="button" class="btn-ghost" id="btn-cover-upload">上传</button></div>
+      <label>描述</label><textarea id="v-desc" rows="3" placeholder="视频描述"></textarea>
+      <button type="submit" class="btn-primary">发布</button>
+    </form>
+  </div>
+</div>
+
+<!-- News Modal -->
+<div class="modal-v2" id="modal-news-v2">
+  <div class="modal-v2-box">
+    <span class="modal-v2-close" id="modal-news-close">&times;</span>
+    <h2>发布新闻</h2>
+    <form id="form-news">
+      <label>标题</label><input type="text" id="n-title" required placeholder="新闻标题">
+      <label>摘要</label><input type="text" id="n-summary" placeholder="简短摘要">
+      <label>正文</label><textarea id="n-content" rows="6" required placeholder="正文内容"></textarea>
+      <label class="chk-label"><input type="checkbox" id="n-important"> 标记为重要</label>
+      <button type="submit" class="btn-primary">发布</button>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toasts"></div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+// ============ THEME ============
+window.THEME2 = {
+  themes: [
+    {bg:'#000',card:'#111',ac:'#fff',tx:'#ddd',nm:'纯黑'},
+    {bg:'#fff',card:'#f8f8f8',ac:'#000',tx:'#222',nm:'纯白'},
+    {bg:'#0e0e0e',card:'#1c1c1c',ac:'#f0f0f0',tx:'#ccc',nm:'暗灰'},
+    {bg:'#fcfcfc',card:'#f2f2f2',ac:'#1a1a1a',tx:'#1a1a1a',nm:'亮灰'}
+  ],
+  cur: localStorage.getItem('bobi_theme2')||'0',
+  apply: function(i){
+    i=parseInt(i)||0; var t=this.themes[i];
+    var s=document.getElementById('theme2-style');
+    if(!s){s=document.createElement('style');s.id='theme2-style';document.head.appendChild(s);}
+    s.textContent='body{background:'+t.bg+';color:'+t.tx+'} .sidebar{background:'+t.card+'} .btn-primary{background:'+t.ac+';color:'+t.bg+'} .nav-item.active{color:'+t.ac+';border-color:'+t.ac+'} .video-card-v2,.news-item,.about-card,.file-item-v2{background:'+t.card+'} .search-box input{background:'+t.card+';color:'+t.tx+'} .chip{background:'+t.card+';color:'+t.tx+'} .chip.active{background:'+t.ac+';color:'+t.bg+'} input,textarea{background:'+t.card+';color:'+t.tx+';border-color:'+t.ac+'40}';
+    localStorage.setItem('bobi_theme2',i); this.cur=i;
+  },
+  next: function(){
+    var i=(parseInt(this.cur)+1)%this.themes.length;
+    this.apply(i);
+  },
+  init: function(){ this.apply(this.cur); }
+};
+THEME2.init();
+</script>
+<script src="js/app-v2.js"></script>
+</body>
+</html>
