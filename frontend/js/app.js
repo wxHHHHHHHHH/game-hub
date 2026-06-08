@@ -1601,6 +1601,11 @@
         avatar.textContent = (user.displayName || '?').charAt(0).toUpperCase();
 
         $('#user-name').textContent = user.displayName;
+        // Sync mobile area
+        var mn = $('#mobile-name'), mr = $('#mobile-role'), ma = $('#mobile-avatar');
+        if (mn) mn.textContent = user.displayName;
+        if (mr) { mr.textContent = AUTH.getRoleLabel(); mr.className = 'urole role-' + user.role; }
+        if (ma) { ma.style.background = user.avatarColor || CONFIG.AVATAR_COLORS[0]; ma.textContent = (user.displayName||'?')[0]; }
 
         const roleEl = $('#user-role');
         roleEl.textContent = AUTH.getRoleLabel();
@@ -1633,6 +1638,8 @@
         // Login
         $('#login-form').addEventListener('submit', handleLogin);
         $('#btn-logout').addEventListener('click', handleLogout);
+        var mLogout = $('#btn-logout-mobile');
+        if (mLogout) mLogout.addEventListener('click', handleLogout);
         $('#logo-home').addEventListener('click', function() { switchView('list'); });
 
         // Nav links
