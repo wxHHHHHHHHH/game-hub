@@ -175,12 +175,13 @@ body {
 /* ============ HEADER ============ */
 #app-main { display: none; flex-direction: column; min-height: 100vh; }
 #app-main.logged-in { display: flex; }
-.header { background: rgb(37,99,235); backdrop-filter: blur(12px);
-    
-    background: var(--bg-secondary) !important;
-    background: var(--bg-secondary); border-bottom: 1px solid var(--border);
-    position: sticky; top:0; z-index:var(--z-sticky); backdrop-filter: blur(10px);
-    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+.header {
+    background: rgb(37,99,235);
+    border-bottom: 1px solid rgba(255,255,255,.2);
+    position: sticky; top:0; z-index:var(--z-sticky);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
 }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration:0.01ms!important; animation-iteration-count:1!important; transition-duration:0.01ms!important; }
@@ -375,7 +376,7 @@ body {
 .btn-cancel:hover { color:var(--text-primary); border-color:var(--text-secondary); }
 
 /* ============ FOOTER ============ */
-.footer { background: rgb(37,99,235); color: #fff; padding: 24px 0; text-align: center; font-size: 14px;
+.footer { background: rgb(37,99,235); color: #fff; padding: 24px 0; text-align: center; font-size: 14px; border-top: none; }
 
 /* ============ VIDEO TYPE TABS ============ */
 .video-type-tabs { display: flex; gap: 0; margin-bottom: 20px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); }
@@ -919,7 +920,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .sort-btn, .source-btn { padding: 8px 20px; font-size: 13px; border-radius: 20px; }
 
 /* Nav refinements */
-.header { background: rgb(37,99,235); backdrop-filter: blur(12px);
     
 
 /* Card subtlety */
