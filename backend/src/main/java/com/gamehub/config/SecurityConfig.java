@@ -60,7 +60,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/videos").hasAnyRole("ADMIN", "MEMBER")
                 .requestMatchers(HttpMethod.PUT, "/api/videos/*").hasAnyRole("ADMIN", "MEMBER")
                 .requestMatchers(HttpMethod.POST, "/api/upload/**").hasAnyRole("ADMIN", "MEMBER")
+                .requestMatchers(HttpMethod.GET, "/api/comments/*/replies").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/videos/*/comments").hasAnyRole("ADMIN", "MEMBER", "VISITOR")
+                .requestMatchers(HttpMethod.POST, "/api/comments/*/reply").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/comments/*/like").authenticated()
                 // Everything else needs auth
                 .anyRequest().authenticated()
             )

@@ -1125,3 +1125,19 @@ button:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
   .mobile-user-area .user-meta .urole{font-size:11px;color:var(--text-muted)}
   .mobile-user-area .btn-exit{padding:6px 14px;font-size:12px;border-radius:8px;background:transparent;color:var(--danger);border:1px solid var(--danger);cursor:pointer;white-space:nowrap}
 }
+
+/* ============ COMMENT REPLIES ============ */
+.reply-item { margin-left:52px; padding:12px 16px; background:rgba(128,128,128,.04); border-radius:8px; margin-top:8px }
+.reply-item:first-child { margin-top:10px }
+.reply-avatar { width:28px; height:28px; min-width:28px; font-size:11px }
+.replies-section { border-left:2px solid var(--accent-cyan); margin-left:22px; padding-left:8px; margin-top:8px }
+.reply-actions { display:flex; gap:8px; align-items:center; margin-top:8px }
+.btn-reply { padding:4px 12px; font-size:12px; border:1px solid rgba(128,128,128,.15); border-radius:14px; background:transparent; color:#888; cursor:pointer; font-family:inherit }
+.btn-reply:hover { color:var(--accent-cyan); border-color:var(--accent-cyan) }
+.reply-sort { display:flex; gap:4px }
+.btn-sort-reply { padding:2px 10px; font-size:11px; border:1px solid rgba(128,128,128,.1); border-radius:10px; background:transparent; color:#777; cursor:pointer; font-family:inherit }
+.btn-sort-reply.active { background:var(--accent-cyan); color:#fff; border-color:var(--accent-cyan) }
+.reply-form { margin-top:8px; margin-left:52px; display:flex; flex-direction:column; gap:8px }
+.reply-form input, .reply-form textarea { padding:8px 12px; font-size:13px; border:1px solid var(--border); border-radius:8px; background:var(--bg-secondary); color:var(--text-primary); font-family:inherit }
+.reply-form textarea { min-height:50px; resize:vertical }
+.btn-submit-reply { align-self:flex-end; padding:6px 16px; font-size:12px; background:var(--accent-cyan); color:#fff; border:none; border-radius:8px; cursor:pointer; font-family:inherit; font-weight:600 }

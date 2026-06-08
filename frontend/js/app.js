@@ -1072,25 +1072,58 @@
         if (!commentList || commentList.length === 0) {
             return '<div class="no-comments">还没有评论，来发表第一条吧！</div>';
         }
-        const showDel = AUTH.can('deleteComment');
-        return commentList.map(function(c) {
+        // Filter top-level only
+        var topLevel = commentList.filter(function(c) { return !c.parentId; });
+        if (topLevel.length === 0) {
+            return '<div class="no-comments">还没有评论，来发表第一条吧！</div>';
+        }
+        var showDel = AUTH.can('deleteComment');
+        return topLevel.map(function(c) {
             var color = getAvatarColor(c.author);
             var initial = (c.author || '?').charAt(0).toUpperCase();
             var avatarHtml = c.authorAvatarUrl
                 ? '<span class="comment-avatar" style="background-image:url(' + esc(c.authorAvatarUrl) + ');background-size:cover"></span>'
                 : '<span class="comment-avatar" style="background:' + color + ';">' + initial + '</span>';
+            // Get replies for this comment
+            var replies = commentList.filter(function(r) { return r.parentId === c.id; });
+            var replyHtml = replies.length > 0
+                ? '<div class="replies-section">' + replies.map(function(r) {
+                    var rColor = getAvatarColor(r.author);
+                    var rInit = (r.author || '?').charAt(0).toUpperCase();
+                    var rAvatar = r.authorAvatarUrl
+                        ? '<span class="comment-avatar reply-avatar" style="background-image:url(' + esc(r.authorAvatarUrl) + ');background-size:cover"></span>'
+                        : '<span class="comment-avatar reply-avatar" style="background:' + rColor + ';">' + rInit + '</span>';
+                    return '<div class="reply-item" data-comment-id="' + r.id + '">' +
+                        '<div class="comment-header">' +
+                            '<span class="comment-author">' + rAvatar + esc(r.author) + '</span>' +
+                            '<span>' +
+                                '<span class="comment-time">' + timeAgo(r.createdAt) + '</span>' +
+                                (showDel ? '<button class="btn-delete-comment" data-id="' + r.id + '">删除</button>' : '') +
+                            '</span>' +
+                        '</div>' +
+                        '<div class="comment-content">' + esc(r.content) + '</div>' +
+                    '</div>';
+                }).join('') + '</div>'
+                : '';
             return '<div class="comment-item" data-comment-id="' + c.id + '">' +
                 '<div class="comment-header">' +
-                    '<span class="comment-author">' +
-                        avatarHtml +
-                        esc(c.author) +
-                    '</span>' +
+                    '<span class="comment-author">' + avatarHtml + esc(c.author) + '</span>' +
                     '<span>' +
                         '<span class="comment-time">' + timeAgo(c.createdAt) + '</span>' +
                         (showDel ? '<button class="btn-delete-comment" data-id="' + c.id + '">删除</button>' : '') +
                     '</span>' +
                 '</div>' +
                 '<div class="comment-content">' + esc(c.content) + '</div>' +
+                (AUTH.isLoggedIn()
+                    ? '<div class="reply-actions"><button class="btn-reply" data-id="' + c.id + '">回复</button>' +
+                      '<span class="reply-sort" data-id="' + c.id + '"><button class="btn-sort-reply active" data-sort="latest" data-pid="' + c.id + '">最新</button><button class="btn-sort-reply" data-sort="hot" data-pid="' + c.id + '">最热</button></span></div>'
+                    : '') +
+                '<div class="reply-form" id="reply-form-' + c.id + '" style="display:none;">' +
+                    '<input type="text" class="reply-author" value="' + esc(AUTH.getUser() ? AUTH.getUser().displayName : '') + '" readonly maxlength="100">' +
+                    '<textarea class="reply-content" placeholder="写下回复..." rows="2"></textarea>' +
+                    '<button class="btn-submit-reply" data-id="' + c.id + '">回复</button>' +
+                '</div>' +
+                replyHtml +
             '</div>';
         }).join('');
     }
@@ -1154,7 +1187,59 @@
 
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('btn-delete-comment')) handleDeleteComment(e);
+        // Reply button
+        if (e.target.classList.contains('btn-reply')) {
+            var id = e.target.dataset.id;
+            var form = document.getElementById('reply-form-' + id);
+            if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+        // Submit reply
+        if (e.target.classList.contains('btn-submit-reply')) {
+            handleReplySubmit(e.target.dataset.id);
+        }
+        // Sort replies
+        if (e.target.classList.contains('btn-sort-reply')) {
+            handleReplySort(e.target.dataset.pid, e.target.dataset.sort);
+        }
     });
+
+    async function handleReplySubmit(parentId) {
+        var form = document.getElementById('reply-form-' + parentId);
+        if (!form) return;
+        var contentEl = form.querySelector('.reply-content');
+        var content = contentEl.value.trim();
+        if (!content) return;
+        var author = AUTH.getUser() ? AUTH.getUser().displayName : '匿名';
+        try {
+            await API.replyComment(parentId, author, content);
+            contentEl.value = '';
+            form.style.display = 'none';
+            refreshComments();
+            showToast('回复成功');
+        } catch(e) { showToast('回复失败: ' + e.message, 'error'); }
+    }
+
+    async function handleReplySort(parentId, sort) {
+        var replies = await API.getReplies(parentId, sort);
+        // Find parent comment element and update replies section
+        var item = document.querySelector('[data-comment-id="' + parentId + '"]');
+        if (!item) return;
+        var section = item.querySelector('.replies-section');
+        if (!section) return;
+        var showDel = AUTH.can('deleteComment');
+        section.innerHTML = replies.map(function(r) {
+            var rColor = getAvatarColor(r.author);
+            var rInit = (r.author || '?').charAt(0).toUpperCase();
+            var rAvatar = r.authorAvatarUrl
+                ? '<span class="comment-avatar reply-avatar" style="background-image:url(' + esc(r.authorAvatarUrl) + ');background-size:cover"></span>'
+                : '<span class="comment-avatar reply-avatar" style="background:' + rColor + ';">' + rInit + '</span>';
+            return '<div class="reply-item">' +
+                '<div class="comment-header"><span class="comment-author">' + rAvatar + esc(r.author) + '</span>' +
+                '<span><span class="comment-time">' + timeAgo(r.createdAt) + '</span>' +
+                (showDel ? '<button class="btn-delete-comment" data-id="' + r.id + '">删除</button>' : '') + '</span></div>' +
+                '<div class="comment-content">' + esc(r.content) + '</div></div>';
+        }).join('');
+    }
 
     async function refreshComments() {
         try {

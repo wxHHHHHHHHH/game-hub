@@ -195,9 +195,19 @@ const API = (function() {
         },
 
         deleteComment: function(id) {
-            return request('/comments/' + id, {
-                method: 'DELETE'
+            return request('/comments/' + id, { method: 'DELETE' });
+        },
+        replyComment: function(parentId, author, content) {
+            return request('/comments/' + parentId + '/reply', {
+                method: 'POST',
+                body: { author: author, content: content }
             });
+        },
+        likeComment: function(id) {
+            return request('/comments/' + id + '/like', { method: 'POST' });
+        },
+        getReplies: function(parentId, sort) {
+            return request('/comments/' + parentId + '/replies?sort=' + (sort||'latest'));
         },
 
         // Files (documents)

@@ -25,6 +25,11 @@ public class Comment {
     @Column(length = 500)
     private String authorAvatarUrl;
 
+    private Long parentId;  // null = top-level comment, non-null = reply
+
+    @Column(nullable = false)
+    private int likes = 0;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
@@ -49,6 +54,10 @@ public class Comment {
     public void setAuthorId(Long authorId) { this.authorId = authorId; }
     public String getAuthorAvatarUrl() { return authorAvatarUrl; }
     public void setAuthorAvatarUrl(String authorAvatarUrl) { this.authorAvatarUrl = authorAvatarUrl; }
+    public Long getParentId() { return parentId; }
+    public void setParentId(Long parentId) { this.parentId = parentId; }
+    public int getLikes() { return likes; }
+    public void setLikes(int likes) { this.likes = likes; }
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
