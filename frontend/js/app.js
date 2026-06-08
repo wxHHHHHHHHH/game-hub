@@ -1074,12 +1074,15 @@
         }
         const showDel = AUTH.can('deleteComment');
         return commentList.map(function(c) {
-            const color = getAvatarColor(c.author);
-            const initial = (c.author || '?').charAt(0).toUpperCase();
+            var color = getAvatarColor(c.author);
+            var initial = (c.author || '?').charAt(0).toUpperCase();
+            var avatarHtml = c.authorAvatarUrl
+                ? '<span class="comment-avatar" style="background-image:url(' + esc(c.authorAvatarUrl) + ');background-size:cover"></span>'
+                : '<span class="comment-avatar" style="background:' + color + ';">' + initial + '</span>';
             return '<div class="comment-item" data-comment-id="' + c.id + '">' +
                 '<div class="comment-header">' +
                     '<span class="comment-author">' +
-                        '<span class="comment-avatar" style="background:' + color + ';">' + initial + '</span>' +
+                        avatarHtml +
                         esc(c.author) +
                     '</span>' +
                     '<span>' +

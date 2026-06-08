@@ -22,6 +22,9 @@ public class Comment {
 
     private Long authorId;
 
+    @Column(length = 500)
+    private String authorAvatarUrl;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
@@ -44,6 +47,8 @@ public class Comment {
 
     public Long getAuthorId() { return authorId; }
     public void setAuthorId(Long authorId) { this.authorId = authorId; }
+    public String getAuthorAvatarUrl() { return authorAvatarUrl; }
+    public void setAuthorAvatarUrl(String authorAvatarUrl) { this.authorAvatarUrl = authorAvatarUrl; }
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
