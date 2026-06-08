@@ -62,6 +62,21 @@ const API = (function() {
         logout: function() {
             return request('/auth/logout', { method: 'POST' });
         },
+        uploadAvatar: function(file) {
+            return new Promise(function(resolve, reject) {
+                var fd = new FormData(); fd.append('file', file);
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', BASE + '/auth/avatar');
+                var tok = AUTH.getToken();
+                if (tok) xhr.setRequestHeader('Authorization', 'Bearer ' + tok);
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText));
+                    else reject(new Error(JSON.parse(xhr.responseText).error || '上传失败'));
+                };
+                xhr.onerror = function() { reject(new Error('网络错误')); };
+                xhr.send(fd);
+            });
+        },
 
         getMe: function() {
             return request('/auth/me');

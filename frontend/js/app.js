@@ -721,6 +721,34 @@
         });
     }
 
+    // ============ AVATAR UPLOAD ============
+    function uploadAvatarHandler() {
+        if (!AUTH.isLoggedIn()) return;
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = async function() {
+            var file = this.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) { showToast('头像最大5MB', 'error'); return; }
+            showToast('上传中...');
+            try {
+                var result = await API.uploadAvatar(file);
+                var user = AUTH.getUser();
+                user.avatarUrl = result.avatarUrl;
+                AUTH.saveUser(user);
+                updateUserUI();
+                showToast('头像已更新');
+            } catch(e) { showToast('上传失败: ' + e.message, 'error'); }
+        };
+        input.click();
+    }
+
+    // Add saveUser to AUTH
+    AUTH.saveUser = function(user) {
+        localStorage.setItem('gamehub_user', JSON.stringify(user));
+    };
+
     // ============ SORT ============
     function setSort(sort) {
         currentSort = sort;
@@ -1597,8 +1625,21 @@
         if (!user) return;
 
         const avatar = $('#user-avatar');
-        avatar.style.background = user.avatarColor || CONFIG.AVATAR_COLORS[0];
-        avatar.textContent = (user.displayName || '?').charAt(0).toUpperCase();
+        // Check for uploaded avatar
+        if (user.avatarUrl) {
+            avatar.style.background = 'transparent';
+            avatar.style.backgroundImage = 'url(' + user.avatarUrl + ')';
+            avatar.style.backgroundSize = 'cover';
+            avatar.textContent = '';
+        } else {
+            avatar.style.background = user.avatarColor || CONFIG.AVATAR_COLORS[0];
+            avatar.style.backgroundImage = '';
+            avatar.textContent = (user.displayName || '?').charAt(0).toUpperCase();
+        }
+        // Click to upload avatar
+        avatar.style.cursor = 'pointer';
+        avatar.title = '点击更换头像';
+        avatar.onclick = uploadAvatarHandler;
 
         $('#user-name').textContent = user.displayName;
         // Sync mobile area

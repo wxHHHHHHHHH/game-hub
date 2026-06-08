@@ -88,7 +88,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public long count() {
-        return userRepository.count();
-    }
+    public long count() { return userRepository.count(); }
+    public User save(User user) { return userRepository.save(user); }
 }
