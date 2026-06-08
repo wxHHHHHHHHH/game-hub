@@ -917,7 +917,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .sort-btn, .source-btn { padding: 8px 20px; font-size: 13px; border-radius: 20px; }
 
 /* Nav refinements */
-.header { backdrop-filter: blur(12px); background: rgba(10,10,26,0.85); }
+.header { backdrop-filter: blur(12px); background: var(--bg-primary); }
 
 /* Card subtlety */
 .intro-section { border: none; background: var(--bg-primary); }
