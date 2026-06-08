@@ -167,16 +167,16 @@ initGSAP(function() {
     }
   };
 
-  // ========== SCROLL-TRIGGER HEADER SHRINK ==========
+  // ========== SCROLL-TRIGGER HEADER SHADOW ==========
+  // Only adjust blur + shadow on scroll; background already follows theme via CSS
   ScrollTrigger.create({
     start: 'top -80',
     end: 99999,
     onEnter: function() {
-      var bg = getComputedStyle(document.body).getPropertyValue('--bg-primary').trim() || '#e8f4fd';
-      gsap.to('.header', { background:bg, backdropFilter:'blur(16px)', duration:0.3, boxShadow:'0 2px 20px rgba(0,0,0,0.08)' });
+      gsap.to('.header', { backdropFilter:'blur(16px)', duration:0.3, boxShadow:'0 2px 20px rgba(0,0,0,0.08)' });
     },
     onLeaveBack: function() {
-      gsap.to('.header', { background:'transparent', backdropFilter:'blur(0px)', duration:0.3, boxShadow:'none' });
+      gsap.to('.header', { backdropFilter:'blur(8px)', duration:0.3, boxShadow:'0 1px 8px rgba(0,0,0,0.06)' });
     }
   });
 
