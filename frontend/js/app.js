@@ -1189,17 +1189,27 @@
         if (e.target.classList.contains('btn-delete-comment')) handleDeleteComment(e);
         // Reply button
         if (e.target.classList.contains('btn-reply')) {
+            e.preventDefault();
             var id = e.target.dataset.id;
+            // Hide all other reply forms
+            document.querySelectorAll('.reply-form').forEach(function(f) { f.style.display = 'none'; });
             var form = document.getElementById('reply-form-' + id);
-            if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            if (form) { form.style.display = 'block'; form.querySelector('.reply-content').focus(); }
         }
         // Submit reply
         if (e.target.classList.contains('btn-submit-reply')) {
+            e.preventDefault();
             handleReplySubmit(e.target.dataset.id);
         }
         // Sort replies
         if (e.target.classList.contains('btn-sort-reply')) {
-            handleReplySort(e.target.dataset.pid, e.target.dataset.sort);
+            e.preventDefault();
+            var pid = e.target.dataset.pid;
+            var s = e.target.dataset.sort;
+            // Update active state
+            e.target.parentElement.querySelectorAll('.btn-sort-reply').forEach(function(b) { b.classList.remove('active'); });
+            e.target.classList.add('active');
+            handleReplySort(pid, s);
         }
     });
 
@@ -1255,11 +1265,12 @@
     }
 
     function updateCommentCount() {
-        const remaining = $$('.comment-item').length;
-        const countEl = $('.comment-count');
-        if (countEl) countEl.textContent = '(' + remaining + ')';
-        if (remaining === 0) {
-            const list = $('#comments-list');
+        // Only count top-level comments (not replies)
+        var count = document.querySelectorAll('.comment-item:not(.reply-item)').length;
+        var countEl = $('.comment-count');
+        if (countEl) countEl.textContent = '(' + count + ')';
+        if (count === 0) {
+            var list = $('#comments-list');
             if (list) list.innerHTML = '<div class="no-comments">还没有评论，来发表第一条吧！</div>';
         }
     }
