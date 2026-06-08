@@ -503,12 +503,12 @@
 // ============ THEME SWITCHER ============
 window.THEME = {
   presets: [
-    { bg:'#000000', card:'#111111', a1:'#ffffff', a2:'#cccccc', text:'#e5e5e5', name:'纯黑' },
-    { bg:'#ffffff', card:'#f5f5f5', a1:'#000000', a2:'#333333', text:'#111111', name:'纯白' },
-    { bg:'#0a0a0a', card:'#1a1a1a', a1:'#e5e5e5', a2:'#a0a0a0', text:'#d4d4d4', name:'暗黑' },
-    { bg:'#fafafa', card:'#ffffff', a1:'#171717', a2:'#525252', text:'#171717', name:'亮白' },
-    { bg:'#1a1a1a', card:'#262626', a1:'#f5f5f5', a2:'#d4d4d4', text:'#e5e5e5', name:'深灰' },
-    { bg:'#f5f5f5', card:'#ffffff', a1:'#262626', a2:'#737373', text:'#171717', name:'浅灰' }
+    { bg:'#e8f4fd', card:'#ffffff', a1:'#2563eb', a2:'#3b82f6', text:'#1e293b', name:'天蓝' },
+    { bg:'#f0f7ff', card:'#ffffff', a1:'#0284c7', a2:'#0ea5e9', text:'#0f172a', name:'深海蓝' },
+    { bg:'#f5f9fc', card:'#ffffff', a1:'#6366f1', a2:'#818cf8', text:'#1e1b4b', name:'靛蓝白' },
+    { bg:'#ecfdf5', card:'#ffffff', a1:'#059669', a2:'#10b981', text:'#064e3b', name:'薄荷绿' },
+    { bg:'#fef7ed', card:'#ffffff', a1:'#d97706', a2:'#f59e0b', text:'#451a03', name:'暖阳' },
+    { bg:'#faf5ff', card:'#ffffff', a1:'#7c3aed', a2:'#8b5cf6', text:'#2e1065', name:'薰衣草' }
   ],
   current: localStorage.getItem('bobi_theme') || '',
   getC: function() { try { return JSON.parse(this.current); } catch(e) { return null; } },
@@ -564,7 +564,7 @@ window.THEME = {
   init: function() {
     var c = this.getC();
     if (c) { this.apply(c.bg, c.card, c.a1, c.a2, c.text); }
-    else { var p=this.presets[0]; this.apply(p.bg, p.card, p.a1, p.a2, p.text); }
+    else { var p=this.presets[0]; this.apply(p.bg||'#e8f4fd',p.card||'#ffffff',p.a1||'#2563eb',p.a2||'#3b82f6',p.text||'#1e293b'); }
   }
 };
 THEME.init();
