@@ -730,10 +730,15 @@
         input.onchange = async function() {
             var file = this.files[0];
             if (!file) return;
-            if (file.size > 5 * 1024 * 1024) { showToast('头像最大5MB', 'error'); return; }
-            showToast('上传中...');
+            if (file.size > 50 * 1024 * 1024) { showToast('头像最大50MB', 'error'); return; }
+            showToast('正在压缩...');
             try {
-                var result = await API.uploadAvatar(file);
+                // Client-side compress + crop to square
+                var compressed = await compressImage(file, 200, 0.8);
+                var origSize = (file.size / 1024 / 1024).toFixed(1);
+                var newSize = (compressed.size / 1024).toFixed(0);
+                showToast('上传中（' + origSize + 'MB → ' + newSize + 'KB）');
+                var result = await API.uploadAvatar(compressed);
                 var user = AUTH.getUser();
                 user.avatarUrl = result.avatarUrl;
                 AUTH.saveUser(user);

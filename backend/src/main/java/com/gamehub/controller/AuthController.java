@@ -72,7 +72,7 @@ public class AuthController {
                                           @RequestAttribute(value = "userId", required = false) Long userId) {
         if (userId == null) return ResponseEntity.status(401).body(Map.of("error", "请先登录"));
         if (file.isEmpty()) return ResponseEntity.badRequest().body(Map.of("error", "文件为空"));
-        if (file.getSize() > 5 * 1024 * 1024) return ResponseEntity.badRequest().body(Map.of("error", "头像最大5MB"));
+        if (file.getSize() > 50 * 1024 * 1024) return ResponseEntity.badRequest().body(Map.of("error", "头像最大50MB"));
 
         try {
             Path dir = Paths.get("E:/game-hub/uploads/avatars");
