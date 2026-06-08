@@ -172,10 +172,11 @@ initGSAP(function() {
     start: 'top -80',
     end: 99999,
     onEnter: function() {
-      gsap.to('.header', { background:'rgba(10,10,26,0.92)', backdropFilter:'blur(16px)', duration:0.3 });
+      var bg = getComputedStyle(document.body).getPropertyValue('--bg-primary').trim() || '#e8f4fd';
+      gsap.to('.header', { background:bg, backdropFilter:'blur(16px)', duration:0.3, boxShadow:'0 2px 20px rgba(0,0,0,0.08)' });
     },
     onLeaveBack: function() {
-      gsap.to('.header', { background:'var(--bg-secondary)', backdropFilter:'blur(10px)', duration:0.3 });
+      gsap.to('.header', { background:'transparent', backdropFilter:'blur(0px)', duration:0.3, boxShadow:'none' });
     }
   });
 
