@@ -526,6 +526,7 @@
         grid.querySelectorAll('.news-card').forEach(function(card) {
             card.addEventListener('click', function() { openNewsDetail(parseInt(card.dataset.id)); });
         });
+        if (window.GSANIM) window.GSANIM.newsList();
     }
 
     async function openNewsDetail(newsId) {
@@ -629,6 +630,7 @@
                 openLightbox(parseInt(item.dataset.idx));
             });
         });
+        if (window.GSANIM) window.GSANIM.gallery();
     }
 
     let touchStartX = 0, touchStartY = 0;
@@ -812,6 +814,9 @@
                 openVideoDetail(parseInt(card.dataset.id));
             });
         });
+
+        // GSAP animate
+        if (window.GSANIM) window.GSANIM.videoGrid();
     }
 
     function updateStats(vCount, cCount) {
@@ -907,7 +912,7 @@
             try {
                 const res = await API.likeVideo(videoId);
                 if (countEl) countEl.textContent = res.likes;
-                if (btn) { btn.classList.add('liked'); btn.innerHTML = '❤ 已赞 <span class="like-count" id="like-count">' + res.likes + '</span>'; }
+                if (btn) { btn.classList.add('liked'); btn.innerHTML = '❤ 已赞 <span class="like-count" id="like-count">' + res.likes + '</span>'; if(window.GSANIM) window.GSANIM.likeBurst(btn); }
             } catch(e) { showToast('点赞失败: ' + e.message, 'error'); }
         }
     }
@@ -1120,11 +1125,11 @@
             const video = await API.getVideo(currentVideoId);
             const comments = video.comments || [];
             const list = $('#comments-list');
-            if (list) { list.innerHTML = renderComments(comments); updateCommentCount(); }
+            if (list) { list.innerHTML = renderComments(comments); updateCommentCount(); if(window.GSANIM) window.GSANIM.comments(); }
         } catch(e) {
             const videoComments = demoComments.filter(function(c) { return c.videoId === currentVideoId; });
             const list = $('#comments-list');
-            if (list) { list.innerHTML = renderComments(videoComments); updateCommentCount(); }
+            if (list) { list.innerHTML = renderComments(videoComments); updateCommentCount(); if(window.GSANIM) window.GSANIM.comments(); }
         }
     }
 
