@@ -1,0 +1,35 @@
+/* 波比 Vue — Global Styles */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#000;--card:#111;--ac:#fff;--tx:#ddd;
+  --z-dropdown:100;--z-sticky:200;--z-modal:300;--z-toast:400;--z-lightbox:500;
+}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+  background:var(--bg);color:var(--tx);line-height:1.6;font-size:15px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Typography */
+h1{font-size:clamp(1.75rem,4vw,3rem);letter-spacing:-0.02em;font-weight:800}
+h2{font-size:clamp(1.25rem,3vw,1.75rem);font-weight:700}
+h3{font-size:1.125rem;font-weight:600}
+p{line-height:1.7}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(128,128,128,.2);border-radius:10px}
+
+/* Focus */
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px;border-radius:2px}
+
+/* Reduced motion */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* Global animation */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}

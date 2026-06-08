@@ -38,3 +38,5 @@ temp/
 
 # HS error logs
 hs_err_pid*.log
+frontend-vue/dist/
+frontend-vue/node_modules/
