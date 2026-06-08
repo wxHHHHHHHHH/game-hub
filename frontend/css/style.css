@@ -18,20 +18,20 @@
     --space-lg: 24px;
     --space-xl: 32px;
     --space-2xl: 48px;
-    --bg-primary: #0a0a1a;
-    --bg-secondary: #12122a;
-    --bg-card: #1a1a3e;
-    --bg-card-hover: #222255;
-    --text-primary: #e8e8f0;
-    --text-secondary: #a0a0c0;
-    --text-muted: #6a6a8a;
-    --accent-cyan: #00e5ff;
-    --accent-magenta: #ff00e5;
-    --accent-green: #00ff88;
-    --accent-yellow: #ffcc00;
-    --accent-purple: #7b61ff;
-    --border: #2a2a4a;
-    --danger: #ff4466;
+    --bg-primary: #e8f4fd;
+    --bg-secondary: #dceaf5;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f0f5fa;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --accent-cyan: #2563eb;
+    --accent-magenta: #3b82f6;
+    --accent-green: #3b82f6;
+    --accent-yellow: #3b82f6;
+    --accent-purple: #3b82f6;
+    --border: #cbd5e1;
+    --danger: #ef4444;
     --radius: 12px;
     --radius-sm: 8px;
     --shadow: 0 4px 24px rgba(0,0,0,0.4);
@@ -66,9 +66,8 @@ body {
     line-height: 1.6;
     min-height: 100vh;
     background-image:
-        radial-gradient(ellipse at 20% 50%, rgba(123,97,255,0.06) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(0,229,255,0.04) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 80%, rgba(255,0,229,0.03) 0%, transparent 50%);
+        radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(59,130,246,0.03) 0%, transparent 50%);
 }
 n@media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration:0.01ms!important; animation-iteration-count:1!important; transition-duration:0.01ms!important; }
