@@ -1960,13 +1960,22 @@
     const navToggle = $('#nav-toggle');
     const navLinks = $('#nav-links');
     if (navToggle && navLinks) {
-        navToggle.addEventListener('click', function() { navLinks.classList.toggle('open'); });
-        document.addEventListener('click', function(e) {
-            if (!navLinks.contains(e.target) && e.target !== navToggle) navLinks.classList.remove('open');
+        navToggle.addEventListener('click', function() {
+            var open = navLinks.classList.toggle('open');
+            navToggle.textContent = open ? '✕' : '☰';
         });
-        // Close after clicking a link
-        navLinks.querySelectorAll('.nav-link').forEach(function(l) {
-            l.addEventListener('click', function() { navLinks.classList.remove('open'); });
+        document.addEventListener('click', function(e) {
+            if (!navLinks.contains(e.target) && e.target !== navToggle) {
+                navLinks.classList.remove('open');
+                navToggle.textContent = '☰';
+            }
+        });
+        // Close after clicking any link or button in nav
+        navLinks.querySelectorAll('.nav-link, #btn-add-video, #btn-dashboard, #btn-admin-panel').forEach(function(l) {
+            l.addEventListener('click', function() {
+                navLinks.classList.remove('open');
+                navToggle.textContent = '☰';
+            });
         });
     }
 

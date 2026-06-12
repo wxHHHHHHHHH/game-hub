@@ -65,10 +65,13 @@ body{
 }
 .login-container{width:100%;max-width:400px}
 .login-brand{text-align:center;margin-bottom:40px}
+.login-brand .logo-img-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
 .login-logo-img{
-  width:72px;height:72px;display:block;margin:0 auto 20px;
+  width:72px;height:72px;display:block;
   border-radius:16px;
 }
+.login-logo-text{font-size:24px;letter-spacing:8px}
+.login-logo-text i{color:var(--ink)}
 .login-brand h1{font-size:28px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
 .login-brand h1 span{color:var(--accent)}
 .login-brand p{color:var(--ink-secondary);font-size:14px}
@@ -96,14 +99,23 @@ body{
 .login-hint strong{color:var(--ink-secondary);font-weight:600}
 
 /* Logo system */
-.logo{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;font-size:18px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
-.logo-col{display:inline-flex;align-items:center}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;font-size:18px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.logo-col{display:inline-flex;align-items:center;gap:6px}
 .logo-img-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
-.logo-text-vertical{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);display:inline-flex;flex-direction:row;line-height:1;letter-spacing:4px}
-.logo-text-vertical i{font-style:normal;font-size:11px;font-weight:800;color:var(--accent-warm);font-family:'STKaiti','KaiTi','楷体',serif}
-.logo-img{width:32px;height:32px;object-fit:contain}
-.logo-pick-btn{font-size:14px;cursor:pointer;transition:var(--transition);opacity:.5}
+.logo-text-vertical{display:inline-flex;flex-direction:row;line-height:1;letter-spacing:4px;align-items:center}
+.logo-text-vertical i{font-style:normal;font-size:16px;font-weight:800;color:var(--ink)}
+.logo-img{width:36px;height:36px;object-fit:contain;border-radius:8px}
+.logo-pick-btn{font-size:14px;cursor:pointer;transition:var(--transition);opacity:.4;margin-left:2px}
 .logo-pick-btn:hover{opacity:1}
+/* Mobile: compact logo */
+@media(max-width:900px){
+  .logo{font-size:15px;gap:6px}
+  .logo-col{gap:4px}
+  .logo-img{width:28px;height:28px}
+  .logo-text-vertical{letter-spacing:2px}
+  .logo-text-vertical i{font-size:14px}
+  .logo-pick-btn{font-size:12px;margin-left:0}
+}
 
 /* ============ HEADER ============ */
 #app-main{display:none;flex-direction:column;min-height:100vh}
