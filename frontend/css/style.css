@@ -708,29 +708,55 @@ body::before {
 .banner-item .banner-info { flex:1; }
 .banner-item .banner-info span { display:block; font-size:13px; }
 
-/* ============ NAV TOGGLE ============ */
-.nav-toggle { display:none; background:none; border:none; color:var(--text-primary); font-size:24px; cursor:pointer; padding:4px; }
+/* ============ NAV TOGGLE (Mobile) ============ */
+.nav-toggle {
+  display:none; background:none; border:none; color:var(--text-primary);
+  font-size:26px; cursor:pointer; padding:8px; line-height:1;
+  align-items:center; justify-content:center;
+}
 @media (max-width: 900px) {
-  .nav-toggle { display:block; }
-  .nav-links { display:none; position:absolute; top:64px; left:0; right:0; background:rgba(14,14,22,.97); flex-direction:column; padding:12px; border-bottom:1px solid var(--border); gap:4px; z-index:var(--z-modal); backdrop-filter: blur(20px); }
+  .nav-toggle { display:flex; align-items:center; }
+  .nav-links {
+    display:none; position:fixed; top:64px; left:0; right:0; bottom:0;
+    background:var(--bg-secondary); flex-direction:column; padding:8px 0 80px;
+    gap:2px; z-index:var(--z-modal);
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
+  }
   .nav-links.open { display:flex; }
-  .nav-link, #btn-add-video, #btn-dashboard, #btn-admin-panel { width:100%; text-align:left; justify-content:flex-start; font-size:14px; padding:10px 14px; }
-  .user-area { flex-direction:row; padding:8px 14px; border-top:1px solid var(--border); margin-top:4px; width:100%; }
+  .nav-link, #btn-add-video, #btn-dashboard, #btn-admin-panel {
+    width:calc(100% - 24px); margin:0 12px;
+    text-align:left; justify-content:flex-start; font-size:15px;
+    padding:14px 16px; border-radius:10px;
+  }
+  .user-area {
+    display:flex; flex-direction:row; align-items:center; gap:10px;
+    padding:16px; margin:12px; border-top:1px solid var(--border);
+    width:calc(100% - 24px);
+  }
+  /* Mobile logged-in user display at top of menu */
+  .mobile-user-area {
+    display:flex!important; align-items:center; gap:12px;
+    padding:16px; margin:0 12px 8px;
+    border-bottom:1px solid var(--border);
+  }
+  .mobile-user-area .user-dot {
+    width:40px; height:40px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; font-weight:700; color:var(--bg-primary);
+    background:linear-gradient(135deg,var(--accent-cyan),var(--accent-magenta));
+  }
+  .mobile-user-area .user-meta { flex:1; }
+  .mobile-user-area .user-meta .uname { font-size:15px; font-weight:600; color:var(--text-primary); display:block; }
+  .mobile-user-area .user-meta .urole { font-size:12px; color:var(--text-muted); }
+  .mobile-user-area .btn-exit {
+    padding:8px 16px; font-size:13px; border-radius:8px;
+    background:transparent; color:var(--danger); border:1px solid var(--danger);
+    cursor:pointer; white-space:nowrap;
+  }
 }
 
 /* ============ VISITOR BANNER ============ */
 .visitor-banner { background: rgba(200,150,62,.06); border: 1px solid rgba(200,150,62,.15); color: var(--accent-cyan); padding: 10px 20px; border-radius: 10px; font-size: 13px; text-align: center; margin-bottom: 20px; }
-
-/* ============ MOBILE USER AREA ============ */
-@media (max-width:768px){
-  .user-area{display:none!important}
-  .mobile-user-area{display:flex!important;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border);margin-bottom:8px;order:-1}
-  .mobile-user-area .user-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--bg-primary);background:linear-gradient(135deg,var(--accent-cyan),var(--accent-magenta));flex-shrink:0}
-  .mobile-user-area .user-meta{flex:1}
-  .mobile-user-area .user-meta .uname{font-size:14px;font-weight:600;color:var(--text-primary);display:block}
-  .mobile-user-area .user-meta .urole{font-size:11px;color:var(--text-muted)}
-  .mobile-user-area .btn-exit{padding:6px 14px;font-size:12px;border-radius:8px;background:transparent;color:var(--danger);border:1px solid var(--danger);cursor:pointer;white-space:nowrap}
-}
 
 /* ============ COMMENT REPLIES ============ */
 .reply-item { margin-left:52px; padding:12px 16px; background:rgba(128,128,128,.04); border-radius:8px; margin-top:8px }
