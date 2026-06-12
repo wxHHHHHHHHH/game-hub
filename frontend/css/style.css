@@ -62,14 +62,13 @@ body.theme-dark    { --accent-cyan:#9CA3AF; --accent-magenta:#6B7280; --accent-p
 body.theme-light   { --accent-cyan:#6366F1; --accent-magenta:#4F46E5; --accent-purple:#4338CA; --accent-green:#6366F1; --accent-yellow:#4F46E5; --bg-primary:#f8f8fa; --bg-secondary:#eef0f2; --bg-card:#ffffff; --bg-card-hover:#f0f0f4; --text-primary:#1a1a2e; --text-secondary:#4a4a5e; --text-muted:#8a8a9a; --border:#d0d0da; }
 
 /* --- GLOBAL --- */
-html { font-size:16px; scroll-behavior:smooth; overflow-x: hidden; }
+html { font-size:16px; scroll-behavior:smooth; }
 body {
   font-family: var(--font-sans);
   background: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
-  overflow-x: hidden;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   /* Subtle noise grain overlay */
@@ -176,19 +175,13 @@ body::before {
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   box-shadow: 0 1px 0 rgba(212,168,83,.05), 0 8px 24px rgba(0,0,0,.2);
-  overflow: hidden;
 }
-.header-inner { display: flex; align-items: center; height: 64px; padding:0; gap: 0; }
-.header-inner .logo { flex-shrink: 0; }
-.header-inner .nav-toggle { flex-shrink: 0; }
-.header-inner .nav-links { flex: 1; justify-content: center; }
-.header-inner .user-area { flex-shrink: 0; margin-left: auto; }
-.header-inner .btn-logout { flex-shrink: 0; }
+.header-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; padding:0; }
 
 /* Navigation */
-.nav-links { display:flex; align-items:center; gap:2px; flex-wrap:nowrap; width:100%; justify-content: center; }
+.nav-links { display:flex; align-items:center; gap:4px; flex-wrap:nowrap; }
 .nav-link {
-  color: var(--nav-text, rgba(255,255,255,.7)); font-size:14px; padding:10px 18px; min-height:44px;
+  color: var(--nav-text, rgba(255,255,255,.7)); font-size:13px; padding:8px 14px; min-height:44px;
   border-radius: 8px; transition: var(--transition); font-weight:600;
   text-decoration: none; background: none; cursor: pointer; font-family: inherit;
   white-space:nowrap; display:inline-flex; align-items:center; border:1px solid transparent;
