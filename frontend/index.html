@@ -477,7 +477,7 @@
 <!-- Color Settings Modal -->
 <div class="modal-overlay" id="modal-color">
     <div class="modal" style="max-width:520px;">
-        <div class="modal-header"><h2>🎨 20 组简约配色</h2><button class="modal-close" onclick="THEME.close()">&times;</button></div>
+        <div class="modal-header"><h2>🎨 50 组配色方案</h2><button class="modal-close" onclick="THEME.close()">&times;</button></div>
         <div class="modal-body">
             <p style="font-size:12px;color:var(--ink-muted);margin-bottom:16px;">点击色块切换：</p>
             <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;" id="preset-btns"></div>
@@ -522,16 +522,46 @@ window.THEME = {
     { bg:'#faf7f6', card:'#ffffff', a1:'#991b1b', a2:'#b91c1c', text:'#1c0606', name:'朱砂' },
     { bg:'#f8f9f8', card:'#ffffff', a1:'#0f766e', a2:'#0d9488', text:'#0c1c1a', name:'青瓷' },
     { bg:'#f9f8f7', card:'#ffffff', a1:'#44403c', a2:'#57534e', text:'#141210', name:'暖棕灰' },
-    { bg:'#f8f7fa', card:'#ffffff', a1:'#3730a3', a2:'#4f46e5', text:'#0c0c24', name:'藏青' },
-    { bg:'#fafaf9', card:'#ffffff', a1:'#92400e', a2:'#b45309', text:'#180c02', name:'古铜棕' },
-    { bg:'#fafafa', card:'#ffffff', a1:'#0c0c0c', a2:'#3f3f46', text:'#09090b', name:'纯黑' },
-    { bg:'#faf8f7', card:'#ffffff', a1:'#9d174d', a2:'#be185d', text:'#1c0610', name:'梅红' },
-    { bg:'#f8f8f9', card:'#ffffff', a1:'#0369a1', a2:'#0284c7', text:'#081420', name:'钴蓝' },
-    { bg:'#faf7f8', card:'#ffffff', a1:'#a21caf', a2:'#c026d3', text:'#18081c', name:'品红' },
-    { bg:'#f9f8f7', card:'#ffffff', a1:'#365314', a2:'#4d7c0f', text:'#101808', name:'橄榄' },
-    { bg:'#faf9f9', card:'#ffffff', a1:'#881337', a2:'#9f1239', text:'#1a0610', name:'玫紫' },
-    { bg:'#f8f9fa', card:'#ffffff', a1:'#075985', a2:'#0c4a6e', text:'#081420', name:'深湖蓝' },
-    { bg:'#faf9f8', card:'#ffffff', a1:'#78350f', a2:'#92400e', text:'#160c04', name:'黑巧克力' },
+    { bg:'#f5f7fa', card:'#ffffff', a1:'#4F8CF7', a2:'#2563EB', text:'#1a2233', name:'晴空蓝' },
+    { bg:'#f8faf9', card:'#ffffff', a1:'#10B981', a2:'#059669', text:'#132820', name:'浅薄荷' },
+    { bg:'#fdf8f5', card:'#ffffff', a1:'#F97316', a2:'#EA580C', text:'#2d1a10', name:'日暖' },
+    { bg:'#faf7fc', card:'#ffffff', a1:'#8B5CF6', a2:'#7C3AED', text:'#1a1230', name:'薰衣草' },
+    { bg:'#fefaf7', card:'#ffffff', a1:'#EC4899', a2:'#DB2777', text:'#281018', name:'樱花粉' },
+    { bg:'#f4f6f9', card:'#ffffff', a1:'#6366F1', a2:'#4F46E5', text:'#141830', name:'靛蓝白' },
+    { bg:'#f0f4f8', card:'#ffffff', a1:'#0EA5E9', a2:'#0284C7', text:'#0f1a28', name:'天蓝' },
+    { bg:'#f5fdfc', card:'#ffffff', a1:'#14B8A6', a2:'#0D9488', text:'#102420', name:'湖水绿' },
+    { bg:'#fffdf5', card:'#ffffff', a1:'#F59E0B', a2:'#D97706', text:'#2d2008', name:'蜜糖' },
+    { bg:'#f8f6f0', card:'#ffffff', a1:'#B45309', a2:'#92400E', text:'#201408', name:'牛皮纸' },
+    { bg:'#fef7f2', card:'#ffffff', a1:'#FB923C', a2:'#F97316', text:'#281808', name:'蜜桃' },
+    { bg:'#f2f7fe', card:'#ffffff', a1:'#93C5FD', a2:'#3B82F6', text:'#141828', name:'蓝莓奶' },
+    { bg:'#fef2f8', card:'#ffffff', a1:'#F9A8D4', a2:'#EC4899', text:'#241018', name:'草莓奶' },
+    { bg:'#f2fef5', card:'#ffffff', a1:'#86EFAC', a2:'#22C55E', text:'#101c14', name:'薄荷奶' },
+    { bg:'#fdf2fc', card:'#ffffff', a1:'#D8B4FE', a2:'#9333EA', text:'#1a1024', name:'紫薯奶' },
+    { bg:'#f2f4f8', card:'#ffffff', a1:'#A5B4FC', a2:'#6366F1', text:'#121828', name:'丁香灰' },
+    { bg:'#f8f4f0', card:'#ffffff', a1:'#D6C8B8', a2:'#A88B73', text:'#1c140c', name:'燕麦' },
+    { bg:'#f0f4f6', card:'#ffffff', a1:'#67E8F9', a2:'#0891B2', text:'#0c1c20', name:'冰蓝' },
+    { bg:'#fcf2f0', card:'#ffffff', a1:'#FCA5A5', a2:'#EF4444', text:'#241010', name:'水蜜桃' },
+    { bg:'#18181b', card:'#27272a', a1:'#E4E4E7', a2:'#A1A1AA', text:'#e8e8ec', name:'锌灰' },
+    { bg:'#1e1b4b', card:'#312e81', a1:'#C084FC', a2:'#818CF8', text:'#e0d8f4', name:'星空紫' },
+    { bg:'#0c1a14', card:'#142c20', a1:'#2DD4BF', a2:'#14B8A6', text:'#c8e8dc', name:'墨绿' },
+    { bg:'#0f172a', card:'#1e293b', a1:'#38BDF8', a2:'#0EA5E9', text:'#dce8f4', name:'暗潮蓝' },
+    { bg:'#1a1412', card:'#2c201c', a1:'#E11D48', a2:'#BE123C', text:'#e8d8d4', name:'酒红' },
+    { bg:'#1a1a10', card:'#2c2c18', a1:'#CA8A04', a2:'#A16207', text:'#e4e0c8', name:'橄榄' },
+    { bg:'#0a0a0f', card:'#151520', a1:'#00FFFF', a2:'#FF00FF', text:'#e0e0f0', name:'赛博青' },
+    { bg:'#ffffff', card:'#ffffff', a1:'#000000', a2:'#333333', text:'#111111', name:'极简白' },
+    { bg:'#000000', card:'#111111', a1:'#FFFFFF', a2:'#CCCCCC', text:'#e8e8e8', name:'极简黑' },
+    { bg:'#fef5f0', card:'#ffffff', a1:'#E11D48', a2:'#BE123C', text:'#200810', name:'日暮红' },
+    { bg:'#f4f8f4', card:'#ffffff', a1:'#166534', a2:'#14532D', text:'#08180c', name:'松林' },
+    { bg:'#f2f6f2', card:'#ffffff', a1:'#4D7C0F', a2:'#3F6212', text:'#101808', name:'橄榄绿' },
+    { bg:'#0c0c10', card:'#181824', a1:'#C0C0C0', a2:'#808080', text:'#dcdcdc', name:'白银' },
+    { bg:'#100c0a', card:'#1c1814', a1:'#D4A853', a2:'#B8860B', text:'#d8d0c0', name:'古铜' },
+    { bg:'#120e0a', card:'#1e1a14', a1:'#FFD700', a2:'#DAA520', text:'#d8d0c0', name:'黄金' },
+    { bg:'#fdfcf5', card:'#ffffff', a1:'#CA8A04', a2:'#A16207', text:'#1c1608', name:'麦穗' },
+    { bg:'#f5fdfb', card:'#ffffff', a1:'#06B6D4', a2:'#0891B2', text:'#0a1c20', name:'湖蓝' },
+    { bg:'#faf6f0', card:'#ffffff', a1:'#92400E', a2:'#78350F', text:'#1c0e04', name:'大地棕' },
+    { bg:'#fef8ee', card:'#ffffff', a1:'#D97706', a2:'#92400E', text:'#1c0c00', name:'焦糖' },
+    { bg:'#f0f7fa', card:'#ffffff', a1:'#0369A1', a2:'#075985', text:'#0a1824', name:'深海蓝' },
+    { bg:'#fdf4f2', card:'#ffffff', a1:'#BE123C', a2:'#9F1239', text:'#1c0810', name:'赤霞珠' },
   ],
   current: localStorage.getItem('bobi_theme') || '',
   getC: function() { try { return JSON.parse(this.current); } catch(e) { return null; } },
@@ -591,8 +621,8 @@ window.THEME = {
     var self = this, cur = this.getC();
     var html = this.presets.map(function(p) {
       var active = cur && cur.bg===p.bg && cur.a1===p.a1;
-      var txt = p.text||'#e6e0d4';
-      return '<button onclick="THEME._apply(\''+p.bg+'\',\''+p.card+'\',\''+p.a1+'\',\''+p.a2+'\',\''+txt+'\')" style="width:32px;height:32px;border-radius:50%;border:2px solid '+(active?'var(--accent-cyan)':'var(--border)')+';background:linear-gradient(135deg,'+p.a1+','+p.a2+');cursor:pointer;" title="'+p.name+'"></button>';
+      var txt = p.text||'#1a1a18';
+      return '<span class="preset-wrap" title="'+p.name+'"><button onclick="THEME._apply(\''+p.bg+'\',\''+p.card+'\',\''+p.a1+'\',\''+p.a2+'\',\''+txt+'\')" class="preset-dot'+(active?' active':'')+'" style="background:linear-gradient(135deg,'+p.a1+','+p.a2+');"></button><span class="preset-name">'+p.name+'</span></span>';
     }).join('');
     document.getElementById('preset-btns').innerHTML = html;
   },

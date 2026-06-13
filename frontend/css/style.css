@@ -287,6 +287,15 @@ body{
 .btn-delete-comment{background:transparent;color:var(--ink-muted);border:none;cursor:pointer;font-size:12px;padding:4px 8px;border-radius:4px;transition:var(--transition);font-family:inherit}
 .btn-delete-comment:hover{color:var(--danger)}
 
+/* Preset color picker */
+#preset-btns{display:flex;flex-wrap:wrap;gap:10px 8px;margin-bottom:16px;max-height:280px;overflow-y:auto}
+.preset-wrap{display:inline-flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.preset-wrap .preset-dot{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);cursor:pointer;transition:var(--transition)}
+.preset-wrap .preset-dot.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.preset-wrap .preset-dot:hover{transform:scale(1.15)}
+.preset-wrap .preset-name{font-size:10px;color:var(--ink-muted);text-align:center;line-height:1.1;max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.preset-wrap:hover .preset-name{color:var(--ink)}
+
 /* ============ MODALS ============ */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:var(--z-modal);align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 .modal-overlay.active{display:flex}
