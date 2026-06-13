@@ -11,6 +11,9 @@
   --bg:#fafaf9;
   --surface:#ffffff;
   --surface-hover:#f5f4f3;
+  --bg-header:#f5f4f1;
+  --bg-footer:#f5f4f1;
+  --bg-input:#f7f6f4;
   --ink:#1a1a18;
   --ink-secondary:#6b6b66;
   --ink-muted:#9e9e98;
@@ -22,6 +25,8 @@
   --danger:#dc2626;
   --radius:12px;
   --radius-sm:8px;
+  --nav-text:rgba(0,0,0,0.58);
+  --nav-text-hover:rgba(0,0,0,0.85);
   --transition:0.2s ease;
   --font:'PingFang SC','Noto Sans SC','Microsoft YaHei','Helvetica Neue',system-ui,sans-serif;
   --z-dropdown:100;--z-sticky:200;--z-modal:300;--z-toast:400;--z-lightbox:500;
@@ -119,7 +124,7 @@ body{
 #app-main{display:none;flex-direction:column;min-height:100vh}
 #app-main.logged-in{display:flex}
 .header{
-  background:var(--surface);border-bottom:1px solid var(--border-light);
+  background:var(--bg-header,var(--surface));border-bottom:1px solid var(--border);
   position:sticky;top:0;z-index:var(--z-sticky)
 }
 .header-inner{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0}
@@ -127,12 +132,12 @@ body{
 /* Navigation */
 .nav-links{display:flex;align-items:center;gap:2px;flex-wrap:nowrap}
 .nav-link{
-  color:var(--ink-secondary);font-size:14px;padding:8px 16px;min-height:44px;
+  color:var(--nav-text,var(--ink-secondary));font-size:14px;padding:8px 16px;min-height:44px;
   border-radius:8px;transition:var(--transition);font-weight:500;
   text-decoration:none;background:none;cursor:pointer;font-family:inherit;
   white-space:nowrap;display:inline-flex;align-items:center;border:none
 }
-.nav-link:hover{color:var(--ink);background:var(--surface-hover)}
+.nav-link:hover{color:var(--nav-text-hover,var(--ink));background:var(--surface-hover)}
 .nav-link.active{color:var(--accent);background:var(--surface-hover);font-weight:600}
 #btn-add-video{
   background:var(--accent);color:#fff;font-weight:600;border-radius:8px;
@@ -321,7 +326,7 @@ body{
 .btn-sm{padding:10px 16px!important;font-size:13px!important;min-height:40px;display:inline-flex;align-items:center}
 
 /* ============ FOOTER ============ */
-.footer{background:var(--surface);color:var(--ink-muted);padding:28px 0;text-align:center;font-size:13px;border-top:1px solid var(--border-light)}
+.footer{background:var(--bg-footer,var(--surface));color:var(--ink-muted);padding:28px 0;text-align:center;font-size:13px;border-top:1px solid var(--border)}
 
 /* Video type tabs */
 .video-type-tabs{display:flex;gap:0;margin-bottom:20px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
