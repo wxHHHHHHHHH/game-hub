@@ -162,7 +162,7 @@ Group=gamehub
 WorkingDirectory=$DEPLOY_DIR
 EnvironmentFile=$ENV_FILE
 ExecStart=/usr/bin/java \\
-  -Xms512m -Xmx1024m \\
+  -Xms256m -Xmx512m \\
   -XX:+UseG1GC \\
   -Djava.awt.headless=true \\
   -jar $DEPLOY_DIR/game-hub.jar \\
