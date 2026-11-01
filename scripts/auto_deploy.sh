@@ -21,11 +21,11 @@ err()  { echo -e "${RED}[ERR]${NC} $1"; }
 info() { echo -e "${CYAN}[..]${NC} $1"; }
 
 # ========== 配置 ==========
-REPO_DIR="/home/user/game-hub"
+REPO_DIR="/opt/game-hub"
 DEPLOY_DIR="/opt/gamehub"
 UPLOAD_DIR="/var/gamehub/uploads"
 LOG_DIR="$DEPLOY_DIR/logs"
-JAVA_HOME="/usr/lib/jvm/java-17-alibaba-dragonwell-17.0.16.0.17.8-1.alnx4.x86_64"
+JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
 
 # 根据服务器实际情况修改下面这个
 MAVEN_CMD=""  # 留空则自动查找
@@ -141,7 +141,7 @@ if [ "$STEP" = "all" ] || [ "$STEP" = "backend" ]; then
     echo "--- 5/5 启动服务 ---"
 
     # 读数据库密码
-    DB_PASS="z43PxYE+MXXBvErc6Bcc2w=="
+    DB_PASS="Root@123456"
     if [ -f /etc/gamehub/env.conf ]; then
         source /etc/gamehub/env.conf 2>/dev/null
         DB_PASS="${DB_PASSWORD:-$DB_PASS}"

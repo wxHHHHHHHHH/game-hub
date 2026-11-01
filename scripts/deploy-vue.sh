@@ -8,7 +8,7 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 log() { echo -e "${GREEN}[OK]${NC} $1"; }
 
-REPO="/home/user/game-hub"
+REPO="/opt/game-hub"
 VUE_DIR="$REPO/frontend-vue"
 DEPLOY_DIR="/opt/gamehub/frontend"
 
