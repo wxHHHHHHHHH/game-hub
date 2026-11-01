@@ -148,7 +148,7 @@ if [ "$STEP" = "all" ] || [ "$STEP" = "backend" ]; then
     fi
 
     sudo -u gamehub nohup "$JAVA_HOME/bin/java" \
-        -Xms512m -Xmx1024m \
+        -Xms256m -Xmx512m \
         -DDB_PASSWORD="$DB_PASS" \
         -jar "$DEPLOY_DIR/game-hub.jar" \
         --spring.profiles.active=prod \
