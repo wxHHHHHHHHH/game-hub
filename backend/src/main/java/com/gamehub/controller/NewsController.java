@@ -47,6 +47,9 @@ public class NewsController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
+        if (!newsRepo.existsById(id)) {
+            return ResponseEntity.status(404).body(Map.of("error", "新闻不存在或已被删除"));
+        }
         newsRepo.deleteById(id);
         return ResponseEntity.ok(Map.of("message", "删除成功"));
     }

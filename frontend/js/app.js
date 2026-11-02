@@ -498,20 +498,18 @@
         const grid = $('#news-grid');
         grid.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
 
-        let news = [];
-        try { news = await API.getNewsList(); } catch(e) { /* demo below */ }
-
-        if (!news || news.length === 0) {
-            news = [
-                { id:1, title:'波比2026年度工作会议圆满召开', summary:'集团于2026年3月召开年度工作会议…', category:'集团动态', pinned:true, createdAt:'2026-03-15T10:00:00' },
-                { id:2, title:'关于进一步加强集团内部管理的通知', summary:'为进一步规范集团内部管理流程…', category:'政策文件', pinned:false, createdAt:'2026-02-28T14:00:00' },
-                { id:3, title:'波比荣获2025年度行业创新奖', summary:'在第15届行业峰会上，集团荣获年度创新企业奖…', category:'行业资讯', pinned:false, createdAt:'2026-01-20T09:00:00' },
-            ];
-        }
-
         const isAdmin = AUTH.getUser() && AUTH.getUser().role === 'ADMIN';
         const bar = $('#news-admin-bar');
         if (bar) bar.style.display = isAdmin ? 'block' : 'none';
+
+        let news = [];
+        try { news = await API.getNewsList(); } catch(e) { news = []; }
+
+        if (!news || news.length === 0) {
+            grid.innerHTML = '<div class="empty-state"><h3>暂无新闻</h3><p>点击下方「发布新闻」添加第一条动态</p></div>';
+            if (window.GSANIM) window.GSANIM.newsList();
+            return;
+        }
 
         grid.innerHTML = news.map(function(n) {
             return '<div class="news-card" data-id="' + n.id + '">' +
@@ -575,7 +573,18 @@
     window.ADMIN_ACTIONS = window.ADMIN_ACTIONS || {};
     window.ADMIN_ACTIONS.deleteNews = async function(id) {
         if (!confirm('确定删除该新闻？')) return;
-        try { await API.deleteNews(id); showToast('已删除'); renderNewsList(); } catch(e) { showToast('删除失败', 'error'); }
+        try {
+            await API.deleteNews(id);
+        } catch(e) {
+            // 404「不存在或已被删除」视为删除成功，直接刷新
+            if (e.message && e.message.indexOf('不存在') !== -1) {
+                showToast('已删除'); renderNewsList(); return;
+            }
+            showToast('删除失败: ' + (e.message || '请重试'), 'error');
+            return;
+        }
+        showToast('已删除');
+        renderNewsList();
     };
 
     // ============ GALLERY ============
