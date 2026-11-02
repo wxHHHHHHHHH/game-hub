@@ -65,6 +65,27 @@ $PKG install -y \
     redis-server >/dev/null
 log "软件安装完成"
 
+# 配置 Maven 国内镜像 (阿里云)，否则国内从 Central 下载极慢
+MAVEN_SETTINGS="/etc/maven/settings.xml"
+if [ -f "$MAVEN_SETTINGS" ]; then
+    cat > "$MAVEN_SETTINGS" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <mirrors>
+    <mirror>
+      <id>aliyunmaven</id>
+      <mirrorOf>*</mirrorOf>
+      <name>阿里云公共仓库</name>
+      <url>https://maven.aliyun.com/repository/public</url>
+    </mirror>
+  </mirrors>
+</settings>
+EOF
+    log "Maven 已配置阿里云镜像加速"
+fi
+
 # ========== 3. 配置 Java 17 为默认 ==========
 info "3/7 配置 Java 17..."
 for bin in java javac; do
