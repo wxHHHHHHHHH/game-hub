@@ -180,8 +180,19 @@ sudo systemctl daemon-reload
 sudo systemctl enable gamehub
 sudo systemctl start gamehub
 
-sleep 5
-if sudo systemctl is-active --quiet gamehub; then
+# 轮询等待后端真正就绪（最多 40 秒），避免固定 sleep 5 秒误报
+info "等待后端启动..."
+READY=0
+for i in $(seq 1 20); do
+    sleep 2
+    # HTTP 探活：端口能响应即代表 Spring Boot 已启动完成
+    if curl -s -o /dev/null http://127.0.0.1:27890/api/videos 2>/dev/null; then
+        READY=1
+        break
+    fi
+done
+
+if [ "$READY" -eq 1 ]; then
     log "GameHub 服务启动成功"
 else
     warn "服务可能未正常启动，检查日志:"

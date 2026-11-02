@@ -155,10 +155,19 @@ if [ "$STEP" = "all" ] || [ "$STEP" = "backend" ]; then
         --spring.jpa.hibernate.ddl-auto=update \
         > "$LOG_DIR/app.log" 2>&1 &
 
-    sleep 8
+    # 轮询等待后端真正就绪（最多 40 秒），避免固定 sleep 8 秒误报
+    info "等待后端启动..."
+    READY=0
+    for i in $(seq 1 20); do
+        sleep 2
+        if curl -s -o /dev/null http://127.0.0.1:27890/api/videos 2>/dev/null; then
+            READY=1
+            break
+        fi
+    done
 
     # 验证
-    if curl -s -o /dev/null http://127.0.0.1:27890/api/videos; then
+    if [ "$READY" -eq 1 ]; then
         log "后端启动成功"
         curl -s http://127.0.0.1:27890/api/videos | head -c 80 && echo ""
     else
