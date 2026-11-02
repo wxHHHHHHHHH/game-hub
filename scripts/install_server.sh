@@ -1,233 +1,155 @@
 #!/bin/bash
 # ============================================================
-# GameHub - Linux Server Environment Installer
+# GameHub - 纯净服务器一键环境安装脚本
 # ============================================================
-# Supports: Ubuntu 20.04+/Debian 11+, CentOS 8+/RHEL 8+
-# Usage:   sudo bash install_server.sh
+# 适用: Ubuntu 22.04 / 24.04, Debian 12 (apt 系)
+# 安装: OpenJDK 17 + Maven + MySQL 8.0 + Redis + FFmpeg + Nginx + Git
+# 用法: sudo bash install_server.sh
+#
+# 安装后端口约定 (与 application-prod.yml 完全一致):
+#   MySQL  : 127.0.0.1:35087   root / Root@123456   库 gamehub
+#   Redis  : 127.0.0.1:26379   无密码
+#   后端   : 127.0.0.1:27890
+#   Nginx  : 80
+#
+# 注: 阿里云 Ubuntu 默认源已是阿里云镜像，apt update 很快。
+#     如果卡在 update，说明源不对，先换阿里云镜像:
+#     sudo sed -i 's|http://.*archive.ubuntu.com|http://mirrors.aliyun.com|g; s|http://.*security.ubuntu.com|http://mirrors.aliyun.com|g' /etc/apt/sources.list /etc/apt/sources.list.d/*.list
 # ============================================================
 set -e
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
-NC='\033[0m'
-
+GREEN='\033[0;32m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; CYAN='\033[0;36m'; NC='\033[0m'
 log()  { echo -e "${GREEN}[✓]${NC} $1"; }
 warn() { echo -e "${YELLOW}[!]${NC} $1"; }
 err()  { echo -e "${RED}[✗]${NC} $1"; exit 1; }
-info() { echo -e "${CYAN}[i]${NC} $1"; }
+info() { echo -e "${CYAN}[..]${NC} $1"; }
 
-# ============================================================
-# Check root
-# ============================================================
-if [ "$(id -u)" -ne 0 ]; then
-    err "请使用 sudo 运行此脚本"
-fi
+# ========== 配置 ==========
+MYSQL_PORT=35087
+MYSQL_ROOT_PW="Root@123456"
+DB_NAME="gamehub"
+REDIS_PORT=26379
+JAVA_HOME_DIR="/usr/lib/jvm/java-17-openjdk-amd64"
 
-# ============================================================
-# Detect OS
-# ============================================================
-if [ -f /etc/os-release ]; then
-    . /etc/os-release
-    OS=$ID
-    OS_VERSION=$VERSION_ID
-else
-    err "无法检测操作系统"
-fi
+# ========== 检查 root ==========
+[ "$(id -u)" -eq 0 ] || err "请用 sudo 运行: sudo bash install_server.sh"
 
-info "检测到操作系统: $OS $OS_VERSION"
-
-case "$OS" in
-    ubuntu|debian)
-        PKG_MGR="apt"
-        ;;
-    centos|rhel|rocky|almalinux|fedora)
-        PKG_MGR="dnf"
-        ;;
-    *)
-        warn "未知系统: $OS，尝试使用 apt"
-        PKG_MGR="apt"
-        ;;
+# ========== 检测 OS ==========
+. /etc/os-release
+case "$ID" in
+    ubuntu|debian) PKG="apt-get";;
+    *) err "本脚本仅支持 Ubuntu/Debian。当前系统: $ID。如果是 CentOS/阿里云Linux 请告诉我，我再补 dnf 版";;
 esac
 
-# ============================================================
-# 1. System Update
-# ============================================================
 echo ""
-echo "=========================================="
-echo "  1/5 更新系统包管理器"
-echo "=========================================="
-if [ "$PKG_MGR" = "apt" ]; then
-    apt update -y && apt upgrade -y
-else
-    dnf update -y
-fi
-log "系统更新完成"
+echo "=============================================="
+echo "  GameHub 环境安装  ($ID $VERSION_ID)"
+echo "=============================================="
 
-# ============================================================
-# 2. Install JDK 17
-# ============================================================
-echo ""
-echo "=========================================="
-echo "  2/5 安装 OpenJDK 17"
-echo "=========================================="
-if [ "$PKG_MGR" = "apt" ]; then
-    apt install -y openjdk-17-jdk
-else
-    dnf install -y java-17-openjdk-devel
-fi
-log "JDK 17 安装完成"
-java -version 2>&1 | head -1
+# ========== 1. 更新包列表 (只 update 不 upgrade，避免卡住) ==========
+info "1/7 更新软件包列表..."
+export DEBIAN_FRONTEND=noninteractive
+$PKG update -y >/dev/null
+log "包列表已更新"
 
-# ============================================================
-# 3. Install MySQL 8.0
-# ============================================================
-echo ""
-echo "=========================================="
-echo "  3/5 安装 MySQL 8.0"
-echo "=========================================="
+# ========== 2. 安装基础软件 ==========
+info "2/7 安装软件 (JDK17/Maven/MySQL/Redis/FFmpeg/Nginx/Git)..."
+$PKG install -y \
+    openjdk-17-jdk \
+    maven \
+    git \
+    curl \
+    ffmpeg \
+    nginx \
+    mysql-server \
+    redis-server >/dev/null
+log "软件安装完成"
 
-MYSQL_ROOT_PW="Root@123456"
-
-if command -v mysql &>/dev/null; then
-    log "MySQL 已安装，跳过"
-else
-    if [ "$PKG_MGR" = "apt" ]; then
-        # Ubuntu/Debian
-        export DEBIAN_FRONTEND=noninteractive
-        apt install -y mysql-server-8.0 2>/dev/null || \
-        apt install -y mysql-server 2>/dev/null || \
-        apt install -y default-mysql-server 2>/dev/null
-    else
-        # CentOS/RHEL
-        dnf install -y mysql-server
+# ========== 3. 配置 Java 17 为默认 ==========
+info "3/7 配置 Java 17..."
+for bin in java javac; do
+    if [ -f "$JAVA_HOME_DIR/bin/$bin" ]; then
+        update-alternatives --set "$bin" "$JAVA_HOME_DIR/bin/$bin" 2>/dev/null || true
     fi
-    log "MySQL 安装完成"
-fi
+done
+cat > /etc/profile.d/java17.sh <<EOF
+export JAVA_HOME=$JAVA_HOME_DIR
+export PATH=\$JAVA_HOME/bin:\$PATH
+EOF
+export JAVA_HOME="$JAVA_HOME_DIR"
+export PATH="$JAVA_HOME/bin:$PATH"
+log "Java 17 已设为默认: $JAVA_HOME_DIR"
 
-# Start MySQL
-if [ "$PKG_MGR" = "apt" ]; then
-    systemctl start mysql 2>/dev/null || service mysql start 2>/dev/null || true
+# ========== 4. 配置 MySQL ==========
+info "4/7 配置 MySQL (端口 $MYSQL_PORT)..."
+MYSQL_CNF="/etc/mysql/mysql.conf.d/mysqld.cnf"
+if grep -qE '^[[:space:]]*port[[:space:]]*=' "$MYSQL_CNF" 2>/dev/null; then
+    sed -i -E "s/^[[:space:]]*port[[:space:]]*=.*/port = $MYSQL_PORT/" "$MYSQL_CNF"
 else
-    systemctl start mysqld
-    systemctl enable mysqld
+    sed -i "/\[mysqld\]/a port = $MYSQL_PORT" "$MYSQL_CNF"
 fi
 
-# Set root password & create database
-info "配置数据库..."
-if [ "$PKG_MGR" = "apt" ]; then
-    # Ubuntu: try socket auth first
-    mysql -u root <<SQL 2>/dev/null || {
-        # If socket auth fails, try with --skip-grant-tables or previous password
-        warn "Socket 认证失败，尝试使用默认密码..."
-    }
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${MYSQL_ROOT_PW}';
+systemctl enable mysql >/dev/null 2>&1
+systemctl restart mysql
+sleep 2
+
+# 设置 root 密码 (Ubuntu 首次 root 走 auth_socket 免密)
+if mysql -u root -e "SELECT 1" &>/dev/null; then
+    mysql -u root <<SQL
+ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '$MYSQL_ROOT_PW';
 FLUSH PRIVILEGES;
 SQL
+    log "MySQL root 密码已设置"
 else
-    # CentOS: get temp password
-    TEMP_PW=$(grep 'temporary password' /var/log/mysqld.log 2>/dev/null | tail -1 | awk '{print $NF}')
-    if [ -n "$TEMP_PW" ]; then
-        mysql --connect-expired-password -u root -p"$TEMP_PW" <<SQL 2>/dev/null
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PW}';
-FLUSH PRIVILEGES;
+    warn "root 已是密码认证，跳过改密"
+fi
+
+# 建库
+mysql -u root -p"$MYSQL_ROOT_PW" <<SQL 2>/dev/null || warn "建库失败，请检查 root 密码"
+CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 SQL
-    fi
-fi
+log "数据库 $DB_NAME 已就绪 (端口 $MYSQL_PORT)"
 
-# Create gamehub database (try with password)
-mysql -u root -p"${MYSQL_ROOT_PW}" <<SQL 2>/dev/null || mysql -u root <<SQL 2>/dev/null
-CREATE DATABASE IF NOT EXISTS gamehub
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-SQL
+# ========== 5. 配置 Redis ==========
+info "5/7 配置 Redis (端口 $REDIS_PORT)..."
+REDIS_CNF="/etc/redis/redis.conf"
+sed -i -E "s/^#?[[:space:]]*port[[:space:]]+[0-9]+/port $REDIS_PORT/" "$REDIS_CNF"
+sed -i -E "s/^#?[[:space:]]*bind[[:space:]].*/bind 127.0.0.1 ::1/" "$REDIS_CNF"
+systemctl enable redis-server >/dev/null 2>&1
+systemctl restart redis-server
+log "Redis 已配置 (端口 $REDIS_PORT, 仅本机)"
 
-log "数据库 gamehub 创建完成"
-info "MySQL root 密码: ${MYSQL_ROOT_PW}"
+# ========== 6. 创建目录和运行用户 ==========
+info "6/7 创建部署目录..."
+mkdir -p /opt/gamehub/logs
+mkdir -p /var/gamehub/uploads/{videos/original,videos/hls,files}
+id gamehub &>/dev/null || useradd -r -s /bin/false gamehub
+chown -R gamehub:gamehub /opt/gamehub /var/gamehub
+log "目录和运行用户 gamehub 已创建"
 
-# ============================================================
-# 4. Install Maven (optional)
-# ============================================================
+# ========== 7. 验证 ==========
+info "7/7 验证环境..."
 echo ""
-echo "=========================================="
-echo "  4/5 安装 Maven"
-echo "=========================================="
-if command -v mvn &>/dev/null; then
-    log "Maven 已安装，跳过"
+echo "  Java    : $(java -version 2>&1 | head -1)"
+echo "  Maven   : $(mvn -version 2>&1 | head -1)"
+echo "  MySQL   : $(mysql --version 2>&1 | head -1)"
+echo "  Redis   : $(redis-cli -p $REDIS_PORT ping 2>&1)"
+echo "  FFmpeg  : $(ffmpeg -version 2>&1 | head -1)"
+echo "  Nginx   : $(nginx -v 2>&1)"
+
+if mysql -u root -p"$MYSQL_ROOT_PW" -e "USE $DB_NAME; SELECT 'DB OK' AS status;" &>/dev/null; then
+    log "MySQL 连接正常，库 $DB_NAME 可用"
 else
-    if [ "$PKG_MGR" = "apt" ]; then
-        apt install -y maven
-    else
-        dnf install -y maven
-    fi
-    log "Maven 安装完成"
-fi
-mvn --version 2>&1 | head -1 || true
-
-# ============================================================
-# 5. Install FFmpeg (optional)
-# ============================================================
-echo ""
-echo "=========================================="
-echo "  5/5 安装 FFmpeg (可选)"
-echo "=========================================="
-if command -v ffmpeg &>/dev/null; then
-    log "FFmpeg 已安装，跳过"
-else
-    if [ "$PKG_MGR" = "apt" ]; then
-        apt install -y ffmpeg 2>/dev/null || warn "FFmpeg 安装失败（非关键）"
-    else
-        dnf install -y epel-release 2>/dev/null || true
-        dnf install -y ffmpeg 2>/dev/null || warn "FFmpeg 安装失败（非关键）"
-    fi
-fi
-ffmpeg -version 2>&1 | head -1 || warn "FFmpeg 未安装（HLS 转码将不可用）"
-
-# ============================================================
-# 6. Install Nginx (optional)
-# ============================================================
-echo ""
-echo "=========================================="
-echo "  额外: 安装 Nginx"
-echo "=========================================="
-if command -v nginx &>/dev/null; then
-    log "Nginx 已安装，跳过"
-else
-    if [ "$PKG_MGR" = "apt" ]; then
-        apt install -y nginx
-    else
-        dnf install -y nginx
-    fi
-    log "Nginx 安装完成"
+    warn "MySQL 连接异常，请手动检查"
 fi
 
-# ============================================================
-# Summary
-# ============================================================
 echo ""
-echo "=========================================="
-echo -e "${GREEN}  环境安装完成！${NC}"
-echo "=========================================="
+echo "=============================================="
+echo -e "  ${GREEN}环境安装完成！${NC}"
+echo "=============================================="
 echo ""
-echo "已安装软件:"
-echo "  JDK 17     : $(java -version 2>&1 | head -1 || echo 'N/A')"
-echo "  MySQL 8.0  : $(mysql --version 2>&1 | head -1 || echo 'N/A')"
-echo "  Maven      : $(mvn --version 2>&1 | head -1 || echo 'N/A')"
-echo "  FFmpeg     : $(ffmpeg -version 2>&1 | head -1 || echo 'N/A')"
-echo "  Nginx      : $(nginx -v 2>&1 || echo 'N/A')"
-echo ""
-echo "数据库信息:"
-echo "  地址     : localhost:35087"
-echo "  数据库   : gamehub"
-echo "  用户名   : root"
-echo "  密码     : ${MYSQL_ROOT_PW}"
-echo ""
-echo "下一步:"
-echo "  1. 修改 backend/src/main/resources/application.yml 中的数据库密码"
-echo "  2. 运行部署脚本: bash scripts/deploy.sh"
-echo ""
-echo "安全提醒:"
-echo "  - 生产环境务必修改 MySQL root 密码"
-echo "  - 生产环境务必修改 JWT secret"
+echo "  下一步 (先克隆/拉取项目代码):"
+echo "    cd /opt && git clone git@github.com:wxHHHHHHHHH/game-hub.git"
+echo "    cd /opt/game-hub && sudo bash scripts/auto_deploy.sh    # 一键部署"
+echo "    # 或: sudo bash scripts/deploy.sh                       # systemd 部署(推荐)"
 echo ""
