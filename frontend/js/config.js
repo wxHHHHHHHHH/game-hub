@@ -15,7 +15,7 @@ const CONFIG = (function() {
         // API base URL — change for production
         // Local:  Spring Boot default at localhost:27890
         // Prod:   Same domain with nginx proxy, or full URL
-        API_BASE: 'http://47.108.130.167/api',
+        API_BASE: isLocal ? 'http://localhost:27890/api' : '/api',
 
         // App info
         APP_NAME: 'GameHub',

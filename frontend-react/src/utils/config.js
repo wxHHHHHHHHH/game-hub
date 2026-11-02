@@ -1,5 +1,5 @@
 export default {
-  API_BASE: 'http://47.108.130.167/api',
+  API_BASE: '/api',
   APP_NAME: '波比',
   BILIBILI_EMBED: 'https://player.bilibili.com/player.html?bvid={BV}&page=1&high_quality=1&as_wide=1&danmaku=0&autoplay=0',
   BILIBILI_API: 'https://api.bilibili.com/x/web-interface/view?bvid={BV}',
