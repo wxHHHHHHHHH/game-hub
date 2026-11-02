@@ -226,10 +226,8 @@ body{
 .carousel-btn.next{right:16px}
 
 /* === VIDEO GRID (horizontal scroll) === */
-.video-grid{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 0 20px;scrollbar-width:none}
-.video-grid::-webkit-scrollbar{display:none}
+.video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:8px 0 20px}
 .video-card{
-  flex:0 0 340px;scroll-snap-align:start;
   background:var(--surface);border-radius:14px;overflow:hidden;
   cursor:pointer;transition:var(--transition);border:1px solid var(--border)
 }
@@ -579,7 +577,7 @@ button:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
 /* ============ RESPONSIVE ============ */
 @media(max-width:900px){
   .container{padding:0 16px}
-  .video-card{flex:0 0 85vw}.news-card{flex:0 0 85vw}
+  .news-card{flex:0 0 85vw}
   .hero{padding:40px 0 28px}.hero h1{font-size:clamp(1.3rem,4vw,1.6rem)}
   .hero-stats{gap:28px}.hero-stat-num{font-size:1.5rem}
   .carousel{height:220px;border-radius:12px}
@@ -589,7 +587,7 @@ button:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
   .admin-add-form .admin-form-row{grid-template-columns:1fr 1fr}
   .news-detail-wrap,.intro-section{padding:24px}
   .sort-buttons{gap:6px}.sort-btn,.source-btn{padding:7px 14px;font-size:12px}
-  .video-grid{gap:12px;padding:4px 0 16px}
+  .video-grid{grid-template-columns:repeat(2,1fr);gap:12px;padding:4px 0 16px}
   .news-grid{gap:12px}
   .contact-card{padding:20px}
   .main{padding:0 0 60px}
@@ -597,7 +595,7 @@ button:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
 
 @media(max-width:640px){
   .container{padding:0 12px}
-  .video-card{flex:0 0 90vw}.news-card{flex:0 0 90vw}
+  .news-card{flex:0 0 90vw}.video-grid{grid-template-columns:1fr}
   .hero{padding:32px 0 24px}.hero h1{font-size:1.35rem}.hero p{font-size:.9rem}
   .header-inner{height:56px}
   .hero-stats{gap:16px}.hero-stat-num{font-size:1.25rem}.hero-stat-label{font-size:11px}
