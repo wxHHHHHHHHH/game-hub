@@ -519,7 +519,7 @@
                 '<h4>' + esc(n.title) + '</h4>' +
                 (n.summary ? '<div class="news-summary">' + esc(n.summary) + '</div>' : '') +
                 '<div class="news-date">' + formatTime(n.createdAt) + '</div>' +
-                (isAdmin ? '<button class="btn-delete-comment" style="float:right;margin-top:-20px;" onclick="event.stopPropagation();ADMIN_ACTIONS.deleteNews(' + n.id + ')">删除</button>' : '') +
+                (isAdmin ? '<button class="btn-delete-news" onclick="event.stopPropagation();ADMIN_ACTIONS.deleteNews(' + n.id + ')">删除</button>' : '') +
             '</div>';
         }).join('');
 
