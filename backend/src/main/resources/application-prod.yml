@@ -41,6 +41,8 @@ spring:
 
 server:
   port: ${SERVER_PORT:27890}
+  # 只监听本机，由 nginx 反代，避免后端端口直接暴露到公网
+  address: ${SERVER_ADDRESS:127.0.0.1}
   compression:
     enabled: true
     mime-types: application/json,text/css,application/javascript

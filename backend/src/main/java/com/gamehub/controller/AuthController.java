@@ -4,6 +4,7 @@ import com.gamehub.dto.LoginRequest;
 import com.gamehub.dto.LoginResponse;
 import com.gamehub.service.TokenBlacklistService;
 import com.gamehub.service.UserService;
+import com.gamehub.util.ClientIpUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpServletRequest req) {
-        String ip = req.getRemoteAddr();
+        String ip = ClientIpUtil.getClientIp(req);
         if (blacklistService.isRateLimited("login:" + ip, 10, 60)) {
             return ResponseEntity.status(429).body(Map.of("error", "登录过于频繁，请1分钟后再试"));
         }
