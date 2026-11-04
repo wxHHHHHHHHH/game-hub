@@ -15,6 +15,7 @@
     let currentVideoId = null;
     let currentSort = 'latest';
     let currentSource = 'all';
+    let currentGame = 'all';
     let dpInstance = null;
     // Like state now managed by server (user_likes table)
 
@@ -780,6 +781,36 @@
         renderVideoList();
     }
 
+    function setGameFilter(game) {
+        currentGame = game;
+        $$('.game-chip').forEach(function(chip) {
+            chip.classList.toggle('active', chip.dataset.game === game);
+        });
+        // 清除搜索框，避免搜索覆盖分类筛选
+        var input = $('#search-input');
+        if (input) input.value = '';
+        var clearBtn = $('#btn-search-clear');
+        if (clearBtn) clearBtn.style.display = 'none';
+        renderVideoList('');
+    }
+
+    async function loadGameFilters() {
+        const container = $('#game-filter');
+        if (!container) return;
+        let games = [];
+        try { games = await API.getGames(); } catch(e) { games = []; }
+
+        var chips = ['<button class="game-chip active" data-game="all">🎮 全部游戏</button>'];
+        games.forEach(function(g) {
+            if (g) chips.push('<button class="game-chip" data-game="' + esc(g) + '">' + esc(g) + '</button>');
+        });
+        container.innerHTML = chips.join('');
+
+        container.querySelectorAll('.game-chip').forEach(function(chip) {
+            chip.addEventListener('click', function() { setGameFilter(chip.dataset.game); });
+        });
+    }
+
     // ============ VIDEO LIST ============
     async function renderVideoList(searchTerm) {
         const grid = $('#video-grid');
@@ -795,6 +826,8 @@
         try {
             if (searchTerm && searchTerm.trim()) {
                 videos = await API.getVideosBySearch(searchTerm.trim());
+            } else if (currentGame !== 'all') {
+                videos = await API.getVideosByGame(currentGame);
             } else if (currentSource !== 'all') {
                 videos = await API.getVideosByType(currentSource);
             } else {
@@ -1947,6 +1980,8 @@
 
         // Search
         initSearch();
+        // Game category filter chips
+        loadGameFilters();
 
         // Admin panel
         $('#btn-admin-panel').addEventListener('click', openAdminPanel);

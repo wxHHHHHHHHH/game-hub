@@ -28,14 +28,23 @@ public class VideoController {
     @GetMapping
     public ResponseEntity<List<Video>> list(@RequestParam(defaultValue = "latest") String sort,
                                             @RequestParam(required = false) String search,
-                                            @RequestParam(required = false) String type) {
+                                            @RequestParam(required = false) String type,
+                                            @RequestParam(required = false) String game) {
         if (search != null && !search.isBlank()) {
             return ResponseEntity.ok(videoRepo.searchByKeyword(search.trim()));
+        }
+        if (game != null && !game.isBlank()) {
+            return ResponseEntity.ok(videoRepo.findByGameOrderByCreatedAtDesc(game.trim()));
         }
         if (type != null && !type.isBlank()) {
             return ResponseEntity.ok(videoRepo.findByVideoTypeOrderByCreatedAtDesc(type));
         }
         return ResponseEntity.ok(videoService.getAll(sort));
+    }
+
+    @GetMapping("/games")
+    public ResponseEntity<List<String>> games() {
+        return ResponseEntity.ok(videoRepo.findDistinctGames());
     }
 
     @GetMapping("/{id}")

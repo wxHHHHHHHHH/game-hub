@@ -15,6 +15,11 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
 
     List<Video> findByVideoTypeOrderByCreatedAtDesc(String videoType);
 
+    List<Video> findByGameOrderByCreatedAtDesc(String game);
+
+    @Query("SELECT DISTINCT v.game FROM Video v WHERE v.game IS NOT NULL AND v.game <> '' ORDER BY v.game")
+    List<String> findDistinctGames();
+
     // play count ranking
     List<Video> findTop10ByOrderByPlayCountDesc();
 }

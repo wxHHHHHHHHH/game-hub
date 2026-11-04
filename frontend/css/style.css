@@ -197,6 +197,10 @@ body{
 .sort-btn:hover,.source-btn:hover{border-color:var(--accent);color:var(--accent)}
 .sort-btn.active,.source-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
 .source-btn.active{background:var(--accent-soft);border-color:var(--accent-soft)}
+.game-filter{gap:6px}
+.game-chip{padding:5px 14px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--ink-secondary);cursor:pointer;font-size:12px;font-weight:500;transition:var(--transition);font-family:inherit;white-space:nowrap}
+.game-chip:hover{border-color:var(--accent);color:var(--accent)}
+.game-chip.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
 
 /* Search */
 .search-bar{max-width:440px;margin:20px auto 0;position:relative}

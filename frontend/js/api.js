@@ -94,6 +94,12 @@ const API = (function() {
         getVideosByType: function(type) {
             return request('/videos?type=' + encodeURIComponent(type));
         },
+        getVideosByGame: function(game) {
+            return request('/videos?game=' + encodeURIComponent(game));
+        },
+        getGames: function() {
+            return request('/videos/games');
+        },
 
         getVideo: function(id) {
             return request('/videos/' + id);
