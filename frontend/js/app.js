@@ -1640,25 +1640,24 @@
     }
 
     // Admin actions (exposed globally for inline onclick handlers)
-    window.ADMIN_ACTIONS = {
-        changeRole: async function(userId, role) {
-            try {
-                await API.admin.updateUserRole(userId, role);
-                showToast('角色已更新');
-                renderAdminUserList();
-            } catch(e) {
-                showToast('更新失败: ' + e.message, 'error');
-            }
-        },
-        deleteUser: async function(userId) {
-            if (!confirm('确定要删除该用户吗？')) return;
-            try {
-                await API.admin.deleteUser(userId);
-                showToast('用户已删除');
-                renderAdminUserList();
-            } catch(e) {
-                showToast('删除失败: ' + e.message, 'error');
-            }
+    window.ADMIN_ACTIONS = window.ADMIN_ACTIONS || {};
+    window.ADMIN_ACTIONS.changeRole = async function(userId, role) {
+        try {
+            await API.admin.updateUserRole(userId, role);
+            showToast('角色已更新');
+            renderAdminUserList();
+        } catch(e) {
+            showToast('更新失败: ' + e.message, 'error');
+        }
+    };
+    window.ADMIN_ACTIONS.deleteUser = async function(userId) {
+        if (!confirm('确定要删除该用户吗？')) return;
+        try {
+            await API.admin.deleteUser(userId);
+            showToast('用户已删除');
+            renderAdminUserList();
+        } catch(e) {
+            showToast('删除失败: ' + e.message, 'error');
         }
     };
 
